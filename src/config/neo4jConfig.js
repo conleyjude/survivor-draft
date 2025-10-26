@@ -1,9 +1,9 @@
 const neo4j = require('neo4j-driver');
 require('dotenv').config();
 
-const URI = process.env.REACT_APP_NEO4J_URI;
-const USER = process.env.REACT_APP_NEO4J_USERNAME;
-const PASSWORD = process.env.REACT_APP_NEO4J_PASSWORD;
+const URI = process.env.NEO4J_URI;
+const USER = process.env.NEO4J_USERNAME;
+const PASSWORD = process.env.NEO4J_PASSWORD;
 
 let driver = null;
 
