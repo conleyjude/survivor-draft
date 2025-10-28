@@ -12,6 +12,9 @@ At a high level, I want to keep a website up for the teams drafted by the Ness f
 3. Player Profile View
 - It could be nice to have a player view that displays tribe, team drafted to, etc.
 
+4. Editing Players
+- For each property they have, there should be a box to put a value
+
 ## Storage!
 I want this to be stored in graph somehow. I think it would be a good opportunity to represent the necessary data while also deepening that bag of mine. 
 

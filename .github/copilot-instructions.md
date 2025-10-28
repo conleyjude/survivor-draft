@@ -1,0 +1,1 @@
+This is an app that manages a Fantasy Football style draft of the show Survivor. It uses a Neo4j database to store information about seasons, players, tribes, and draft picks.
