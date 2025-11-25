@@ -1,22 +1,24 @@
-import logo from './logo.svg';
+import { useEffect } from 'react';
 import './App.css';
+import Players from './components/Players';
+import { initDriver, closeDriver } from './config/neo4jConfig';
 
 function App() {
+  useEffect(() => {
+    // Initialize Neo4j connection
+    initDriver().catch(console.error);
+    
+    // Cleanup on component unmount
+    return () => {
+      closeDriver().catch(console.error);
+    };
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Survivor Draft Manager</h1>
+        <Players seasonId="1" />
       </header>
     </div>
   );

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getDriver } from '../config/neo4jConfig';
+import { getDriver, initDriver } from '../config/neo4jConfig';
 
 const Players = ({ seasonId }) => {
   const [players, setPlayers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newPlayer, setNewPlayer] = useState({
     name: '',
     age: '',
@@ -12,9 +14,13 @@ const Players = ({ seasonId }) => {
 
   // Fetch players for the current season
   const fetchPlayers = async () => {
-    const driver = getDriver();
-    const session = driver.session();
+    let session = null;
     try {
+      const driver = await getDriver();
+      if (!driver) {
+        throw new Error('Could not connect to Neo4j');
+      }
+      session = driver.session();
       const result = await session.run(
         `MATCH (p:Player)-[:PLAYED_IN]->(s:Season)
          WHERE ID(s) = $seasonId
@@ -35,9 +41,13 @@ const Players = ({ seasonId }) => {
   // Add a new player
   const addPlayer = async (e) => {
     e.preventDefault();
-    const driver = getDriver();
-    const session = driver.session();
+    let session = null;
     try {
+      const driver = await getDriver();
+      if (!driver) {
+        throw new Error('Could not connect to Neo4j');
+      }
+      session = driver.session();
       await session.run(
         `MATCH (s:Season)
          WHERE ID(s) = $seasonId
@@ -56,38 +66,62 @@ const Players = ({ seasonId }) => {
         occupation: '',
         hometown: ''
       });
-      fetchPlayers();
+      await fetchPlayers();
     } catch (error) {
       console.error('Error adding player:', error);
+      setError(error.message);
     } finally {
-      session.close();
+      if (session) {
+        await session.close();
+      }
     }
   };
 
   // Delete a player
   const deletePlayer = async (playerId) => {
-    const driver = getDriver();
-    const session = driver.session();
+    let session = null;
     try {
+      const driver = await getDriver();
+      if (!driver) {
+        throw new Error('Could not connect to Neo4j');
+      }
+      session = driver.session();
       await session.run(
         `MATCH (p:Player)
          WHERE ID(p) = $playerId
          DETACH DELETE p`,
         { playerId }
       );
-      fetchPlayers();
+      await fetchPlayers();
     } catch (error) {
       console.error('Error deleting player:', error);
+      setError(error.message);
     } finally {
-      session.close();
+      if (session) {
+        await session.close();
+      }
     }
   };
 
   useEffect(() => {
-    if (seasonId) {
-      fetchPlayers();
-    }
+    const initializeAndFetch = async () => {
+      try {
+        await initDriver();
+        if (seasonId) {
+          await fetchPlayers();
+        }
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
+    };
+
+    initializeAndFetch();
   }, [seasonId]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="players-container">
