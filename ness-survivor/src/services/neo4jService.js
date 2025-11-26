@@ -237,19 +237,6 @@ export const addPlayerToAlliance = async (first_name, last_name, alliance_name) 
  * @param {number} previous_wins - Number of previous wins
  * @returns {Promise<Object>} - The created fantasy team
  */
-export const createFantasyTeam = async (team_name, members, previous_wins) => {
-  const query = `
-    CREATE (ft:FantasyTeam {
-      team_name: $team_name,
-      members: $members,
-      previous_wins: $previous_wins
-    })
-    RETURN ft
-  `;
-  const results = await executeQuery(query, { team_name, members, previous_wins });
-  return results[0]?.ft?.properties || null;
-};
-
 /**
  * Draft a Player to a Fantasy Team
  * @param {string} first_name - Player's first name
@@ -433,6 +420,69 @@ export const getSeasonOverview = async (season_number) => {
 // ============================================
 
 /**
+ * Update Season (year)
+ * @param {number} season_number - The season number to update
+ * @param {object} updates - Object with fields to update { year }
+ * @returns {Promise<Object>} - Updated season
+ */
+export const updateSeason = async (season_number, updates) => {
+  let setClause = [];
+  let params = { season_number };
+
+  if (updates.year !== undefined) {
+    setClause.push('s.year = $year');
+    params.year = updates.year;
+  }
+
+  if (setClause.length === 0) {
+    throw new Error('No fields provided for update');
+  }
+
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    SET ${setClause.join(', ')}
+    RETURN s
+  `;
+  const results = await executeQuery(query, params);
+  return results[0]?.s?.properties || null;
+};
+
+/**
+ * Update Tribe (name, color)
+ * @param {string} tribe_name - The tribe name to update
+ * @param {number} season_number - The season the tribe belongs to
+ * @param {object} updates - Object with fields to update { tribe_name, tribe_color }
+ * @returns {Promise<Object>} - Updated tribe
+ */
+export const updateTribe = async (tribe_name, season_number, updates) => {
+  let setClause = [];
+  let params = { tribe_name, season_number };
+
+  if (updates.tribe_name !== undefined && updates.tribe_name !== tribe_name) {
+    setClause.push('t.tribe_name = $new_tribe_name');
+    params.new_tribe_name = updates.tribe_name;
+  }
+
+  if (updates.tribe_color !== undefined) {
+    setClause.push('t.tribe_color = $tribe_color');
+    params.tribe_color = updates.tribe_color;
+  }
+
+  if (setClause.length === 0) {
+    return { tribe_name, season_number };
+  }
+
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    MATCH (t:Tribe {tribe_name: $tribe_name})-[:IN_SEASON]->(s)
+    SET ${setClause.join(', ')}
+    RETURN t
+  `;
+  const results = await executeQuery(query, params);
+  return results[0]?.t?.properties || null;
+};
+
+/**
  * Update Player Stats (challenges won, idol status, etc.)
  * @param {string} first_name - Player's first name
  * @param {string} last_name - Player's last name
@@ -520,6 +570,34 @@ export const updatePlayerBasicInfo = async (
 };
 
 /**
+ * Update all Player fields
+ * @param {string} first_name - Player's first name (used to identify player)
+ * @param {string} last_name - Player's last name (used to identify player)
+ * @param {object} updates - Object with fields to update
+ * @returns {Promise<Object>} - Updated player
+ */
+export const updatePlayer = async (first_name, last_name, updates) => {
+  const setClause = Object.keys(updates)
+    .map(key => `p.${key} = $${key}`)
+    .join(', ');
+  
+  const query = `
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+    SET ${setClause}
+    RETURN p
+  `;
+  
+  const params = {
+    first_name,
+    last_name,
+    ...updates,
+  };
+  
+  const results = await executeQuery(query, params);
+  return results[0]?.p?.properties || null;
+};
+
+/**
  * Move Player to Different Tribe (tribe swap)
  * @param {string} first_name - Player's first name
  * @param {string} last_name - Player's last name
@@ -566,17 +644,6 @@ export const updateAlliance = async (alliance_name, dissolved_episode, notes) =>
  * @param {number} previous_wins - Updated previous wins
  * @returns {Promise<Object>} - Updated team
  */
-export const updateFantasyTeam = async (team_name, members, previous_wins) => {
-  const query = `
-    MATCH (ft:FantasyTeam {team_name: $team_name})
-    SET ft.members = $members,
-        ft.previous_wins = $previous_wins
-    RETURN ft
-  `;
-  const results = await executeQuery(query, { team_name, members, previous_wins });
-  return results[0]?.ft?.properties || null;
-};
-
 /**
  * Increment Player Challenge Wins
  * @param {string} first_name - Player's first name
@@ -697,12 +764,13 @@ export const deleteAlliance = async (alliance_name) => {
  * @param {string} tribe_name - Tribe name
  * @returns {Promise<boolean>} - Success indicator
  */
-export const deleteTribe = async (tribe_name) => {
+export const deleteTribe = async (tribe_name, season_number) => {
   const query = `
-    MATCH (t:Tribe {tribe_name: $tribe_name})
+    MATCH (s:Season {season_number: $season_number})
+    MATCH (t:Tribe {tribe_name: $tribe_name})-[:IN_SEASON]->(s)
     DETACH DELETE t
   `;
-  await executeQuery(query, { tribe_name });
+  await executeQuery(query, { tribe_name, season_number });
   return true;
 };
 
@@ -711,15 +779,6 @@ export const deleteTribe = async (tribe_name) => {
  * @param {string} team_name - Team name
  * @returns {Promise<boolean>} - Success indicator
  */
-export const deleteFantasyTeam = async (team_name) => {
-  const query = `
-    MATCH (ft:FantasyTeam {team_name: $team_name})
-    DETACH DELETE ft
-  `;
-  await executeQuery(query, { team_name });
-  return true;
-};
-
 /**
  * Delete a Season and all related data
  * WARNING: Cascades to all related data!
@@ -816,4 +875,165 @@ export const getAvailablePlayersInSeason = async (season_number) => {
   `;
   const results = await executeQuery(query, { season_number });
   return results.map(r => r.p?.properties || {});
+};
+
+/**
+ * Get all Alliances in a Season
+ * @param {number} season_number - The season number
+ * @returns {Promise<Array>} - Array of alliances with members
+ */
+export const getAlliancesInSeason = async (season_number) => {
+  const query = `
+    MATCH (a:Alliance)-[:FORMED_IN]->(s:Season {season_number: $season_number})
+    OPTIONAL MATCH (a)-[:INCLUDES]->(p:Player)
+    RETURN a, collect(p) as members
+    ORDER BY a.alliance_name
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => ({
+    ...r.a?.properties,
+    roster: r.members?.map(m => m?.properties) || [],
+  }));
+};
+
+/**
+ * Create a new Fantasy Team
+ * @param {string} team_name - Name of the fantasy team
+ * @param {string} owner_name - Name of the owner
+ * @param {Array} players - Array of player objects to add to roster
+ * @param {number} season_number - Season number to link to
+ * @returns {Promise<Object>} - The created fantasy team
+ */
+export const createFantasyTeam = async (team_name, owner_name, players, season_number) => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    CREATE (t:FantasyTeam {
+      team_name: $team_name,
+      owner_name: $owner_name
+    })-[:DRAFTED_FOR]->(s)
+    WITH t
+    UNWIND $players as player_data
+    MATCH (p:Player {first_name: player_data.first_name, last_name: player_data.last_name})
+    CREATE (t)-[:INCLUDES]->(p)
+    RETURN t
+  `;
+  const results = await executeQuery(query, { team_name, owner_name, season_number, players });
+  return results[0]?.t?.properties || null;
+};
+
+/**
+ * Update a Fantasy Team (owner and roster)
+ * @param {string} team_name - Name of the fantasy team
+ * @param {string} owner_name - New owner name
+ * @param {Array} players - Array of player objects for new roster
+ * @returns {Promise<Object>} - The updated fantasy team
+ */
+export const updateFantasyTeam = async (team_name, owner_name, players) => {
+  const query = `
+    MATCH (t:FantasyTeam {team_name: $team_name})
+    SET t.owner_name = $owner_name
+    WITH t
+    OPTIONAL MATCH (t)-[r:INCLUDES]->(p)
+    DELETE r
+    WITH t
+    UNWIND $players as player_data
+    MATCH (p:Player {first_name: player_data.first_name, last_name: player_data.last_name})
+    CREATE (t)-[:INCLUDES]->(p)
+    RETURN t
+  `;
+  const results = await executeQuery(query, { team_name, owner_name, players });
+  return results[0]?.t?.properties || null;
+};
+
+/**
+ * Delete a Fantasy Team
+ * @param {string} team_name - Name of the fantasy team to delete
+ * @returns {Promise<boolean>} - True if deletion successful
+ */
+export const deleteFantasyTeam = async (team_name) => {
+  const query = `
+    MATCH (t:FantasyTeam {team_name: $team_name})
+    DETACH DELETE t
+    RETURN true as success
+  `;
+  const results = await executeQuery(query, { team_name });
+  return results[0]?.success || false;
+};
+
+/**
+ * Get all Fantasy Teams in a Season
+ * @param {number} season_number - The season number
+ * @returns {Promise<Array>} - Array of fantasy teams with rosters
+ */
+export const getFantasyTeamsInSeason = async (season_number) => {
+  const query = `
+    MATCH (t:FantasyTeam)-[:DRAFTED_FOR]->(s:Season {season_number: $season_number})
+    OPTIONAL MATCH (t)-[:INCLUDES]->(p:Player)
+    RETURN t, collect(p) as roster
+    ORDER BY t.team_name
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => ({
+    ...r.t?.properties,
+    roster: r.roster?.map(p => p?.properties) || [],
+  }));
+};
+
+/**
+ * Create a Draft Pick
+ * @param {number} season_number - Season number
+ * @param {number} round - Draft round number
+ * @param {number} pick_number - Pick number within round
+ * @param {string} player_name - Full name of player picked (first last)
+ * @param {string} team_name - Name of fantasy team making pick
+ * @returns {Promise<Object>} - The created draft pick
+ */
+export const createDraftPick = async (season_number, round, pick_number, player_name, team_name) => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    MATCH (t:FantasyTeam {team_name: $team_name})
+    MATCH (p:Player)
+    WHERE (p.first_name + ' ' + p.last_name) = $player_name
+    CREATE (dp:DraftPick {
+      round: $round,
+      pick_number: $pick_number,
+      player_name: $player_name
+    })-[:PICKED_IN]->(s)
+    CREATE (t)-[:MADE_PICK]->(dp)
+    RETURN dp
+  `;
+  const results = await executeQuery(query, { season_number, round, pick_number, player_name, team_name });
+  return results[0]?.dp?.properties || null;
+};
+
+/**
+ * Delete a Draft Pick
+ * @param {number} season_number - Season number
+ * @param {number} round - Draft round number
+ * @param {number} pick_number - Pick number within round
+ * @returns {Promise<boolean>} - True if deletion successful
+ */
+export const deleteDraftPick = async (season_number, round, pick_number) => {
+  const query = `
+    MATCH (dp:DraftPick {round: $round, pick_number: $pick_number})-[:PICKED_IN]->(s:Season {season_number: $season_number})
+    DETACH DELETE dp
+    RETURN true as success
+  `;
+  const results = await executeQuery(query, { season_number, round, pick_number });
+  return results[0]?.success || false;
+};
+
+/**
+ * Get all Draft Picks for a Season
+ * @param {number} season_number - The season number
+ * @returns {Promise<Array>} - Array of draft picks
+ */
+export const getDraftPicksForSeason = async (season_number) => {
+  const query = `
+    MATCH (dp:DraftPick)-[:PICKED_IN]->(s:Season {season_number: $season_number})
+    RETURN dp
+    ORDER BY dp.round, dp.pick_number
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => r.dp?.properties || {});
 };

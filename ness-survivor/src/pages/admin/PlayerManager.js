@@ -1,119 +1,239 @@
 /**
- * PlayerManager - Create and manage players
+ * PlayerManager - Create, read, update, and delete players
+ * Comprehensive CRUD interface with cascading season/tribe selectors
  */
 
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetchData, useForm, useMutation } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
+import { playerValidation, hasErrors } from '../../utils/validation';
 import '../../styles/PlayerManager.css';
-import { useState, useEffect } from 'react';
 
 function PlayerManager() {
-  const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
+  const { data: seasons, loading: seasonsLoading } = useFetchData(
+    () => neo4jService.getAllSeasons(),
+    []
+  );
+
   const [selectedSeason, setSelectedSeason] = useState(null);
   const [selectedTribe, setSelectedTribe] = useState(null);
   const [tribesInSeason, setTribesInSeason] = useState([]);
   const [playersInSeason, setPlayersInSeason] = useState([]);
+  const [loadingTribes, setLoadingTribes] = useState(false);
+  const [loadingPlayers, setLoadingPlayers] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
+  // Load tribes when season changes
   useEffect(() => {
     if (selectedSeason) {
-      const loadData = async () => {
-        const tribes = await neo4jService.getTribesInSeason(selectedSeason);
-        setTribesInSeason(tribes);
-        const players = await neo4jService.getPlayersInSeason(selectedSeason);
-        setPlayersInSeason(players);
-      };
-      loadData();
+      setLoadingTribes(true);
+      setSelectedTribe(null);
+      neo4jService.getTribesInSeason(selectedSeason)
+        .then(setTribesInSeason)
+        .catch(err => {
+          setErrorMessage(`Failed to load tribes: ${err.message}`);
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setLoadingTribes(false));
+    } else {
+      setTribesInSeason([]);
+      setPlayersInSeason([]);
     }
   }, [selectedSeason]);
 
-  const { mutate: createPlayer } = useMutation(
-    (params) =>
-      neo4jService.createPlayer(
-        params.season_number,
-        params.tribe_name,
-        params.first_name,
-        params.last_name,
-        params.occupation,
-        params.hometown,
-        params.archetype,
-        params.notes
-      ),
+  // Load players when season changes
+  useEffect(() => {
+    if (selectedSeason) {
+      setLoadingPlayers(true);
+      neo4jService.getPlayersInSeason(selectedSeason)
+        .then(setPlayersInSeason)
+        .catch(err => {
+          setErrorMessage(`Failed to load players: ${err.message}`);
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setLoadingPlayers(false));
+    } else {
+      setPlayersInSeason([]);
+    }
+  }, [selectedSeason]);
+
+  const { mutate: createPlayer, isLoading: isCreating } = useMutation(
+    (firstName, lastName, age, occupation, placement, tribeId) =>
+      neo4jService.createPlayer(firstName, lastName, age, occupation, placement, tribeId),
     () => {
-      alert('Player created successfully!');
+      setSuccessMessage('Player created successfully!');
       if (selectedSeason) {
         neo4jService.getPlayersInSeason(selectedSeason).then(setPlayersInSeason);
       }
       resetForm();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => alert(`Error: ${err.message}`)
-  );
-
-  const { values, errors, handleChange, handleSubmit, resetForm } = useForm(
-    {
-      first_name: '',
-      last_name: '',
-      occupation: '',
-      hometown: '',
-      archetype: '',
-      notes: '',
-    },
-    async (values) => {
-      if (!selectedSeason || !selectedTribe) {
-        alert('Please select both season and tribe');
-        return;
-      }
-      await createPlayer({
-        season_number: selectedSeason,
-        tribe_name: selectedTribe,
-        ...values,
-      });
-    },
-    {
-      first_name: (val) => !val ? 'First name is required' : '',
-      last_name: (val) => !val ? 'Last name is required' : '',
+    (err) => {
+      setErrorMessage(`Failed to create player: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
     }
   );
+
+  const { mutate: updatePlayer, isLoading: isUpdating } = useMutation(
+    (firstName, lastName, updates) =>
+      neo4jService.updatePlayer(firstName, lastName, updates),
+    () => {
+      setSuccessMessage('Player updated successfully!');
+      if (selectedSeason) {
+        neo4jService.getPlayersInSeason(selectedSeason).then(setPlayersInSeason);
+      }
+      resetForm();
+      setEditingId(null);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    },
+    (err) => {
+      setErrorMessage(`Failed to update player: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  );
+
+  const { mutate: deletePlayer, isLoading: isDeleting } = useMutation(
+    (firstName, lastName) =>
+      neo4jService.deletePlayer(firstName, lastName),
+    () => {
+      setSuccessMessage('Player deleted successfully!');
+      if (selectedSeason) {
+        neo4jService.getPlayersInSeason(selectedSeason).then(setPlayersInSeason);
+      }
+      setTimeout(() => setSuccessMessage(''), 3000);
+    },
+    (err) => {
+      setErrorMessage(`Failed to delete player: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  );
+
+  const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
+    { first_name: '', last_name: '', age: '', occupation: '', placement: '', hometown: '', archetype: '' },
+    async (formValues) => {
+      if (!selectedSeason) {
+        setErrorMessage('Please select a season first');
+        return;
+      }
+      if (!selectedTribe) {
+        setErrorMessage('Please select a tribe first');
+        return;
+      }
+
+      if (editingId) {
+        await updatePlayer(editingId.first_name, editingId.last_name, {
+          first_name: formValues.first_name,
+          last_name: formValues.last_name,
+          age: Number(formValues.age),
+          occupation: formValues.occupation,
+          placement: Number(formValues.placement),
+          hometown: formValues.hometown,
+          archetype: formValues.archetype,
+        });
+      } else {
+        await createPlayer(
+          formValues.first_name,
+          formValues.last_name,
+          Number(formValues.age),
+          formValues.occupation,
+          Number(formValues.placement),
+          selectedTribe
+        );
+      }
+    },
+    playerValidation
+  );
+
+  const handleEdit = (player) => {
+    setEditingId(player);
+    setValues({
+      first_name: player.first_name,
+      last_name: player.last_name,
+      age: player.age,
+      occupation: player.occupation,
+      placement: player.placement,
+      hometown: player.hometown || '',
+      archetype: player.archetype || '',
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    resetForm();
+  };
+
+  const handleDelete = (player) => {
+    if (window.confirm(`Are you sure you want to delete ${player.first_name} ${player.last_name}? This action cannot be undone.`)) {
+      deletePlayer(player.first_name, player.last_name);
+    }
+  };
+
+  // Filter players based on search term
+  const filteredPlayers = playersInSeason?.filter(player =>
+    `${player.first_name} ${player.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    player.occupation?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const formHasErrors = hasErrors(errors);
 
   return (
     <div className="player-manager">
       <div className="manager-header">
         <h1>👥 Manage Players</h1>
+        <p className="header-subtitle">Create, edit, and manage Survivor players</p>
       </div>
 
+      {/* Messages */}
+      {successMessage && (
+        <div className="message message-success">
+          ✓ {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div className="message message-error">
+          ✕ {errorMessage}
+        </div>
+      )}
+
       <div className="manager-content">
-        {/* Create Form */}
+        {/* Create/Edit Form */}
         <section className="create-section">
-          <h2>Create New Player</h2>
+          <h2>{editingId ? `Edit Player: ${editingId.first_name} ${editingId.last_name}` : 'Create New Player'}</h2>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="season_select">Select Season</label>
-              <select
-                id="season_select"
-                value={selectedSeason || ''}
-                onChange={(e) => {
-                  const season = Number(e.target.value) || null;
-                  setSelectedSeason(season);
-                  setSelectedTribe(null);
-                }}
-              >
-                <option value="">-- Choose Season --</option>
-                {seasons?.map((season) => (
-                  <option key={season.season_number} value={season.season_number}>
-                    Season {season.season_number} ({season.year})
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Season Selection */}
+          <div className="form-group">
+            <label htmlFor="season_select">Select Season *</label>
+            <select
+              id="season_select"
+              value={selectedSeason || ''}
+              onChange={(e) => setSelectedSeason(Number(e.target.value) || null)}
+              disabled={seasonsLoading}
+              className={!selectedSeason && 'input-error'}
+            >
+              <option value="">-- Choose Season --</option>
+              {seasons?.map((season) => (
+                <option key={season.season_number} value={season.season_number}>
+                  Season {season.season_number} ({season.year})
+                </option>
+              ))}
+            </select>
+            {!selectedSeason && <span className="error-message">Please select a season</span>}
+          </div>
 
+          {/* Tribe Selection */}
+          {selectedSeason && (
             <div className="form-group">
-              <label htmlFor="tribe_select">Select Tribe</label>
+              <label htmlFor="tribe_select">Select Tribe *</label>
               <select
                 id="tribe_select"
                 value={selectedTribe || ''}
                 onChange={(e) => setSelectedTribe(e.target.value || null)}
-                disabled={!selectedSeason}
+                disabled={loadingTribes}
+                className={!selectedTribe && 'input-error'}
               >
                 <option value="">-- Choose Tribe --</option>
                 {tribesInSeason?.map((tribe) => (
@@ -122,93 +242,136 @@ function PlayerManager() {
                   </option>
                 ))}
               </select>
+              {!selectedTribe && <span className="error-message">Please select a tribe</span>}
             </div>
-          </div>
+          )}
 
+          {/* Player Form */}
           {selectedSeason && selectedTribe && (
             <form onSubmit={handleSubmit} className="form">
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="first_name">First Name</label>
+                  <label htmlFor="first_name">First Name *</label>
                   <input
                     id="first_name"
                     name="first_name"
+                    type="text"
                     value={values.first_name}
                     onChange={handleChange}
-                    placeholder="First name"
+                    placeholder="e.g., Robert"
+                    className={errors.first_name ? 'input-error' : ''}
                   />
-                  {errors.first_name && <span className="error">{errors.first_name}</span>}
+                  {errors.first_name && <span className="error-message">{errors.first_name}</span>}
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="last_name">Last Name</label>
+                  <label htmlFor="last_name">Last Name *</label>
                   <input
                     id="last_name"
                     name="last_name"
+                    type="text"
                     value={values.last_name}
                     onChange={handleChange}
-                    placeholder="Last name"
+                    placeholder="e.g., Marksanchez"
+                    className={errors.last_name ? 'input-error' : ''}
                   />
-                  {errors.last_name && <span className="error">{errors.last_name}</span>}
+                  {errors.last_name && <span className="error-message">{errors.last_name}</span>}
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="occupation">Occupation</label>
+                  <label htmlFor="age">Age *</label>
                   <input
-                    id="occupation"
-                    name="occupation"
-                    value={values.occupation}
+                    id="age"
+                    name="age"
+                    type="number"
+                    value={values.age}
                     onChange={handleChange}
-                    placeholder="e.g., Marketing Manager"
+                    placeholder="e.g., 45"
+                    className={errors.age ? 'input-error' : ''}
                   />
+                  {errors.age && <span className="error-message">{errors.age}</span>}
                 </div>
 
+                <div className="form-group">
+                  <label htmlFor="placement">Placement *</label>
+                  <input
+                    id="placement"
+                    name="placement"
+                    type="number"
+                    value={values.placement}
+                    onChange={handleChange}
+                    placeholder="e.g., 1"
+                    className={errors.placement ? 'input-error' : ''}
+                  />
+                  {errors.placement && <span className="error-message">{errors.placement}</span>}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="occupation">Occupation *</label>
+                <input
+                  id="occupation"
+                  name="occupation"
+                  type="text"
+                  value={values.occupation}
+                  onChange={handleChange}
+                  placeholder="e.g., Restaurant Owner"
+                  className={errors.occupation ? 'input-error' : ''}
+                />
+                {errors.occupation && <span className="error-message">{errors.occupation}</span>}
+              </div>
+
+              <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="hometown">Hometown</label>
                   <input
                     id="hometown"
                     name="hometown"
+                    type="text"
                     value={values.hometown}
                     onChange={handleChange}
-                    placeholder="e.g., Chicago, IL"
+                    placeholder="e.g., Los Angeles, CA"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="archetype">Archetype</label>
+                  <input
+                    id="archetype"
+                    name="archetype"
+                    type="text"
+                    value={values.archetype}
+                    onChange={handleChange}
+                    placeholder="e.g., Strategic Player"
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="archetype">Archetype</label>
-                <select
-                  id="archetype"
-                  name="archetype"
-                  value={values.archetype}
-                  onChange={handleChange}
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={formHasErrors || isCreating || isUpdating}
                 >
-                  <option value="">-- Select --</option>
-                  <option value="Leader">Leader</option>
-                  <option value="Strategic">Strategic</option>
-                  <option value="Loyal">Loyal</option>
-                  <option value="Challenge Beast">Challenge Beast</option>
-                  <option value="Social Butterfly">Social Butterfly</option>
-                  <option value="Wildcard">Wildcard</option>
-                </select>
+                  {isCreating || isUpdating ? (
+                    <>⏳ {editingId ? 'Updating...' : 'Creating...'}</>
+                  ) : (
+                    editingId ? '💾 Update Player' : '➕ Create Player'
+                  )}
+                </button>
+                {editingId && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleCancelEdit}
+                    disabled={isUpdating}
+                  >
+                    ✕ Cancel
+                  </button>
+                )}
               </div>
-
-              <div className="form-group">
-                <label htmlFor="notes">Notes</label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  value={values.notes}
-                  onChange={handleChange}
-                  placeholder="Additional notes about the player"
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary">
-                Create Player
-              </button>
             </form>
           )}
         </section>
@@ -216,19 +379,64 @@ function PlayerManager() {
         {/* Players List */}
         {selectedSeason && (
           <section className="list-section">
-            <h2>Players in Season {selectedSeason} ({playersInSeason?.length || 0})</h2>
-            {playersInSeason && playersInSeason.length > 0 ? (
+            <div className="list-header">
+              <h2>Players in Season {selectedSeason} ({filteredPlayers.length})</h2>
+              <input
+                type="text"
+                placeholder="Search by name or occupation..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
+            {loadingPlayers ? (
+              <div className="loading">⏳ Loading players...</div>
+            ) : filteredPlayers.length > 0 ? (
               <div className="players-list">
-                {playersInSeason.map((player) => (
+                {filteredPlayers.map((player) => (
                   <div key={`${player.first_name}-${player.last_name}`} className="player-item">
-                    <h3>{player.first_name} {player.last_name}</h3>
-                    <p className="occupation">{player.occupation || 'N/A'}</p>
-                    <p className="hometown">{player.hometown || 'N/A'}</p>
+                    <div className="player-content">
+                      <div className="player-info">
+                        <h3>{player.first_name} {player.last_name}</h3>
+                        <p className="player-details">
+                          {player.age} years old • {player.occupation}
+                        </p>
+                        {player.hometown && <p className="player-meta">{player.hometown}</p>}
+                      </div>
+                      <div className="player-stats">
+                        <span className="stat-badge">Placement #{player.placement}</span>
+                      </div>
+                    </div>
+                    <div className="player-actions">
+                      <button
+                        className="btn btn-small btn-edit"
+                        onClick={() => handleEdit(player)}
+                        disabled={isUpdating || isDeleting}
+                        title="Edit player"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        className="btn btn-small btn-delete"
+                        onClick={() => handleDelete(player)}
+                        disabled={isDeleting}
+                        title="Delete player"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p>No players in this season yet</p>
+              <div className="empty-state">
+                {playersInSeason?.length === 0 ? (
+                  <p>No players in this season yet. Create one to get started!</p>
+                ) : (
+                  <p>No players match your search.</p>
+                )}
+              </div>
             )}
           </section>
         )}
