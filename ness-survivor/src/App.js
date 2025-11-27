@@ -16,6 +16,8 @@ import TribeManager from './pages/admin/TribeManager';
 import PlayerManager from './pages/admin/PlayerManager';
 import AllianceManager from './pages/admin/AllianceManager';
 import DraftManager from './pages/admin/DraftManager';
+import FantasyTeamManager from './pages/admin/FantasyTeamManager';
+import DatabaseVerification from './pages/admin/DatabaseVerification';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
@@ -71,6 +73,8 @@ function App() {
                   <li><Link to="/admin/players">Manage Players</Link></li>
                   <li><Link to="/admin/alliances">Manage Alliances</Link></li>
                   <li><Link to="/admin/draft">Manage Draft</Link></li>
+                  <li><Link to="/admin/fantasy-teams">Manage Fantasy Teams</Link></li>
+                  <li><Link to="/admin/database-verification">Database Verification</Link></li>
                 </ul>
               </li>
             </ul>
@@ -93,6 +97,8 @@ function App() {
             <Route path="/admin/players" element={<PlayerManager />} />
             <Route path="/admin/alliances" element={<AllianceManager />} />
             <Route path="/admin/draft" element={<DraftManager />} />
+            <Route path="/admin/fantasy-teams" element={<FantasyTeamManager />} />
+            <Route path="/admin/database-verification" element={<DatabaseVerification />} />
 
             {/* 404 Page */}
             <Route path="*" element={<NotFound />} />

@@ -1,0 +1,174 @@
+/* Notification Container Styles */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+  pointer-events: none;
+}
+
+/* Individual Notification */
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+  pointer-events: auto;
+  max-width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+.notification.notification--exit {
+  animation: slideOut 0.3s ease-in;
+}
+
+/* Success Notification */
+.notification--success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #b1dfbb;
+  color: #155724;
+}
+
+/* Error Notification */
+.notification--error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #f1b0b7;
+  color: #721c24;
+}
+
+/* Warning Notification */
+.notification--warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+/* Info Notification */
+.notification--info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  border: 1px solid #b8daff;
+  color: #0c5460;
+}
+
+/* Notification Icon */
+.notification__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification Content */
+.notification__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification__message {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-break: break-word;
+  font-weight: 500;
+}
+
+/* Notification Close Button */
+.notification__close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: currentColor;
+  opacity: 0.7;
+}
+
+.notification__close:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .notification-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .notification {
+    max-width: 100%;
+  }
+
+  .notification__message {
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .notification {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .notification--success {
+    background: linear-gradient(135deg, #1e5631 0%, #2d6a4f 100%);
+    border-color: #40916c;
+    color: #d8f3dc;
+  }
+
+  .notification--error {
+    background: linear-gradient(135deg, #5c1a1a 0%, #7a2626 100%);
+    border-color: #a63d3d;
+    color: #f8d7da;
+  }
+
+  .notification--warning {
+    background: linear-gradient(135deg, #664d03 0%, #997404 100%);
+    border-color: #d4a104;
+    color: #fff3cd;
+  }
+
+  .notification--info {
+    background: linear-gradient(135deg, #084e77 0%, #126b93 100%);
+    border-color: #1f8bc5;
+    color: #d1ecf1;
+  }
+}

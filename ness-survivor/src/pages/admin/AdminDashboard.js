@@ -37,6 +37,18 @@ function AdminDashboard() {
       icon: '📋',
       link: '/admin/draft',
     },
+    {
+      title: 'Fantasy Teams',
+      description: 'Create and edit fantasy teams',
+      icon: '🎯',
+      link: '/admin/fantasy-teams',
+    },
+    {
+      title: 'Database Verification',
+      description: 'Test database connectivity and CRUD operations',
+      icon: '🔍',
+      link: '/admin/database-verification',
+    },
   ];
 
   return (

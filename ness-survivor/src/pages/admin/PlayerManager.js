@@ -62,8 +62,8 @@ function PlayerManager() {
   }, [selectedSeason]);
 
   const { mutate: createPlayer, isLoading: isCreating } = useMutation(
-    (firstName, lastName, age, occupation, placement, tribeId) =>
-      neo4jService.createPlayer(firstName, lastName, age, occupation, placement, tribeId),
+    (seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes) =>
+      neo4jService.createPlayer(seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes),
     () => {
       setSuccessMessage('Player created successfully!');
       if (selectedSeason) {
@@ -113,7 +113,7 @@ function PlayerManager() {
   );
 
   const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
-    { first_name: '', last_name: '', age: '', occupation: '', placement: '', hometown: '', archetype: '' },
+    { first_name: '', last_name: '', occupation: '', hometown: '', archetype: '', notes: '' },
     async (formValues) => {
       if (!selectedSeason) {
         setErrorMessage('Please select a season first');
@@ -128,20 +128,20 @@ function PlayerManager() {
         await updatePlayer(editingId.first_name, editingId.last_name, {
           first_name: formValues.first_name,
           last_name: formValues.last_name,
-          age: Number(formValues.age),
           occupation: formValues.occupation,
-          placement: Number(formValues.placement),
           hometown: formValues.hometown,
           archetype: formValues.archetype,
         });
       } else {
         await createPlayer(
+          selectedSeason,
+          selectedTribe,
           formValues.first_name,
           formValues.last_name,
-          Number(formValues.age),
           formValues.occupation,
-          Number(formValues.placement),
-          selectedTribe
+          formValues.hometown,
+          formValues.archetype,
+          ''
         );
       }
     },
@@ -153,11 +153,10 @@ function PlayerManager() {
     setValues({
       first_name: player.first_name,
       last_name: player.last_name,
-      age: player.age,
       occupation: player.occupation,
-      placement: player.placement,
       hometown: player.hometown || '',
       archetype: player.archetype || '',
+      notes: player.notes || '',
     });
   };
 
@@ -279,36 +278,6 @@ function PlayerManager() {
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="age">Age *</label>
-                  <input
-                    id="age"
-                    name="age"
-                    type="number"
-                    value={values.age}
-                    onChange={handleChange}
-                    placeholder="e.g., 45"
-                    className={errors.age ? 'input-error' : ''}
-                  />
-                  {errors.age && <span className="error-message">{errors.age}</span>}
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="placement">Placement *</label>
-                  <input
-                    id="placement"
-                    name="placement"
-                    type="number"
-                    value={values.placement}
-                    onChange={handleChange}
-                    placeholder="e.g., 1"
-                    className={errors.placement ? 'input-error' : ''}
-                  />
-                  {errors.placement && <span className="error-message">{errors.placement}</span>}
-                </div>
-              </div>
-
               <div className="form-group">
                 <label htmlFor="occupation">Occupation *</label>
                 <input
@@ -347,6 +316,18 @@ function PlayerManager() {
                     placeholder="e.g., Strategic Player"
                   />
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  value={values.notes}
+                  onChange={handleChange}
+                  placeholder="e.g., Key player in the game..."
+                  rows="3"
+                />
               </div>
 
               <div className="form-actions">
@@ -400,12 +381,10 @@ function PlayerManager() {
                       <div className="player-info">
                         <h3>{player.first_name} {player.last_name}</h3>
                         <p className="player-details">
-                          {player.age} years old • {player.occupation}
+                          {player.occupation}
                         </p>
                         {player.hometown && <p className="player-meta">{player.hometown}</p>}
-                      </div>
-                      <div className="player-stats">
-                        <span className="stat-badge">Placement #{player.placement}</span>
+                        {player.archetype && <p className="player-archetype">{player.archetype}</p>}
                       </div>
                     </div>
                     <div className="player-actions">

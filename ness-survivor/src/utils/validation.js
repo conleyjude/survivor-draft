@@ -69,36 +69,22 @@ export const playerValidation = {
     if (!/^[a-zA-Z\s'-]+$/.test(value)) return 'Last name can only contain letters, spaces, hyphens, and apostrophes';
     return '';
   },
-  age: (value) => {
-    if (!value) return 'Age is required';
-    const num = Number(value);
-    if (isNaN(num)) return 'Age must be a number';
-    if (num < 18) return 'Age must be at least 18';
-    if (num > 120) return 'Age must be 120 or less';
-    if (!Number.isInteger(num)) return 'Age must be a whole number';
-    return '';
-  },
   occupation: (value) => {
     if (!value || !value.trim()) return 'Occupation is required';
     if (value.trim().length < 2) return 'Occupation must be at least 2 characters';
     if (value.trim().length > 100) return 'Occupation cannot exceed 100 characters';
     return '';
   },
-  season_number: (value) => {
-    if (!value && value !== 0) return 'Season is required';
+  hometown: (value) => {
+    // Optional field
     return '';
   },
-  tribe_name: (value) => {
-    if (!value || !value.trim()) return 'Tribe is required';
+  archetype: (value) => {
+    // Optional field
     return '';
   },
-  placement: (value) => {
-    if (!value && value !== 0) return 'Placement is required';
-    const num = Number(value);
-    if (isNaN(num)) return 'Placement must be a number';
-    if (num < 1) return 'Placement must be at least 1';
-    if (num > 20) return 'Placement cannot exceed 20';
-    if (!Number.isInteger(num)) return 'Placement must be a whole number';
+  notes: (value) => {
+    // Optional field
     return '';
   },
 };
@@ -113,14 +99,30 @@ export const allianceValidation = {
     if (value.trim().length > 100) return 'Alliance name cannot exceed 100 characters';
     return '';
   },
-  members: (value) => {
-    if (!value || value.length === 0) return 'At least one member is required';
-    if (value.length > 10) return 'Alliance cannot have more than 10 members';
+  formation_episode: (value) => {
+    if (!value && value !== 0) return 'Formation episode is required';
+    const num = Number(value);
+    if (isNaN(num)) return 'Formation episode must be a number';
+    if (num < 1) return 'Formation episode must be at least 1';
+    if (num > 20) return 'Formation episode cannot exceed 20';
+    if (!Number.isInteger(num)) return 'Formation episode must be a whole number';
     return '';
   },
-  status: (value) => {
-    const validStatuses = ['active', 'broken', 'dormant'];
-    if (!value || !validStatuses.includes(value)) return 'Please select a valid alliance status';
+  dissolved_episode: (value) => {
+    // Optional field
+    return '';
+  },
+  size: (value) => {
+    if (!value && value !== 0) return 'Alliance size is required';
+    const num = Number(value);
+    if (isNaN(num)) return 'Alliance size must be a number';
+    if (num < 1) return 'Alliance size must be at least 1';
+    if (num > 20) return 'Alliance size cannot exceed 20';
+    if (!Number.isInteger(num)) return 'Alliance size must be a whole number';
+    return '';
+  },
+  notes: (value) => {
+    // Optional field
     return '';
   },
 };
@@ -135,14 +137,20 @@ export const fantasyTeamValidation = {
     if (value.trim().length > 100) return 'Team name cannot exceed 100 characters';
     return '';
   },
-  owner: (value) => {
-    if (!value || !value.trim()) return 'Owner name is required';
-    if (value.trim().length < 2) return 'Owner name must be at least 2 characters';
-    if (value.trim().length > 100) return 'Owner name cannot exceed 100 characters';
-    return '';
-  },
-  season_number: (value) => {
-    if (!value && value !== 0) return 'Season is required';
+  owner_names: (value) => {
+    if (!value || !value.trim()) return 'Owner names are required';
+    const owners = value
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+    
+    if (owners.length === 0) return 'Please enter at least one owner name';
+    
+    for (const owner of owners) {
+      if (owner.length < 1) return 'Owner names cannot be empty';
+      if (owner.length > 100) return 'Each owner name cannot exceed 100 characters';
+    }
+    
     return '';
   },
 };

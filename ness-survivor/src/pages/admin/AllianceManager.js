@@ -3,7 +3,7 @@
  * Comprehensive CRUD interface with multi-select member picker
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetchData, useForm, useMutation } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
@@ -21,54 +21,49 @@ function AllianceManager() {
   const [alliances, setAlliances] = useState([]);
   const [loadingPlayers, setLoadingPlayers] = useState(false);
   const [loadingAlliances, setLoadingAlliances] = useState(false);
-  const [selectedMembers, setSelectedMembers] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Load players and alliances when season changes
-  const handleSeasonChange = (seasonNum) => {
-    setSelectedSeason(seasonNum);
-    setSelectedMembers([]);
-    setEditingId(null);
-
-    if (seasonNum) {
+  // Load players when season changes
+  useEffect(() => {
+    if (selectedSeason) {
       setLoadingPlayers(true);
-      setLoadingAlliances(true);
-
-      Promise.all([
-        neo4jService.getPlayersInSeason(seasonNum),
-        neo4jService.getAlliancesInSeason(seasonNum)
-      ])
-        .then(([players, alliances]) => {
-          setPlayersInSeason(players);
-          setAlliances(alliances);
-        })
+      neo4jService.getPlayersInSeason(selectedSeason)
+        .then(setPlayersInSeason)
         .catch(err => {
-          setErrorMessage(`Failed to load data: ${err.message}`);
+          setErrorMessage(`Failed to load players: ${err.message}`);
           setTimeout(() => setErrorMessage(''), 3000);
         })
-        .finally(() => {
-          setLoadingPlayers(false);
-          setLoadingAlliances(false);
-        });
+        .finally(() => setLoadingPlayers(false));
     } else {
       setPlayersInSeason([]);
+    }
+  }, [selectedSeason]);
+
+  // Load alliances when season changes
+  useEffect(() => {
+    if (selectedSeason) {
+      setLoadingAlliances(true);
+      neo4jService.getAlliancesInSeason(selectedSeason)
+        .then(setAlliances)
+        .catch(err => {
+          setErrorMessage(`Failed to load alliances: ${err.message}`);
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setLoadingAlliances(false));
+    } else {
       setAlliances([]);
     }
-  };
+  }, [selectedSeason]);
 
   const { mutate: createAlliance, isLoading: isCreating } = useMutation(
-    (allianceName, members, status) =>
-      neo4jService.createAlliance(allianceName, members, status),
+    (seasonNumber, allianceName, formationEpisode, dissolvedEpisode, size, notes) =>
+      neo4jService.createAlliance(seasonNumber, allianceName, formationEpisode, dissolvedEpisode, size, notes),
     () => {
       setSuccessMessage('Alliance created successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       resetForm();
-      setSelectedMembers([]);
       setTimeout(() => setSuccessMessage(''), 3000);
     },
     (err) => {
@@ -78,15 +73,11 @@ function AllianceManager() {
   );
 
   const { mutate: updateAlliance, isLoading: isUpdating } = useMutation(
-    (allianceName, updates) =>
-      neo4jService.updateAlliance(allianceName, updates.dissolved_episode || null, updates.notes || ''),
+    (allianceName, dissolvedEpisode, notes) =>
+      neo4jService.updateAlliance(allianceName, dissolvedEpisode, notes),
     () => {
       setSuccessMessage('Alliance updated successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       resetForm();
-      setSelectedMembers([]);
       setEditingId(null);
       setTimeout(() => setSuccessMessage(''), 3000);
     },
@@ -101,9 +92,6 @@ function AllianceManager() {
       neo4jService.deleteAlliance(allianceName),
     () => {
       setSuccessMessage('Alliance deleted successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       setTimeout(() => setSuccessMessage(''), 3000);
     },
     (err) => {
@@ -113,55 +101,46 @@ function AllianceManager() {
   );
 
   const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
-    { alliance_name: '', status: 'active', notes: '' },
+    { alliance_name: '', formation_episode: '', dissolved_episode: '', size: '', notes: '' },
     async (formValues) => {
       if (!selectedSeason) {
         setErrorMessage('Please select a season first');
         return;
       }
-      if (selectedMembers.length === 0) {
-        setErrorMessage('Please select at least one member');
-        return;
-      }
 
       if (editingId) {
-        await updateAlliance(editingId, {
-          status: formValues.status,
-          notes: formValues.notes,
-        });
-      } else {
-        // For create, pass player objects
-        const memberObjects = playersInSeason.filter(p => 
-          selectedMembers.includes(`${p.first_name} ${p.last_name}`)
+        await updateAlliance(
+          editingId.alliance_name,
+          formValues.dissolved_episode ? Number(formValues.dissolved_episode) : null,
+          formValues.notes
         );
-        await createAlliance(formValues.alliance_name, memberObjects, formValues.status);
+      } else {
+        await createAlliance(
+          selectedSeason,
+          formValues.alliance_name,
+          Number(formValues.formation_episode),
+          formValues.dissolved_episode ? Number(formValues.dissolved_episode) : null,
+          Number(formValues.size),
+          formValues.notes
+        );
       }
     },
     allianceValidation
   );
 
-  const handleMemberToggle = (playerName) => {
-    setSelectedMembers(prev =>
-      prev.includes(playerName)
-        ? prev.filter(m => m !== playerName)
-        : [...prev, playerName]
-    );
-  };
-
   const handleEdit = (alliance) => {
-    setEditingId(alliance.alliance_name);
+    setEditingId(alliance);
     setValues({
       alliance_name: alliance.alliance_name,
-      status: alliance.status || 'active',
+      formation_episode: alliance.formation_episode || '',
+      dissolved_episode: alliance.dissolved_episode || '',
+      size: alliance.size || '',
       notes: alliance.notes || '',
     });
-    // Convert roster objects to names for selectedMembers
-    setSelectedMembers(alliance.roster?.map(m => `${m.first_name} ${m.last_name}`) || []);
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setSelectedMembers([]);
     resetForm();
   };
 
@@ -176,12 +155,7 @@ function AllianceManager() {
     alliance.alliance_name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  // When editing, ignore alliance_name validation since it's disabled; otherwise check all errors
-  const relevantErrors = editingId 
-    ? Object.fromEntries(Object.entries(errors).filter(([key]) => key !== 'alliance_name'))
-    : errors;
-  
-  const formHasErrors = hasErrors(relevantErrors) || (selectedMembers.length === 0 && !editingId);
+  const formHasErrors = hasErrors(errors);
 
   return (
     <div className="alliance-manager">
@@ -205,7 +179,7 @@ function AllianceManager() {
       <div className="manager-content">
         {/* Create/Edit Form */}
         <section className="create-section">
-          <h2>{editingId ? `Edit Alliance: ${editingId}` : 'Create New Alliance'}</h2>
+          <h2>{editingId ? `Edit Alliance: ${editingId.alliance_name}` : 'Create New Alliance'}</h2>
 
           {/* Season Selection */}
           <div className="form-group">
@@ -213,7 +187,11 @@ function AllianceManager() {
             <select
               id="season_select"
               value={selectedSeason || ''}
-              onChange={(e) => handleSeasonChange(Number(e.target.value) || null)}
+              onChange={(e) => {
+                const seasonNum = Number(e.target.value) || null;
+                setSelectedSeason(seasonNum);
+                setEditingId(null);
+              }}
               disabled={seasonsLoading}
               className={!selectedSeason && 'input-error'}
             >
@@ -244,46 +222,46 @@ function AllianceManager() {
                 {errors.alliance_name && <span className="error-message">{errors.alliance_name}</span>}
               </div>
 
-              {/* Member Selection */}
-              {loadingPlayers ? (
-                <div className="loading-small">⏳ Loading players...</div>
-              ) : playersInSeason.length > 0 ? (
-                <div className="form-group">
-                  <label>Select Members * ({selectedMembers.length})</label>
-                  <div className="member-selection">
-                    {playersInSeason.map((player) => (
-                      <label key={`${player.first_name}-${player.last_name}`} className="member-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={selectedMembers.includes(`${player.first_name} ${player.last_name}`)}
-                          onChange={() => handleMemberToggle(`${player.first_name} ${player.last_name}`)}
-                        />
-                        <span>{player.first_name} {player.last_name}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {selectedMembers.length === 0 && <span className="error-message">At least one member is required</span>}
-                </div>
-              ) : (
-                <div className="error-message">No players available in this season</div>
-              )}
-
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="status">Status *</label>
-                  <select
-                    id="status"
-                    name="status"
-                    value={values.status}
+                  <label htmlFor="formation_episode">Formation Episode *</label>
+                  <input
+                    id="formation_episode"
+                    name="formation_episode"
+                    type="number"
+                    value={values.formation_episode}
                     onChange={handleChange}
-                    className={errors.status ? 'input-error' : ''}
-                  >
-                    <option value="active">Active</option>
-                    <option value="broken">Broken</option>
-                    <option value="dormant">Dormant</option>
-                  </select>
-                  {errors.status && <span className="error-message">{errors.status}</span>}
+                    placeholder="e.g., 1"
+                    className={errors.formation_episode ? 'input-error' : ''}
+                  />
+                  {errors.formation_episode && <span className="error-message">{errors.formation_episode}</span>}
                 </div>
+
+                <div className="form-group">
+                  <label htmlFor="dissolved_episode">Dissolved Episode</label>
+                  <input
+                    id="dissolved_episode"
+                    name="dissolved_episode"
+                    type="number"
+                    value={values.dissolved_episode}
+                    onChange={handleChange}
+                    placeholder="e.g., 8"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="size">Alliance Size *</label>
+                <input
+                  id="size"
+                  name="size"
+                  type="number"
+                  value={values.size}
+                  onChange={handleChange}
+                  placeholder="e.g., 4"
+                  className={errors.size ? 'input-error' : ''}
+                />
+                {errors.size && <span className="error-message">{errors.size}</span>}
               </div>
 
               <div className="form-group">
@@ -348,13 +326,18 @@ function AllianceManager() {
                     <div className="alliance-content">
                       <div className="alliance-header">
                         <h3>{alliance.alliance_name}</h3>
-                        <span className={`status-badge status-${alliance.status || 'active'}`}>
-                          {alliance.status || 'Active'}
-                        </span>
+                        {!alliance.dissolved_episode ? (
+                          <span className="badge badge-active">Active</span>
+                        ) : (
+                          <span className="badge badge-dissolved">Dissolved</span>
+                        )}
                       </div>
-                      <div className="alliance-members">
-                        <strong>Members ({alliance.members?.length || 0}):</strong>
-                        <p>{alliance.members?.join(', ') || 'No members'}</p>
+                      <div className="alliance-info">
+                        <p><strong>Formation Episode:</strong> {alliance.formation_episode}</p>
+                        {alliance.dissolved_episode && (
+                          <p><strong>Dissolved Episode:</strong> {alliance.dissolved_episode}</p>
+                        )}
+                        <p><strong>Size:</strong> {alliance.size} members</p>
                       </div>
                       {alliance.notes && (
                         <p className="alliance-notes">{alliance.notes}</p>
