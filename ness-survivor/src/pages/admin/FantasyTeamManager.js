@@ -16,9 +16,7 @@ function FantasyTeamManager() {
   const [formMode, setFormMode] = useState('create'); // create, edit
   const [editingTeam, setEditingTeam] = useState(null);
   const [teamName, setTeamName] = useState('');
-  const [ownerName, setOwnerName] = useState('');
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
-  const [playerSearchTerm, setPlayerSearchTerm] = useState('');
+  const [ownerNames, setOwnerNames] = useState('');
   const [teamSearchTerm, setTeamSearchTerm] = useState('');
 
   // State for messages
@@ -26,19 +24,15 @@ function FantasyTeamManager() {
 
   // Data fetching
   const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
-  const { data: players, refetch: refetchPlayers } = useFetchData(
-    () => (selectedSeason ? neo4jService.getPlayersInSeason(selectedSeason) : Promise.resolve([])),
-    [selectedSeason]
-  );
   const { data: teams, refetch: refetchTeams } = useFetchData(
     () => (selectedSeason ? neo4jService.getFantasyTeamsInSeason(selectedSeason) : Promise.resolve([])),
     [selectedSeason]
   );
 
   // Mutations
-  const { mutate: createTeam } = useMutation(
-    () =>
-      neo4jService.createFantasyTeam(teamName, ownerName, selectedPlayers, selectedSeason),
+  const { mutate: createTeam, isLoading: isCreating } = useMutation(
+    (name, owners, season) =>
+      neo4jService.createFantasyTeam(name, owners, season),
     () => {
       addMessage('Fantasy team created successfully!', 'success');
       resetTeamForm();
@@ -47,8 +41,8 @@ function FantasyTeamManager() {
     (err) => addMessage(`Error creating team: ${err.message}`, 'error')
   );
 
-  const { mutate: updateTeam } = useMutation(
-    () => neo4jService.updateFantasyTeam(editingTeam.team_name, ownerName, selectedPlayers),
+  const { mutate: updateTeam, isLoading: isUpdating } = useMutation(
+    (name, owners) => neo4jService.updateFantasyTeam(name, owners),
     () => {
       addMessage('Fantasy team updated successfully!', 'success');
       resetTeamForm();
@@ -57,8 +51,8 @@ function FantasyTeamManager() {
     (err) => addMessage(`Error updating team: ${err.message}`, 'error')
   );
 
-  const { mutate: deleteTeam } = useMutation(
-    () => neo4jService.deleteFantasyTeam(editingTeam.team_name),
+  const { mutate: deleteTeam, isLoading: isDeleting } = useMutation(
+    (name) => neo4jService.deleteFantasyTeam(name),
     () => {
       addMessage('Fantasy team deleted successfully!', 'success');
       resetTeamForm();
@@ -82,20 +76,11 @@ function FantasyTeamManager() {
     resetTeamForm();
   };
 
-  const handlePlayerToggle = (player) => {
-    setSelectedPlayers((prev) =>
-      prev.find((p) => p.first_name === player.first_name && p.last_name === player.last_name)
-        ? prev.filter((p) => !(p.first_name === player.first_name && p.last_name === player.last_name))
-        : [...prev, player]
-    );
-  };
-
   const handleEditTeam = (team) => {
     setFormMode('edit');
     setEditingTeam(team);
     setTeamName(team.team_name);
-    setOwnerName(team.owner_name || '');
-    setSelectedPlayers(team.roster || []);
+    setOwnerNames((team.owners || []).join(', '));
   };
 
   const handleSubmitTeam = (e) => {
@@ -106,29 +91,41 @@ function FantasyTeamManager() {
       addMessage('Team name is required', 'error');
       return;
     }
-    if (!ownerName.trim()) {
-      addMessage('Owner name is required', 'error');
+    if (!ownerNames.trim()) {
+      addMessage('Owners are required', 'error');
       return;
     }
     if (teamName.length < 2 || teamName.length > 100) {
       addMessage('Team name must be between 2 and 100 characters', 'error');
       return;
     }
-    if (ownerName.length < 2 || ownerName.length > 100) {
-      addMessage('Owner name must be between 2 and 100 characters', 'error');
+
+    // Parse owners from comma-separated string
+    const owners = ownerNames
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+
+    if (owners.length === 0) {
+      addMessage('Please enter at least one owner name', 'error');
+      return;
+    }
+
+    if (owners.some(owner => owner.length < 1 || owner.length > 100)) {
+      addMessage('Each owner name must be 1-100 characters', 'error');
       return;
     }
 
     if (formMode === 'create') {
-      createTeam();
+      createTeam(teamName, owners, selectedSeason);
     } else {
-      updateTeam();
+      updateTeam(editingTeam.team_name, owners);
     }
   };
 
   const handleDeleteTeam = () => {
     if (window.confirm(`Are you sure you want to delete "${editingTeam.team_name}"?`)) {
-      deleteTeam();
+      deleteTeam(editingTeam.team_name);
     }
   };
 
@@ -136,28 +133,27 @@ function FantasyTeamManager() {
     setFormMode('create');
     setEditingTeam(null);
     setTeamName('');
-    setOwnerName('');
-    setSelectedPlayers([]);
+    setOwnerNames('');
   };
 
-  // Filtering
-  const filteredPlayers = players?.filter((player) =>
-    playerSearchTerm === ''
-      ? true
-      : `${player.first_name} ${player.last_name}`
-          .toLowerCase()
-          .includes(playerSearchTerm.toLowerCase()) ||
-        (player.occupation || '').toLowerCase().includes(playerSearchTerm.toLowerCase())
-  ) || [];
+  // // Filtering
+  // const filteredPlayers = players?.filter((player) =>
+  //   playerSearchTerm === ''
+  //     ? true
+  //     : `${player.first_name} ${player.last_name}`
+  //         .toLowerCase()
+  //         .includes(playerSearchTerm.toLowerCase()) ||
+  //       (player.occupation || '').toLowerCase().includes(playerSearchTerm.toLowerCase())
+  // ) || [];
 
-  const filteredTeams = teams?.filter((team) =>
-    `${team.team_name} ${team.owner_name}`.toLowerCase().includes(teamSearchTerm.toLowerCase())
-  ) || [];
+  const filteredTeams = teams?.filter((team) => {
+    const teamString = `${team.team_name} ${(team.owners || []).join(' ')}`.toLowerCase();
+    return teamString.includes(teamSearchTerm.toLowerCase());
+  }) || [];
 
   const isFormValid =
     teamName.trim() &&
-    ownerName.trim() &&
-    selectedPlayers.length > 0 &&
+    ownerNames.trim() &&
     selectedSeason;
 
   return (
@@ -222,51 +218,18 @@ function FantasyTeamManager() {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="owner_name">Owner Name</label>
+                    <label htmlFor="owner_names">Owners (comma-separated)</label>
                     <input
-                      id="owner_name"
+                      id="owner_names"
                       type="text"
-                      value={ownerName}
-                      onChange={(e) => setOwnerName(e.target.value)}
-                      placeholder="e.g., John Doe"
-                      className={ownerName.length < 2 && ownerName ? 'input-error' : ''}
+                      value={ownerNames}
+                      onChange={(e) => setOwnerNames(e.target.value)}
+                      placeholder="e.g., John Doe, Jane Smith"
+                      className={ownerNames && ownerNames.split(',').some(o => o.trim().length === 0) ? 'input-error' : ''}
                     />
-                    {ownerName && (ownerName.length < 2 || ownerName.length > 100) && (
-                      <span className="error-message">Owner name must be 2-100 characters</span>
+                    {ownerNames && ownerNames.split(',').some(o => o.trim().length === 0) && (
+                      <span className="error-message">Please enter valid owner names</span>
                     )}
-                  </div>
-
-                  <div className="form-group">
-                    <label>
-                      Select Players for Roster ({selectedPlayers.length} selected)
-                    </label>
-                    <div className="player-search-container">
-                      <input
-                        type="text"
-                        placeholder="Search players..."
-                        value={playerSearchTerm}
-                        onChange={(e) => setPlayerSearchTerm(e.target.value)}
-                        className="search-input"
-                      />
-                    </div>
-                    <div className="player-grid">
-                      {filteredPlayers.map((player) => (
-                        <label key={`${player.first_name}-${player.last_name}`} className="player-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={selectedPlayers.some(
-                              (p) =>
-                                p.first_name === player.first_name &&
-                                p.last_name === player.last_name
-                            )}
-                            onChange={() => handlePlayerToggle(player)}
-                          />
-                          <span>
-                            {player.first_name} {player.last_name}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
                   </div>
 
                   <div className="form-actions">
@@ -317,10 +280,7 @@ function FantasyTeamManager() {
                       <div key={team.team_name} className="team-item">
                         <div className="team-content">
                           <div className="team-name">{team.team_name}</div>
-                          <div className="team-owner">👤 {team.owner_name}</div>
-                          <div className="team-roster">
-                            Roster: {team.roster?.length || 0} players
-                          </div>
+                          <div className="team-owner">� {(team.owners || []).join(', ')}</div>
                         </div>
                         <div className="team-actions">
                           <button

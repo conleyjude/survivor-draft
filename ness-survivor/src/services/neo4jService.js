@@ -899,49 +899,37 @@ export const getAlliancesInSeason = async (season_number) => {
 /**
  * Create a new Fantasy Team
  * @param {string} team_name - Name of the fantasy team
- * @param {string} owner_name - Name of the owner
- * @param {Array} players - Array of player objects to add to roster
+ * @param {Array<string>} owners - Array of owner names
  * @param {number} season_number - Season number to link to
  * @returns {Promise<Object>} - The created fantasy team
  */
-export const createFantasyTeam = async (team_name, owner_name, players, season_number) => {
+export const createFantasyTeam = async (team_name, owners, season_number) => {
   const query = `
     MATCH (s:Season {season_number: $season_number})
     CREATE (t:FantasyTeam {
       team_name: $team_name,
-      owner_name: $owner_name
-    })-[:DRAFTED_FOR]->(s)
-    WITH t
-    UNWIND $players as player_data
-    MATCH (p:Player {first_name: player_data.first_name, last_name: player_data.last_name})
-    CREATE (t)-[:INCLUDES]->(p)
+      owners: $owners
+    })
+    CREATE (t)-[:DRAFTED_FOR]->(s)
     RETURN t
   `;
-  const results = await executeQuery(query, { team_name, owner_name, season_number, players });
+  const results = await executeQuery(query, { team_name, owners, season_number });
   return results[0]?.t?.properties || null;
 };
 
 /**
- * Update a Fantasy Team (owner and roster)
+ * Update a Fantasy Team (owners)
  * @param {string} team_name - Name of the fantasy team
- * @param {string} owner_name - New owner name
- * @param {Array} players - Array of player objects for new roster
+ * @param {Array<string>} owners - Array of owner names
  * @returns {Promise<Object>} - The updated fantasy team
  */
-export const updateFantasyTeam = async (team_name, owner_name, players) => {
+export const updateFantasyTeam = async (team_name, owners) => {
   const query = `
     MATCH (t:FantasyTeam {team_name: $team_name})
-    SET t.owner_name = $owner_name
-    WITH t
-    OPTIONAL MATCH (t)-[r:INCLUDES]->(p)
-    DELETE r
-    WITH t
-    UNWIND $players as player_data
-    MATCH (p:Player {first_name: player_data.first_name, last_name: player_data.last_name})
-    CREATE (t)-[:INCLUDES]->(p)
+    SET t.owners = $owners
     RETURN t
   `;
-  const results = await executeQuery(query, { team_name, owner_name, players });
+  const results = await executeQuery(query, { team_name, owners });
   return results[0]?.t?.properties || null;
 };
 

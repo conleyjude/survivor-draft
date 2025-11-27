@@ -109,6 +109,7 @@ export const useMutation = (mutationFn, onSuccess, onError) => {
   return {
     mutate,
     loading,
+    isLoading: loading, // Alias for convenience
     error,
     data,
     success,

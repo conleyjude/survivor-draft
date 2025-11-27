@@ -43,6 +43,12 @@ function AdminDashboard() {
       icon: '🎯',
       link: '/admin/fantasy-teams',
     },
+    {
+      title: 'Database Verification',
+      description: 'Test database connectivity and CRUD operations',
+      icon: '🔍',
+      link: '/admin/database-verification',
+    },
   ];
 
   return (
