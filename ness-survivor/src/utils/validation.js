@@ -137,14 +137,20 @@ export const fantasyTeamValidation = {
     if (value.trim().length > 100) return 'Team name cannot exceed 100 characters';
     return '';
   },
-  owner: (value) => {
-    if (!value || !value.trim()) return 'Owner name is required';
-    if (value.trim().length < 2) return 'Owner name must be at least 2 characters';
-    if (value.trim().length > 100) return 'Owner name cannot exceed 100 characters';
-    return '';
-  },
-  season_number: (value) => {
-    if (!value && value !== 0) return 'Season is required';
+  owner_names: (value) => {
+    if (!value || !value.trim()) return 'Owner names are required';
+    const owners = value
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+    
+    if (owners.length === 0) return 'Please enter at least one owner name';
+    
+    for (const owner of owners) {
+      if (owner.length < 1) return 'Owner names cannot be empty';
+      if (owner.length > 100) return 'Each owner name cannot exceed 100 characters';
+    }
+    
     return '';
   },
 };

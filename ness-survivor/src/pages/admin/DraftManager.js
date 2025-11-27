@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useFetchData, useMutation } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
 import '../../styles/DraftManager.css';
@@ -20,20 +21,21 @@ function DraftManager() {
   // Maps team_name -> selected_player_name
 
   // State for messages
-  const [messages, setMessages] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Data fetching
   const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
   const { data: players, refetch: refetchPlayers } = useFetchData(
-    () => (selectedSeason ? neo4jService.getPlayersInSeason(selectedSeason) : Promise.resolve([])),
+    () => (selectedSeason ? neo4jService.getPlayersInSeason(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
   const { data: teams, refetch: refetchTeams } = useFetchData(
-    () => (selectedSeason ? neo4jService.getFantasyTeamsInSeason(selectedSeason) : Promise.resolve([])),
+    () => (selectedSeason ? neo4jService.getFantasyTeamsInSeason(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
   const { data: draftPicks, refetch: refetchDraftPicks } = useFetchData(
-    () => (selectedSeason ? neo4jService.getDraftPicksForSeason(selectedSeason) : Promise.resolve([])),
+    () => (selectedSeason ? neo4jService.getDraftPicksForSeason(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
 
@@ -41,45 +43,44 @@ function DraftManager() {
   const { mutate: createDraftPick } = useMutation(
     (teamName, playerName) =>
       neo4jService.createDraftPick(
-        selectedSeason,
+        Number(selectedSeason),
         draftRound,
         draftPick,
         playerName,
         teamName
       ),
     () => {
-      addMessage('Draft pick created successfully!', 'success');
+      setSuccessMessage('Draft pick created successfully!');
       // Auto-increment pick/round
-      const nextPick = draftPick === 10 ? 1 : draftPick + 1;
-      const nextRound = draftPick === 10 ? draftRound + 1 : draftRound;
+      const nextPick = draftPick === teams.length ? 1 : draftPick + 1;
+      const nextRound = draftPick === teams.length ? draftRound + 1 : draftRound;
       setDraftPick(nextPick);
       setDraftRound(nextRound);
       // Clear selections
       setTeamPlayerSelections({});
       refetchDraftPicks();
       refetchPlayers();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => addMessage(`Error creating draft pick: ${err.message}`, 'error')
+    (err) => {
+      setErrorMessage(`Error creating draft pick: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
   );
 
   const { mutate: deleteDraftPick } = useMutation(
-    (pick) => neo4jService.deleteDraftPick(selectedSeason, pick.round, pick.pick_number),
+    (pick) => neo4jService.deleteDraftPick(Number(selectedSeason), pick.round, pick.pick_number),
     () => {
-      addMessage('Draft pick removed successfully!', 'success');
+      setSuccessMessage('Draft pick removed successfully!');
       refetchDraftPicks();
       refetchPlayers();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => addMessage(`Error removing draft pick: ${err.message}`, 'error')
+    (err) => {
+      setErrorMessage(`Error removing draft pick: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
   );
-
-  // Message handling
-  const addMessage = (text, type) => {
-    const id = Date.now();
-    setMessages((prev) => [...prev, { id, text, type }]);
-    setTimeout(() => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== id));
-    }, 3000);
-  };
 
   // Form handlers
   const handleSeasonChange = (e) => {
@@ -102,7 +103,8 @@ function DraftManager() {
   const handleSubmitDraftPickForTeam = (teamName) => {
     const playerName = teamPlayerSelections[teamName];
     if (!playerName) {
-      addMessage(`Please select a player for ${teamName}`, 'error');
+      setErrorMessage(`Please select a player for ${teamName}`);
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
     createDraftPick(teamName, playerName);
@@ -111,13 +113,16 @@ function DraftManager() {
   return (
     <div className="draft-manager">
       {/* Messages */}
-      <div className="messages-container">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message ${msg.type}`}>
-            {msg.text}
-          </div>
-        ))}
-      </div>
+      {successMessage && (
+        <div className="message message-success">
+          ✓ {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div className="message message-error">
+          ✕ {errorMessage}
+        </div>
+      )}
 
       <div className="manager-header">
         <h1>🎯 Draft Management</h1>
@@ -254,6 +259,8 @@ function DraftManager() {
           </div>
         )}
       </div>
+
+      <Link to="/admin" className="back-link">← Back to Admin</Link>
     </div>
   );
 }

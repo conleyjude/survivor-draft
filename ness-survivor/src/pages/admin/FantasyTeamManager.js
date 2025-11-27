@@ -4,8 +4,11 @@
  */
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useFetchData, useMutation } from '../../hooks/useNeo4j';
+import { useForm } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
+import { fantasyTeamValidation, hasErrors } from '../../utils/validation';
 import '../../styles/DraftManager.css';
 
 function FantasyTeamManager() {
@@ -13,159 +16,143 @@ function FantasyTeamManager() {
   const [selectedSeason, setSelectedSeason] = useState('');
 
   // State for form management
-  const [formMode, setFormMode] = useState('create'); // create, edit
   const [editingTeam, setEditingTeam] = useState(null);
-  const [teamName, setTeamName] = useState('');
-  const [ownerNames, setOwnerNames] = useState('');
-  const [teamSearchTerm, setTeamSearchTerm] = useState('');
 
   // State for messages
-  const [messages, setMessages] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // State for search
+  const [teamSearchTerm, setTeamSearchTerm] = useState('');
 
   // Data fetching
   const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
   const { data: teams, refetch: refetchTeams } = useFetchData(
-    () => (selectedSeason ? neo4jService.getFantasyTeamsInSeason(selectedSeason) : Promise.resolve([])),
+    () => (selectedSeason ? neo4jService.getFantasyTeamsInSeason(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
 
+  // Form management
+  const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
+    { team_name: '', owner_names: '' },
+    async (formValues) => {
+      if (!selectedSeason) {
+        setErrorMessage('Please select a season first');
+        setTimeout(() => setErrorMessage(''), 3000);
+        return;
+      }
+
+      const owners = formValues.owner_names
+        .split(',')
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
+
+      console.log('Form submission - team:', formValues.team_name, 'owners:', owners, 'season:', selectedSeason, 'season type:', typeof selectedSeason);
+
+      try {
+        if (editingTeam) {
+          console.log('Updating team:', editingTeam.team_name);
+          await updateTeamMutation(editingTeam.team_name, owners);
+        } else {
+          console.log('Creating new team');
+          await createTeamMutation(formValues.team_name, owners, Number(selectedSeason));
+        }
+      } catch (err) {
+        console.error('Mutation error:', err);
+        // Error handling is done in mutation callbacks
+      }
+    },
+    fantasyTeamValidation
+  );
+
   // Mutations
-  const { mutate: createTeam, isLoading: isCreating } = useMutation(
+  const { mutate: createTeamMutation, isLoading: isCreating } = useMutation(
     (name, owners, season) =>
       neo4jService.createFantasyTeam(name, owners, season),
     () => {
-      addMessage('Fantasy team created successfully!', 'success');
-      resetTeamForm();
+      setSuccessMessage('Fantasy team created successfully!');
+      resetForm();
       refetchTeams();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => addMessage(`Error creating team: ${err.message}`, 'error')
+    (err) => {
+      console.error('Error creating team:', err);
+      setErrorMessage(`Error creating team: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
   );
 
-  const { mutate: updateTeam, isLoading: isUpdating } = useMutation(
+  const { mutate: updateTeamMutation, isLoading: isUpdating } = useMutation(
     (name, owners) => neo4jService.updateFantasyTeam(name, owners),
     () => {
-      addMessage('Fantasy team updated successfully!', 'success');
-      resetTeamForm();
+      setSuccessMessage('Fantasy team updated successfully!');
+      setEditingTeam(null);
+      resetForm();
       refetchTeams();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => addMessage(`Error updating team: ${err.message}`, 'error')
+    (err) => {
+      setErrorMessage(`Error updating team: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
   );
 
-  const { mutate: deleteTeam, isLoading: isDeleting } = useMutation(
+  const { mutate: deleteTeamMutation, isLoading: isDeleting } = useMutation(
     (name) => neo4jService.deleteFantasyTeam(name),
     () => {
-      addMessage('Fantasy team deleted successfully!', 'success');
-      resetTeamForm();
+      setSuccessMessage('Fantasy team deleted successfully!');
+      setEditingTeam(null);
+      resetForm();
       refetchTeams();
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
-    (err) => addMessage(`Error deleting team: ${err.message}`, 'error')
+    (err) => {
+      setErrorMessage(`Error deleting team: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
   );
-
-  // Message handling
-  const addMessage = (text, type) => {
-    const id = Date.now();
-    setMessages((prev) => [...prev, { id, text, type }]);
-    setTimeout(() => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== id));
-    }, 3000);
-  };
 
   // Form handlers
   const handleSeasonChange = (e) => {
     setSelectedSeason(e.target.value);
-    resetTeamForm();
+    setEditingTeam(null);
+    resetForm();
   };
 
   const handleEditTeam = (team) => {
-    setFormMode('edit');
     setEditingTeam(team);
-    setTeamName(team.team_name);
-    setOwnerNames((team.owners || []).join(', '));
-  };
-
-  const handleSubmitTeam = (e) => {
-    e.preventDefault();
-
-    // Validation
-    if (!teamName.trim()) {
-      addMessage('Team name is required', 'error');
-      return;
-    }
-    if (!ownerNames.trim()) {
-      addMessage('Owners are required', 'error');
-      return;
-    }
-    if (teamName.length < 2 || teamName.length > 100) {
-      addMessage('Team name must be between 2 and 100 characters', 'error');
-      return;
-    }
-
-    // Parse owners from comma-separated string
-    const owners = ownerNames
-      .split(',')
-      .map(name => name.trim())
-      .filter(name => name.length > 0);
-
-    if (owners.length === 0) {
-      addMessage('Please enter at least one owner name', 'error');
-      return;
-    }
-
-    if (owners.some(owner => owner.length < 1 || owner.length > 100)) {
-      addMessage('Each owner name must be 1-100 characters', 'error');
-      return;
-    }
-
-    if (formMode === 'create') {
-      createTeam(teamName, owners, selectedSeason);
-    } else {
-      updateTeam(editingTeam.team_name, owners);
-    }
+    setValues({
+      team_name: team.team_name,
+      owner_names: (team.owners || []).join(', '),
+    });
   };
 
   const handleDeleteTeam = () => {
-    if (window.confirm(`Are you sure you want to delete "${editingTeam.team_name}"?`)) {
-      deleteTeam(editingTeam.team_name);
+    if (window.confirm(`Are you sure you want to delete "${editingTeam.team_name}"? This action cannot be undone.`)) {
+      deleteTeamMutation(editingTeam.team_name);
     }
   };
-
-  const resetTeamForm = () => {
-    setFormMode('create');
-    setEditingTeam(null);
-    setTeamName('');
-    setOwnerNames('');
-  };
-
-  // // Filtering
-  // const filteredPlayers = players?.filter((player) =>
-  //   playerSearchTerm === ''
-  //     ? true
-  //     : `${player.first_name} ${player.last_name}`
-  //         .toLowerCase()
-  //         .includes(playerSearchTerm.toLowerCase()) ||
-  //       (player.occupation || '').toLowerCase().includes(playerSearchTerm.toLowerCase())
-  // ) || [];
 
   const filteredTeams = teams?.filter((team) => {
     const teamString = `${team.team_name} ${(team.owners || []).join(' ')}`.toLowerCase();
     return teamString.includes(teamSearchTerm.toLowerCase());
   }) || [];
 
-  const isFormValid =
-    teamName.trim() &&
-    ownerNames.trim() &&
-    selectedSeason;
+  const formHasErrors = hasErrors(errors);
 
   return (
     <div className="draft-manager">
       {/* Messages */}
-      <div className="messages-container">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message ${msg.type}`}>
-            {msg.text}
-          </div>
-        ))}
-      </div>
+      {successMessage && (
+        <div className="message message-success">
+          ✓ {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div className="message message-error">
+          ✕ {errorMessage}
+        </div>
+      )}
 
       <div className="manager-header">
         <h1>👥 Fantasy Teams</h1>
@@ -198,37 +185,39 @@ function FantasyTeamManager() {
             <div className="column">
               <section className="create-section">
                 <h2>
-                  {formMode === 'create' ? '➕ Create Fantasy Team' : '✏️ Edit Fantasy Team'}
+                  {editingTeam ? '✏️ Edit Fantasy Team' : '➕ Create Fantasy Team'}
                 </h2>
-                <form onSubmit={handleSubmitTeam} className="form">
+                <form onSubmit={handleSubmit} className="form">
                   <div className="form-group">
-                    <label htmlFor="team_name">Team Name</label>
+                    <label htmlFor="team_name">Team Name *</label>
                     <input
                       id="team_name"
+                      name="team_name"
                       type="text"
-                      value={teamName}
-                      onChange={(e) => setTeamName(e.target.value)}
+                      value={values.team_name}
+                      onChange={handleChange}
                       placeholder="e.g., The Champions"
-                      disabled={formMode === 'edit'}
-                      className={teamName.length < 2 && teamName ? 'input-error' : ''}
+                      disabled={editingTeam !== null}
+                      className={errors.team_name ? 'input-error' : ''}
                     />
-                    {teamName && (teamName.length < 2 || teamName.length > 100) && (
-                      <span className="error-message">Team name must be 2-100 characters</span>
+                    {errors.team_name && (
+                      <span className="error-message">{errors.team_name}</span>
                     )}
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="owner_names">Owners (comma-separated)</label>
+                    <label htmlFor="owner_names">Owners (comma-separated) *</label>
                     <input
                       id="owner_names"
+                      name="owner_names"
                       type="text"
-                      value={ownerNames}
-                      onChange={(e) => setOwnerNames(e.target.value)}
+                      value={values.owner_names}
+                      onChange={handleChange}
                       placeholder="e.g., John Doe, Jane Smith"
-                      className={ownerNames && ownerNames.split(',').some(o => o.trim().length === 0) ? 'input-error' : ''}
+                      className={errors.owner_names ? 'input-error' : ''}
                     />
-                    {ownerNames && ownerNames.split(',').some(o => o.trim().length === 0) && (
-                      <span className="error-message">Please enter valid owner names</span>
+                    {errors.owner_names && (
+                      <span className="error-message">{errors.owner_names}</span>
                     )}
                   </div>
 
@@ -236,25 +225,35 @@ function FantasyTeamManager() {
                     <button
                       type="submit"
                       className="btn btn-primary"
-                      disabled={!isFormValid}
+                      disabled={formHasErrors || isCreating || isUpdating}
                     >
-                      {formMode === 'create' ? 'Create Team' : 'Update Team'}
+                      {isCreating || isUpdating ? (
+                        <>⏳ {editingTeam ? 'Updating...' : 'Creating...'}</>
+                      ) : (
+                        editingTeam ? '💾 Update Team' : '➕ Create Team'
+                      )}
                     </button>
-                    {formMode === 'edit' && (
+                    {editingTeam && (
                       <>
                         <button
                           type="button"
-                          onClick={resetTeamForm}
                           className="btn btn-secondary"
+                          onClick={() => {
+                            setEditingTeam(null);
+                            resetForm();
+                          }}
+                          disabled={isUpdating}
                         >
-                          Cancel
+                          ✕ Cancel
                         </button>
                         <button
                           type="button"
+                          className="btn btn-small btn-delete"
                           onClick={handleDeleteTeam}
-                          className="btn btn-delete btn-small"
+                          disabled={isDeleting}
+                          title="Delete team"
                         >
-                          Delete
+                          🗑️ Delete
                         </button>
                       </>
                     )}
@@ -309,6 +308,8 @@ function FantasyTeamManager() {
           </div>
         )}
       </div>
+
+      <Link to="/admin" className="back-link">← Back to Admin</Link>
     </div>
   );
 }

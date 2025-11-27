@@ -3,7 +3,7 @@
  * Comprehensive CRUD interface with multi-select member picker
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetchData, useForm, useMutation } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
@@ -26,45 +26,43 @@ function AllianceManager() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Load players and alliances when season changes
-  const handleSeasonChange = (seasonNum) => {
-    setSelectedSeason(seasonNum);
-    setEditingId(null);
-
-    if (seasonNum) {
+  // Load players when season changes
+  useEffect(() => {
+    if (selectedSeason) {
       setLoadingPlayers(true);
-      setLoadingAlliances(true);
-
-      Promise.all([
-        neo4jService.getPlayersInSeason(seasonNum),
-        neo4jService.getAlliancesInSeason(seasonNum)
-      ])
-        .then(([players, alliances]) => {
-          setPlayersInSeason(players);
-          setAlliances(alliances);
-        })
+      neo4jService.getPlayersInSeason(selectedSeason)
+        .then(setPlayersInSeason)
         .catch(err => {
-          setErrorMessage(`Failed to load data: ${err.message}`);
+          setErrorMessage(`Failed to load players: ${err.message}`);
           setTimeout(() => setErrorMessage(''), 3000);
         })
-        .finally(() => {
-          setLoadingPlayers(false);
-          setLoadingAlliances(false);
-        });
+        .finally(() => setLoadingPlayers(false));
     } else {
       setPlayersInSeason([]);
+    }
+  }, [selectedSeason]);
+
+  // Load alliances when season changes
+  useEffect(() => {
+    if (selectedSeason) {
+      setLoadingAlliances(true);
+      neo4jService.getAlliancesInSeason(selectedSeason)
+        .then(setAlliances)
+        .catch(err => {
+          setErrorMessage(`Failed to load alliances: ${err.message}`);
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setLoadingAlliances(false));
+    } else {
       setAlliances([]);
     }
-  };
+  }, [selectedSeason]);
 
   const { mutate: createAlliance, isLoading: isCreating } = useMutation(
     (seasonNumber, allianceName, formationEpisode, dissolvedEpisode, size, notes) =>
       neo4jService.createAlliance(seasonNumber, allianceName, formationEpisode, dissolvedEpisode, size, notes),
     () => {
       setSuccessMessage('Alliance created successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       resetForm();
       setTimeout(() => setSuccessMessage(''), 3000);
     },
@@ -79,9 +77,6 @@ function AllianceManager() {
       neo4jService.updateAlliance(allianceName, dissolvedEpisode, notes),
     () => {
       setSuccessMessage('Alliance updated successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       resetForm();
       setEditingId(null);
       setTimeout(() => setSuccessMessage(''), 3000);
@@ -97,9 +92,6 @@ function AllianceManager() {
       neo4jService.deleteAlliance(allianceName),
     () => {
       setSuccessMessage('Alliance deleted successfully!');
-      if (selectedSeason) {
-        handleSeasonChange(selectedSeason);
-      }
       setTimeout(() => setSuccessMessage(''), 3000);
     },
     (err) => {
@@ -163,12 +155,7 @@ function AllianceManager() {
     alliance.alliance_name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  // Check if form has errors - don't validate alliance_name when editing
-  const relevantErrors = editingId 
-    ? Object.fromEntries(Object.entries(errors).filter(([key]) => key !== 'alliance_name'))
-    : errors;
-  
-  const formHasErrors = hasErrors(relevantErrors);
+  const formHasErrors = hasErrors(errors);
 
   return (
     <div className="alliance-manager">
@@ -192,7 +179,7 @@ function AllianceManager() {
       <div className="manager-content">
         {/* Create/Edit Form */}
         <section className="create-section">
-          <h2>{editingId ? `Edit Alliance: ${editingId}` : 'Create New Alliance'}</h2>
+          <h2>{editingId ? `Edit Alliance: ${editingId.alliance_name}` : 'Create New Alliance'}</h2>
 
           {/* Season Selection */}
           <div className="form-group">
@@ -200,7 +187,11 @@ function AllianceManager() {
             <select
               id="season_select"
               value={selectedSeason || ''}
-              onChange={(e) => handleSeasonChange(Number(e.target.value) || null)}
+              onChange={(e) => {
+                const seasonNum = Number(e.target.value) || null;
+                setSelectedSeason(seasonNum);
+                setEditingId(null);
+              }}
               disabled={seasonsLoading}
               className={!selectedSeason && 'input-error'}
             >
@@ -335,13 +326,18 @@ function AllianceManager() {
                     <div className="alliance-content">
                       <div className="alliance-header">
                         <h3>{alliance.alliance_name}</h3>
-                        <span className={`status-badge status-${alliance.status || 'active'}`}>
-                          {alliance.status || 'Active'}
-                        </span>
+                        {!alliance.dissolved_episode ? (
+                          <span className="badge badge-active">Active</span>
+                        ) : (
+                          <span className="badge badge-dissolved">Dissolved</span>
+                        )}
                       </div>
-                      <div className="alliance-members">
-                        <strong>Members ({alliance.members?.length || 0}):</strong>
-                        <p>{alliance.members?.join(', ') || 'No members'}</p>
+                      <div className="alliance-info">
+                        <p><strong>Formation Episode:</strong> {alliance.formation_episode}</p>
+                        {alliance.dissolved_episode && (
+                          <p><strong>Dissolved Episode:</strong> {alliance.dissolved_episode}</p>
+                        )}
+                        <p><strong>Size:</strong> {alliance.size} members</p>
                       </div>
                       {alliance.notes && (
                         <p className="alliance-notes">{alliance.notes}</p>

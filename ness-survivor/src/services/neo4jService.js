@@ -904,6 +904,8 @@ export const getAlliancesInSeason = async (season_number) => {
  * @returns {Promise<Object>} - The created fantasy team
  */
 export const createFantasyTeam = async (team_name, owners, season_number) => {
+  console.log('createFantasyTeam called with:', { team_name, owners, season_number });
+  
   const query = `
     MATCH (s:Season {season_number: $season_number})
     CREATE (t:FantasyTeam {
@@ -913,8 +915,17 @@ export const createFantasyTeam = async (team_name, owners, season_number) => {
     CREATE (t)-[:DRAFTED_FOR]->(s)
     RETURN t
   `;
-  const results = await executeQuery(query, { team_name, owners, season_number });
-  return results[0]?.t?.properties || null;
+  
+  try {
+    const results = await executeQuery(query, { team_name, owners, season_number });
+    console.log('createFantasyTeam results:', results);
+    const team = results[0]?.t?.properties || null;
+    console.log('Created team:', team);
+    return team;
+  } catch (err) {
+    console.error('createFantasyTeam error:', err);
+    throw err;
+  }
 };
 
 /**
@@ -954,17 +965,28 @@ export const deleteFantasyTeam = async (team_name) => {
  * @returns {Promise<Array>} - Array of fantasy teams with rosters
  */
 export const getFantasyTeamsInSeason = async (season_number) => {
+  console.log('getFantasyTeamsInSeason called with:', { season_number, type: typeof season_number });
+  
   const query = `
     MATCH (t:FantasyTeam)-[:DRAFTED_FOR]->(s:Season {season_number: $season_number})
     OPTIONAL MATCH (t)-[:INCLUDES]->(p:Player)
     RETURN t, collect(p) as roster
     ORDER BY t.team_name
   `;
-  const results = await executeQuery(query, { season_number });
-  return results.map(r => ({
-    ...r.t?.properties,
-    roster: r.roster?.map(p => p?.properties) || [],
-  }));
+  
+  try {
+    const results = await executeQuery(query, { season_number });
+    console.log('getFantasyTeamsInSeason raw results:', results);
+    const teams = results.map(r => ({
+      ...r.t?.properties,
+      roster: r.roster?.map(p => p?.properties) || [],
+    }));
+    console.log('getFantasyTeamsInSeason processed teams:', teams);
+    return teams;
+  } catch (err) {
+    console.error('getFantasyTeamsInSeason error:', err);
+    throw err;
+  }
 };
 
 /**
