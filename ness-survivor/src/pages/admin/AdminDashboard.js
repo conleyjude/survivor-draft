@@ -37,6 +37,12 @@ function AdminDashboard() {
       icon: '📋',
       link: '/admin/draft',
     },
+    {
+      title: 'Fantasy Teams',
+      description: 'Create and edit fantasy teams',
+      icon: '🎯',
+      link: '/admin/fantasy-teams',
+    },
   ];
 
   return (

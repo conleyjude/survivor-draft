@@ -1,76 +1,186 @@
-/* Leaderboard.css */
+/**
+ * Leaderboard.css - Styles for fantasy team standings
+ */
 
 .leaderboard {
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .leaderboard-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 30px;
 }
 
 .leaderboard-header h1 {
   font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
+  color: #1f2937;
+  margin: 0 0 10px;
+  font-weight: 700;
 }
 
-.leaderboard-header p {
-  color: #7f8c8d;
-  font-size: 1.1rem;
+.subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Sort Controls */
+.sort-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.sort-btn {
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.sort-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.sort-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Leaderboard Table */
+.leaderboard-section {
+  margin-bottom: 30px;
+}
+
+.leaderboard-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.leaderboard-table-container.show {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .leaderboard-table-container {
+    display: block;
+  }
 }
 
 .leaderboard-table {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.leaderboard-header-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 150px 150px 150px;
-  gap: 1rem;
+.leaderboard-table thead {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1rem;
-  font-weight: bold;
-  border-bottom: 2px solid #ecf0f1;
 }
 
-.leaderboard-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 150px 150px 150px;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid #ecf0f1;
+.leaderboard-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.leaderboard-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.leaderboard-table td {
+  padding: 15px;
+  color: #374151;
+}
+
+.col-rank {
+  width: 80px;
+}
+
+.col-team {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.team-link {
+  color: #667eea;
   text-decoration: none;
-  color: #2c3e50;
-  transition: background-color 0.3s ease;
-  cursor: pointer;
-  align-items: center;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
-.leaderboard-row:hover {
-  background-color: #f8f9fa;
+.team-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
 }
 
-.col {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.col-owner {
+  color: #6b7280;
 }
 
-.col.rank,
-.col.team {
-  justify-content: flex-start;
+.col-wins {
+  font-weight: 600;
+  color: #667eea;
 }
 
-.col.team {
-  justify-content: flex-start;
-  font-weight: 500;
+.stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
+.col-roster {
+  text-align: center;
+}
+
+.roster-badge {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #1f2937;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.col-prev {
+  text-align: center;
+  color: #6b7280;
+}
+
+.rank-1 {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 100%);
+}
+
+.rank-2 {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0) 100%);
+}
+
+.rank-3 {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%);
+}
+
+/* Rank Badge */
 .rank-badge {
   display: inline-flex;
   align-items: center;
@@ -80,51 +190,242 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 50%;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.loading,
-.error,
-.no-data {
+  font-weight: 700;
+  font-size: 1rem;
   text-align: center;
-  padding: 2rem;
-  color: #7f8c8d;
 }
 
-.error {
-  color: #e74c3c;
-}
-
-@media (max-width: 1024px) {
-  .leaderboard-header-row,
-  .leaderboard-row {
-    grid-template-columns: 60px 1fr 120px 120px;
-  }
-
-  .col.prev {
-    display: none;
-  }
-
-  .leaderboard-header-row .col:nth-child(5),
-  .leaderboard-row .col:nth-child(5) {
-    display: none;
-  }
+/* Mobile Cards View */
+.leaderboard-cards {
+  display: none;
+  gap: 15px;
 }
 
 @media (max-width: 768px) {
-  .leaderboard-header-row,
-  .leaderboard-row {
-    grid-template-columns: 50px 1fr 100px;
-    gap: 0.5rem;
+  .leaderboard-table-container {
+    display: none !important;
   }
 
-  .leaderboard-header-row .col:nth-child(n+4),
-  .leaderboard-row .col:nth-child(n+4) {
-    display: none;
+  .leaderboard-cards {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.leaderboard-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 15px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-card:hover {
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+  transform: translateX(4px);
+  border-color: #667eea;
+}
+
+.card-rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  margin-right: 15px;
+}
+
+.rank-number {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-content h3 {
+  margin: 0 0 5px;
+  color: #1f2937;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-content .owner {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.card-stats {
+  display: flex;
+  gap: 12px;
+  margin-left: 15px;
+}
+
+.card-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-val {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  background: white;
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+/* Loading and Error States */
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.error-state {
+  color: #dc2626;
+}
+
+.error-state p {
+  margin: 0;
+}
+
+/* Navigation */
+.navigation {
+  display: flex;
+  gap: 10px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  padding: 10px 16px;
+  background: #f3f4f6;
+  color: #667eea;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.nav-link:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .leaderboard {
+    padding: 10px;
   }
 
   .leaderboard-header h1 {
     font-size: 1.8rem;
+  }
+
+  .sort-controls {
+    flex-direction: column;
+  }
+
+  .sort-btn {
+    width: 100%;
+  }
+
+  .card-stats {
+    gap: 8px;
+    margin-left: 10px;
+  }
+
+  .navigation {
+    flex-direction: column;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .leaderboard-card {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .card-rank {
+    flex-direction: row;
+    min-width: auto;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .rank-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .rank-number {
+    margin-top: 0;
+    margin-left: 5px;
+  }
+
+  .card-stats {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .stat-val {
+    font-size: 0.95rem;
   }
 }
