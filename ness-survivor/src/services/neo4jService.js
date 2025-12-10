@@ -248,7 +248,7 @@ export const draftPlayerToTeam = async (first_name, last_name, team_name) => {
   const query = `
     MATCH (p:Player {first_name: $first_name, last_name: $last_name})
     MATCH (ft:FantasyTeam {team_name: $team_name})
-    CREATE (p)-[:DRAFTED_BY]->(ft)
+    CREATE (p)-[:ON_TEAM]->(ft)
     RETURN p, ft
   `;
   const results = await executeQuery(query, { first_name, last_name, team_name });
@@ -331,7 +331,7 @@ export const getPlayerDetails = async (first_name, last_name) => {
     OPTIONAL MATCH (p)-[:BELONGS_TO]->(t:Tribe)
     OPTIONAL MATCH (p)-[:COMPETES_IN]->(s:Season)
     OPTIONAL MATCH (p)-[:MEMBER_OF]->(a:Alliance)
-    OPTIONAL MATCH (p)-[:DRAFTED_BY]->(ft:FantasyTeam)
+    OPTIONAL MATCH (p)-[:ON_TEAM]->(ft:FantasyTeam)
     RETURN p, t, s, collect(a) as alliances, ft
   `;
   const results = await executeQuery(query, { first_name, last_name });
@@ -369,7 +369,7 @@ export const getPlayersInAlliance = async (alliance_name) => {
 export const getFantasyTeamWithPlayers = async (team_name) => {
   const query = `
     MATCH (ft:FantasyTeam {team_name: $team_name})
-    OPTIONAL MATCH (p:Player)-[:DRAFTED_BY]->(ft)
+    OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(ft)
     RETURN ft, collect(p) as drafted_players
   `;
   const results = await executeQuery(query, { team_name });
@@ -721,7 +721,7 @@ export const removePlayerFromAlliance = async (first_name, last_name, alliance_n
  */
 export const removePlayerFromFantasyTeam = async (first_name, last_name) => {
   const query = `
-    MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[r:DRAFTED_BY]->(ft:FantasyTeam)
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[r:ON_TEAM]->(ft:FantasyTeam)
     DELETE r
     RETURN p
   `;
@@ -830,7 +830,7 @@ export const getPlayerStatsSummary = async (season_number) => {
 export const getFantasyTeamLeaderboard = async () => {
   const query = `
     MATCH (ft:FantasyTeam)
-    OPTIONAL MATCH (p:Player)-[:DRAFTED_BY]->(ft)
+    OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(ft)
     RETURN ft.team_name,
            ft.previous_wins,
            sum(p.challenges_won) as total_challenge_wins,
@@ -869,7 +869,7 @@ export const playerExists = async (first_name, last_name) => {
 export const getAvailablePlayersInSeason = async (season_number) => {
   const query = `
     MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
-    WHERE NOT (p)-[:DRAFTED_BY]->(:FantasyTeam)
+    WHERE NOT (p)-[:ON_TEAM]->(:FantasyTeam)
     RETURN p
     ORDER BY p.last_name
   `;
@@ -1010,6 +1010,7 @@ export const createDraftPick = async (season_number, round, pick_number, player_
       player_name: $player_name
     })-[:PICKED_IN]->(s)
     CREATE (t)-[:MADE_PICK]->(dp)
+    CREATE (p)-[:ON_TEAM]->(t)
     RETURN dp
   `;
   const results = await executeQuery(query, { season_number, round, pick_number, player_name, team_name });

@@ -67,7 +67,7 @@ RETURN ft
 // 7. Draft a Player to Fantasy Team
 MATCH (p:Player {first_name: $first_name, last_name: $last_name})
 MATCH (ft:FantasyTeam {team_name: $team_name})
-CREATE (p)-[:DRAFTED_BY]->(ft)
+CREATE (p)-[:ON_TEAM]->(ft)
 RETURN p, ft
 
 
@@ -98,7 +98,7 @@ MATCH (p:Player {first_name: $first_name, last_name: $last_name})
 OPTIONAL MATCH (p)-[:BELONGS_TO]->(t:Tribe)
 OPTIONAL MATCH (p)-[:COMPETES_IN]->(s:Season)
 OPTIONAL MATCH (p)-[:MEMBER_OF]->(a:Alliance)
-OPTIONAL MATCH (p)-[:DRAFTED_BY]->(ft:FantasyTeam)
+OPTIONAL MATCH (p)-[:ON_TEAM]->(ft:FantasyTeam)
 RETURN p, t, s, collect(a) as alliances, ft
 
 // 13. Get all Players in an Alliance
@@ -107,7 +107,7 @@ RETURN p
 
 // 14. Get Fantasy Team with all drafted Players
 MATCH (ft:FantasyTeam {team_name: $team_name})
-OPTIONAL MATCH (p:Player)-[:DRAFTED_BY]->(ft)
+OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(ft)
 RETURN ft, collect(p) as drafted_players
 
 // 15. Get all Fantasy Teams
@@ -190,7 +190,7 @@ DELETE r
 RETURN p
 
 // 27. Remove Player from Fantasy Team
-MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[r:DRAFTED_BY]->(ft:FantasyTeam)
+MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[r:ON_TEAM]->(ft:FantasyTeam)
 DELETE r
 RETURN p
 
@@ -230,7 +230,7 @@ ORDER BY p.challenges_won DESC
 
 // 34. Get Fantasy Team Leaderboard (by total challenge wins)
 MATCH (ft:FantasyTeam)
-OPTIONAL MATCH (p:Player)-[:DRAFTED_BY]->(ft)
+OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(ft)
 RETURN ft.team_name,
        ft.previous_wins,
        sum(p.challenges_won) as total_challenge_wins,
@@ -243,6 +243,6 @@ RETURN count(p) > 0 as exists
 
 // 36. Get all available Players (not yet drafted)
 MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
-WHERE NOT (p)-[:DRAFTED_BY]->(:FantasyTeam)
+WHERE NOT (p)-[:ON_TEAM]->(:FantasyTeam)
 RETURN p
 ORDER BY p.last_name
