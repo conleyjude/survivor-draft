@@ -132,6 +132,10 @@ function PlayerManager() {
           hometown: formValues.hometown,
           archetype: formValues.archetype,
         });
+        // If tribe changed, move player to new tribe
+        if (editingId.tribe_name !== selectedTribe) {
+          await neo4jService.movePlayerToTribe(editingId.first_name, editingId.last_name, selectedTribe);
+        }
       } else {
         await createPlayer(
           selectedSeason,
@@ -150,6 +154,10 @@ function PlayerManager() {
 
   const handleEdit = (player) => {
     setEditingId(player);
+    // Set the tribe from the player's current tribe
+    if (player.tribe_name) {
+      setSelectedTribe(player.tribe_name);
+    }
     setValues({
       first_name: player.first_name,
       last_name: player.last_name,
@@ -227,6 +235,11 @@ function PlayerManager() {
           {selectedSeason && (
             <div className="form-group">
               <label htmlFor="tribe_select">Select Tribe *</label>
+              {editingId && editingId.tribe_name && (
+                <div className="current-tribe-info">
+                  Current tribe: <strong>{editingId.tribe_name}</strong>
+                </div>
+              )}
               <select
                 id="tribe_select"
                 value={selectedTribe || ''}

@@ -298,11 +298,15 @@ export const getTribesInSeason = async (season_number) => {
 export const getPlayersInSeason = async (season_number) => {
   const query = `
     MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
-    RETURN p
+    OPTIONAL MATCH (p)-[:BELONGS_TO]->(t:Tribe)
+    RETURN p, t.tribe_name as tribe_name
     ORDER BY p.last_name
   `;
   const results = await executeQuery(query, { season_number });
-  return results.map(r => r.p?.properties || {});
+  return results.map(r => ({
+    ...r.p?.properties || {},
+    tribe_name: r.tribe_name || null
+  }));
 };
 
 /**
