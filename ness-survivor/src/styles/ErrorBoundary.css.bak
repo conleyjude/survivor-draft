@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--gradient-jungle);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
 }
 
@@ -28,14 +28,14 @@
 }
 
 .error-title {
-  color: var(--color-danger);
+  color: #ef4444;
   margin: 0 0 15px 0;
   font-size: 24px;
   font-weight: 600;
 }
 
 .error-message {
-  color: var(--color-text-light);
+  color: #666;
   margin: 0 0 20px 0;
   line-height: 1.6;
   font-size: 16px;
@@ -44,15 +44,15 @@
 .error-details {
   margin: 20px 0;
   padding: 15px;
-  background: var(--color-bg-secondary);
-  border-left: 4px solid var(--color-danger);
+  background: #f5f5f5;
+  border-left: 4px solid #ef4444;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .error-details summary {
   font-weight: 600;
-  color: var(--color-danger);
+  color: #ef4444;
   user-select: none;
 }
 
@@ -63,7 +63,7 @@
   border-radius: 4px;
   overflow-x: auto;
   font-size: 12px;
-  color: var(--color-text-dark);
+  color: #333;
   line-height: 1.4;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
@@ -86,8 +86,8 @@
 }
 
 .btn-primary {
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
 .btn-primary:hover {
@@ -97,8 +97,8 @@
 
 .btn-secondary {
   background: #f0f0f0;
-  color: var(--color-text-dark);
-  border: 1px solid var(--color-border);
+  color: #333;
+  border: 1px solid #ddd;
 }
 
 .btn-secondary:hover {

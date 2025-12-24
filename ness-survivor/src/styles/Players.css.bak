@@ -41,7 +41,7 @@
 
 .player-card {
   padding: 15px;
-  background-color: var(--color-text-inverse);
+  background-color: white;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 2px 4px var(--color-shadow-light);

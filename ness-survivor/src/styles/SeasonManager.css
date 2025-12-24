@@ -10,12 +10,12 @@
 
 .manager-header h1 {
   font-size: 2rem;
-  color: #2c3e50;
+  color: var(--color-text-main);
   margin-bottom: 0.5rem;
 }
 
 .header-subtitle {
-  color: #7f8c8d;
+  color: var(--color-text-light);
   font-size: 1rem;
   margin: 0;
 }
@@ -30,15 +30,15 @@
 }
 
 .message-success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 .message-error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
 }
 
 @keyframes slideIn {
@@ -71,8 +71,8 @@
 .list-section h2 {
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
-  color: #2c3e50;
-  border-bottom: 2px solid #3498db;
+  color: var(--color-text-main);
+  border-bottom: 2px solid var(--color-moss-green);
   padding-bottom: 0.5rem;
 }
 
@@ -95,7 +95,7 @@
   flex: 1;
   min-width: 200px;
   padding: 0.75rem;
-  border: 1px solid #ecf0f1;
+  border: 1px solid var(--color-bg-secondary);
   border-radius: 4px;
   font-size: 0.95rem;
   transition: border-color 0.3s ease;
@@ -103,8 +103,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--color-moss-green);
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
 }
 
 .form {
@@ -120,7 +120,7 @@
 
 .form-group label {
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--color-text-main);
   margin-bottom: 0.5rem;
 }
 
@@ -128,7 +128,7 @@
 .form-group select,
 .form-group textarea {
   padding: 0.75rem;
-  border: 1px solid #ecf0f1;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
@@ -139,23 +139,23 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--color-moss-green);
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
 }
 
 .form-group input:disabled,
 .form-group select:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-secondary);
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .input-error {
-  border-color: #e74c3c !important;
+  border-color: var(--color-danger) !important;
 }
 
 .error-message {
-  color: #e74c3c;
+  color: var(--color-danger);
   font-size: 0.85rem;
   margin-top: 0.25rem;
   font-weight: 500;
@@ -186,8 +186,8 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradient-jungle);
+  color: var(--color-text-inverse);
   flex: 1;
 }
 
@@ -197,12 +197,12 @@
 }
 
 .btn-secondary {
-  background: #95a5a6;
-  color: white;
+  background: var(--color-stone);
+  color: var(--color-text-inverse);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #7f8c8d;
+  background: var(--color-text-light);
 }
 
 .btn-small {
@@ -212,21 +212,21 @@
 }
 
 .btn-edit {
-  background: #3498db;
-  color: white;
+  background: var(--color-moss-green);
+  color: var(--color-text-inverse);
 }
 
 .btn-edit:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--color-jungle-dark);
 }
 
 .btn-delete {
-  background: #e74c3c;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
 }
 
 .btn-delete:hover:not(:disabled) {
-  background: #c0392b;
+  background: #a00d1a;
 }
 
 .seasons-list {
@@ -240,8 +240,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: #f8f9fa;
-  border-left: 4px solid #667eea;
+  background: var(--color-bg-secondary);
+  border-left: 4px solid var(--color-deep-jungle);
   border-radius: 4px;
   transition: all 0.3s ease;
 }
@@ -257,13 +257,13 @@
 
 .season-info h3 {
   margin: 0 0 0.25rem 0;
-  color: #2c3e50;
+  color: var(--color-text-dark);
   font-size: 1.1rem;
 }
 
 .season-year {
   margin: 0;
-  color: #7f8c8d;
+  color: var(--color-text-light);
   font-size: 0.9rem;
 }
 
@@ -277,7 +277,7 @@
 .empty-state {
   text-align: center;
   padding: 2rem 1rem;
-  color: #7f8c8d;
+  color: var(--color-text-light);
   font-size: 1rem;
 }
 
@@ -288,14 +288,14 @@
 .back-link {
   display: inline-block;
   margin-top: 1rem;
-  color: #3498db;
+  color: var(--color-moss-green);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .back-link:hover {
-  color: #2980b9;
+  color: var(--color-jungle-dark);
 }
 
 @media (max-width: 1024px) {

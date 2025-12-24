@@ -1,3 +1,62 @@
+/* Jungle Theme CSS Custom Properties */
+:root {
+  /* Primary Jungle Colors */
+  --color-deep-jungle: #1a4d2e;
+  --color-jungle-dark: #0d2818;
+  --color-jungle-green: #2d6a4f;
+  --color-moss-green: #40916c;
+  --color-light-moss: #52b788;
+  
+  /* Earthy & Natural Tones */
+  --color-burnt-orange: #d66a3c;
+  --color-warm-brown: #8b5a3c;
+  --color-earth-brown: #6b4423;
+  --color-gold: #d4a574;
+  --color-stone: #a89968;
+  --color-sand: #e8dcc4;
+  --color-cream: #f5f2ed;
+  
+  /* Secondary Colors */
+  --color-accent-blue: #1f6e78;
+  --color-accent-teal: #2d7a7a;
+  
+  /* Functional Colors */
+  --color-success: #40916c;
+  --color-warning: #d66a3c;
+  --color-danger: #c1121f;
+  --color-info: #1f6e78;
+  
+  /* Text Colors */
+  --color-text-dark: #0d2818;
+  --color-text-main: #2d3436;
+  --color-text-light: #636e72;
+  --color-text-inverse: #f5f2ed;
+  
+  /* Background Colors */
+  --color-bg-primary: #f5f2ed;
+  --color-bg-secondary: #efe9e0;
+  --color-bg-tertiary: #e8dcc4;
+  --color-bg-dark: #0d2818;
+  
+  /* Tribe Colors (Jungle inspired) */
+  --tribe-boran: #d4a574;
+  --tribe-samburu: #c1121f;
+  --tribe-moto: #2d6a4f;
+  --tribe-jembe: #1f6e78;
+  --tribe-final: #8b5a3c;
+  
+  /* UI Elements */
+  --color-border: #d4c4b0;
+  --color-shadow: rgba(13, 40, 24, 0.15);
+  --color-shadow-light: rgba(13, 40, 24, 0.08);
+  
+  /* Gradients */
+  --gradient-jungle: linear-gradient(135deg, #1a4d2e 0%, #2d6a4f 100%);
+  --gradient-bronze: linear-gradient(135deg, #8b5a3c 0%, #d4a574 100%);
+  --gradient-fire: linear-gradient(135deg, #d66a3c 0%, #c1121f 100%);
+  --gradient-earth: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

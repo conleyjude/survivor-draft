@@ -80,7 +80,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem;
-  background: var(--color-bg-secondary);
+  background: #f8f9fa;
   border-radius: 4px;
 }
 
@@ -98,6 +98,7 @@
 .team-score {
   color: var(--color-deep-jungle);
   font-weight: bold;
+}
 }
 
 .view-all-link {
@@ -160,10 +161,10 @@
   gap: 0.5rem;
   padding: 1.5rem;
   background: white;
-  border: 2px solid var(--color-bg-secondary);
+  border: 2px solid #ecf0f1;
   border-radius: 8px;
   text-decoration: none;
-  color: var(--color-text-dark);
+  color: #2c3e50;
   transition: all 0.3s ease;
   cursor: pointer;
 }
