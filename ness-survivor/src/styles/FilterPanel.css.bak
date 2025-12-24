@@ -7,8 +7,8 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -30,8 +30,8 @@
   display: inline-block;
   min-width: 20px;
   height: 20px;
-  background: var(--color-danger);
-  color: var(--color-text-inverse);
+  background: #ef4444;
+  color: white;
   border-radius: 10px;
   font-size: 12px;
   font-weight: 700;
@@ -42,7 +42,7 @@
 
 .filter-content {
   background: white;
-  border: 2px solid var(--color-border);
+  border: 2px solid #e5e7eb;
   border-radius: 6px;
   padding: 20px;
   margin-top: 10px;
@@ -72,7 +72,7 @@
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-text-dark);
+  color: #333;
   margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: var(--color-text-light);
+  color: #666;
   cursor: pointer;
   user-select: none;
 }
@@ -96,15 +96,15 @@
 .filter-option input[type='checkbox'] {
   margin-right: 8px;
   cursor: pointer;
-  accent-color: var(--color-deep-jungle);
+  accent-color: #667eea;
 }
 
 .filter-select {
   padding: 8px 12px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #e5e7eb;
   border-radius: 4px;
   font-size: 14px;
-  color: var(--color-text-dark);
+  color: #333;
   background: white;
   cursor: pointer;
   transition: border-color 0.2s;
@@ -112,7 +112,7 @@
 
 .filter-select:focus {
   outline: none;
-  border-color: var(--color-deep-jungle);
+  border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -120,9 +120,9 @@
   width: 100%;
   padding: 10px;
   margin-top: 15px;
-  border: 2px solid var(--color-danger);
+  border: 2px solid #ef4444;
   background: white;
-  color: var(--color-danger);
+  color: #ef4444;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
@@ -131,8 +131,8 @@
 }
 
 .filter-reset:hover {
-  background: var(--color-danger);
-  color: var(--color-text-inverse);
+  background: #ef4444;
+  color: white;
 }
 
 @media (max-width: 768px) {

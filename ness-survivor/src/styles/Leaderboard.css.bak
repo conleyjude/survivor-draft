@@ -15,13 +15,13 @@
 
 .leaderboard-header h1 {
   font-size: 2.5rem;
-  color: var(--color-text-main);
+  color: #1f2937;
   margin: 0 0 10px;
   font-weight: 700;
 }
 
 .subtitle {
-  color: var(--color-text-light);
+  color: #6b7280;
   font-size: 1rem;
   margin: 0;
 }
@@ -37,9 +37,9 @@
 
 .sort-btn {
   padding: 10px 16px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #e5e7eb;
   background: white;
-  color: var(--color-text-light);
+  color: #6b7280;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -48,13 +48,13 @@
 }
 
 .sort-btn:hover {
-  border-color: var(--color-moss-green);
-  color: var(--color-moss-green);
+  border-color: #667eea;
+  color: #667eea;
 }
 
 .sort-btn.active {
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border-color: transparent;
 }
 
@@ -87,8 +87,8 @@
 }
 
 .leaderboard-table thead {
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
 .leaderboard-table th {
@@ -101,17 +101,17 @@
 }
 
 .leaderboard-table tbody tr {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #e5e7eb;
   transition: all 0.3s ease;
 }
 
 .leaderboard-table tbody tr:hover {
-  background-color: var(--color-bg-primary);
+  background-color: #f9fafb;
 }
 
 .leaderboard-table td {
   padding: 15px;
-  color: var(--color-text-main);
+  color: #374151;
 }
 
 .col-rank {
@@ -120,28 +120,28 @@
 
 .col-team {
   font-weight: 600;
-  color: var(--color-text-main);
+  color: #1f2937;
 }
 
 .team-link {
-  color: var(--color-deep-jungle);
+  color: #667eea;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
 .team-link:hover {
-  color: var(--color-moss-green);
+  color: #764ba2;
   text-decoration: underline;
 }
 
 .col-owner {
-  color: var(--color-text-light);
+  color: #6b7280;
 }
 
 .col-wins {
   font-weight: 600;
-  color: var(--color-deep-jungle);
+  color: #667eea;
 }
 
 .stat-value {
@@ -155,8 +155,8 @@
 
 .roster-badge {
   display: inline-block;
-  background: var(--color-bg-secondary);
-  color: var(--color-text-main);
+  background: #f3f4f6;
+  color: #1f2937;
   padding: 4px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -165,7 +165,7 @@
 
 .col-prev {
   text-align: center;
-  color: var(--color-text-light);
+  color: #6b7280;
 }
 
 .rank-1 {
@@ -187,8 +187,8 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border-radius: 50%;
   font-weight: 700;
   font-size: 1rem;
@@ -216,7 +216,7 @@
   display: flex;
   align-items: center;
   background: white;
-  border: 1px solid var(--color-border);
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 15px;
   text-decoration: none;
@@ -228,7 +228,7 @@
 .leaderboard-card:hover {
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
   transform: translateX(4px);
-  border-color: var(--color-deep-jungle);
+  border-color: #667eea;
 }
 
 .card-rank {
@@ -242,7 +242,7 @@
 
 .rank-number {
   font-size: 0.8rem;
-  color: var(--color-text-light);
+  color: #6b7280;
   margin-top: 5px;
   font-weight: 500;
 }
@@ -254,7 +254,7 @@
 
 .card-content h3 {
   margin: 0 0 5px;
-  color: var(--color-text-main);
+  color: #1f2937;
   font-size: 1rem;
   font-weight: 600;
   white-space: nowrap;
@@ -264,7 +264,7 @@
 
 .card-content .owner {
   margin: 0;
-  color: var(--color-text-light);
+  color: #6b7280;
   font-size: 0.85rem;
 }
 
@@ -282,7 +282,7 @@
 
 .stat-label {
   font-size: 0.7rem;
-  color: var(--color-text-light);
+  color: #9ca3af;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -291,16 +291,16 @@
   display: block;
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--color-deep-jungle);
+  color: #667eea;
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: var(--color-text-light);
+  color: #6b7280;
   background: white;
-  border: 1px dashed var(--color-border);
+  border: 1px dashed #e5e7eb;
   border-radius: 12px;
   font-size: 1rem;
 }
@@ -314,12 +314,12 @@
 .error-state {
   text-align: center;
   padding: 80px 20px;
-  color: var(--color-text-light);
+  color: #6b7280;
   font-size: 1.1rem;
 }
 
 .error-state {
-  color: var(--color-danger);
+  color: #dc2626;
 }
 
 .error-state p {
@@ -332,25 +332,25 @@
   gap: 10px;
   margin-top: 40px;
   padding-top: 20px;
-  border-top: 2px solid var(--color-border);
+  border-top: 2px solid #e5e7eb;
   flex-wrap: wrap;
 }
 
 .nav-link {
   padding: 10px 16px;
-  background: var(--color-bg-secondary);
-  color: var(--color-deep-jungle);
+  background: #f3f4f6;
+  color: #667eea;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s ease;
-  border: 1px solid var(--color-border);
+  border: 1px solid #e5e7eb;
 }
 
 .nav-link:hover {
-  background: var(--color-deep-jungle);
-  color: var(--color-text-inverse);
-  border-color: var(--color-deep-jungle);
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
 }
 
 /* Responsive Design */

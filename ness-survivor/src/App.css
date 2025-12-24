@@ -1,4 +1,4 @@
-/* App.css - Main application styles */
+/* App.css - Jungle themed application styles */
 
 * {
   margin: 0;
@@ -12,7 +12,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f7fa;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-main);
 }
 
 .App {
@@ -23,10 +24,10 @@ body {
 
 /* Navigation */
 .App-nav {
-  background-color: #2c3e50;
-  color: white;
+  background-color: var(--color-deep-jungle);
+  color: var(--color-text-inverse);
   padding: 1rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--color-shadow);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -45,14 +46,14 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
-  color: white;
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .nav-brand:hover {
-  color: #3498db;
+  color: var(--color-gold);
 }
 
 .nav-menu {
@@ -63,13 +64,13 @@ body {
 }
 
 .nav-menu a {
-  color: white;
+  color: var(--color-text-inverse);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .nav-menu a:hover {
-  color: #3498db;
+  color: var(--color-gold);
 }
 
 .nav-submenu {
@@ -93,12 +94,12 @@ body {
   position: absolute;
   top: calc(100% - 0.5rem);
   left: 0;
-  background-color: #1a252f;
+  background-color: var(--color-jungle-dark);
   flex-direction: column;
   min-width: 200px;
   border-radius: 4px;
   padding: 0.5rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--color-shadow);
   pointer-events: auto;
 }
 
@@ -112,7 +113,7 @@ body {
 }
 
 .nav-submenu-list a:hover {
-  background-color: #2c3e50;
+  background-color: var(--color-deep-jungle);
 }
 
 /* Main Content */
@@ -126,8 +127,8 @@ body {
 
 /* Footer */
 .App-footer {
-  background-color: #2c3e50;
-  color: white;
+  background-color: var(--color-deep-jungle);
+  color: var(--color-text-inverse);
   text-align: center;
   padding: 2rem;
   margin-top: 4rem;
@@ -145,44 +146,44 @@ button.btn {
 }
 
 .btn-primary {
-  background-color: #3498db;
-  color: white;
+  background: var(--gradient-jungle);
+  color: var(--color-text-inverse);
 }
 
 .btn-primary:hover {
-  background-color: #2980b9;
+  background: linear-gradient(135deg, var(--color-jungle-dark) 0%, var(--color-moss-green) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 8px var(--color-shadow);
 }
 
 .btn-secondary {
-  background-color: #95a5a6;
-  color: white;
+  background-color: var(--color-stone);
+  color: var(--color-text-inverse);
 }
 
 .btn-secondary:hover {
-  background-color: #7f8c8d;
+  background-color: var(--color-earth-brown);
 }
 
 .btn-danger {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--color-danger);
+  color: var(--color-text-inverse);
 }
 
 .btn-danger:hover {
-  background-color: #c0392b;
+  background-color: #a00d1a;
 }
 
 .back-link {
   display: inline-block;
   margin-top: 2rem;
-  color: #3498db;
+  color: var(--color-deep-jungle);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .back-link:hover {
-  color: #2980b9;
+  color: var(--color-moss-green);
 }
 
 /* Responsive */
@@ -209,26 +210,183 @@ button.btn {
 
 .not-found h1 {
   font-size: 3rem;
-  color: #e74c3c;
+  color: var(--color-danger);
   margin-bottom: 1rem;
 }
 
 .not-found p {
   font-size: 1.1rem;
-  color: #7f8c8d;
+  color: var(--color-text-light);
   margin-bottom: 2rem;
 }
 
 .not-found a {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #3498db;
-  color: white;
+  background: var(--gradient-jungle);
+  color: var(--color-text-inverse);
   text-decoration: none;
   border-radius: 4px;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .not-found a:hover {
-  background-color: #2980b9;
+  background: linear-gradient(135deg, var(--color-jungle-dark) 0%, var(--color-moss-green) 100%);
+}
+
+/* Jungle Theme Enhancements */
+
+/* Enhanced card styling with subtle texture */
+.dashboard-section,
+.admin-section-card,
+.create-section,
+.list-section,
+.player-card,
+.season-card,
+.tribe-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle foliage accent on cards */
+.dashboard-section::before,
+.create-section::before,
+.list-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(64, 145, 108, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Hero section jungle enhancement */
+.dashboard-hero::after,
+.admin-header::after,
+.manager-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-burnt-orange) 0%, var(--color-gold) 50%, var(--color-burnt-orange) 100%);
+  pointer-events: none;
+}
+
+/* Enhanced button styling with jungle flair */
+button.btn {
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 6px var(--color-shadow);
+}
+
+button.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: left 0.3s ease;
+}
+
+button.btn:hover::before {
+  left: 100%;
+}
+
+/* Input field jungle styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  border: 2px solid var(--color-border) !important;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-moss-green) !important;
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15) !important;
+  background-color: white;
+}
+
+/* Link styling */
+a {
+  color: var(--color-deep-jungle);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-moss-green);
+}
+
+/* Heading enhancements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+h1 {
+  border-bottom: 3px solid var(--color-gold);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+/* Section dividers */
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-border) 50%, transparent 100%);
+  margin: 2rem 0;
+}
+
+/* Success/Error message styling */
+.message,
+.alert {
+  border-left: 4px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.message.success,
+.alert-success {
+  background: #e8f5e9 !important;
+  border-left-color: var(--color-success) !important;
+  color: #2e7d32 !important;
+}
+
+.message.error,
+.alert-danger {
+  background: #ffebee !important;
+  border-left-color: var(--color-danger) !important;
+  color: #c62828 !important;
+}
+
+.message.warning,
+.alert-warning {
+  background: #fef3e0 !important;
+  border-left-color: var(--color-warning) !important;
+  color: #8b5a3c !important;
+}
+
+.message.info,
+.alert-info {
+  background: #e0f2f1 !important;
+  border-left-color: var(--color-info) !important;
+  color: #004d40 !important;
 }
