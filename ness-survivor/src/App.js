@@ -6,6 +6,7 @@ import { initDriver, closeDriver } from './config/neo4jConfig';
 // Page components - to be created
 import Dashboard from './pages/Dashboard';
 import SeasonView from './pages/views/SeasonView';
+import SeasonProgress from './pages/SeasonProgress';
 import PlayerDetail from './pages/views/PlayerDetail';
 import FantasyTeamView from './pages/views/FantasyTeamView';
 import Leaderboard from './pages/views/Leaderboard';
@@ -60,7 +61,7 @@ function App() {
               <li className="nav-submenu">
                 <span>Views</span>
                 <ul className="nav-submenu-list">
-                  <li><Link to="/seasons">Seasons</Link></li>
+                  <li><Link to="/">Home</Link></li>
                   <li><Link to="/leaderboard">Leaderboard</Link></li>
                 </ul>
               </li>
@@ -86,6 +87,7 @@ function App() {
             {/* Public View Routes */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/seasons/:seasonId" element={<SeasonView />} />
+            <Route path="/season/:seasonNumber/progress" element={<SeasonProgress />} />
             <Route path="/players/:firstName/:lastName" element={<PlayerDetail />} />
             <Route path="/teams/:teamName" element={<FantasyTeamView />} />
             <Route path="/leaderboard" element={<Leaderboard />} />

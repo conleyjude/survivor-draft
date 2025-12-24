@@ -55,7 +55,14 @@ function SeasonView() {
       <div className="season-view">
         <div className="error-state">
           <h2>❌ Season not found</h2>
-          {error && <p className="error-message">{error}</p>}
+          {error ? (
+            <p className="error-message">Error: {error}</p>
+          ) : (
+            <>
+              <p className="error-message">Season #{seasonNumber} could not be found in the database.</p>
+              <p className="error-message">Make sure the season has been created in the admin panel.</p>
+            </>
+          )}
           <Link to="/" className="btn btn-primary">Return to Dashboard</Link>
         </div>
       </div>
@@ -160,6 +167,9 @@ function SeasonView() {
 
       {/* Navigation */}
       <div className="navigation">
+        <Link to={`/season/${seasonNumber}/progress`} className="nav-link">
+          📊 Track Season Progress
+        </Link>
         <Link to="/" className="nav-link">← Back to Dashboard</Link>
       </div>
     </div>

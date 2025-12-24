@@ -1,0 +1,607 @@
+/* SeasonProgress.css - Season progress tracking with tribe-centric view */
+
+.season-progress {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.progress-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.progress-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.progress-header .subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Tribes Grid */
+.tribes-container {
+  margin-bottom: 3rem;
+}
+
+.tribes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Tribe Panel */
+.tribe-panel {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-top: 5px solid;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tribe-panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Tribe Header */
+.tribe-header {
+  padding: 1.5rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tribe-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.tribe-header .player-count {
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Tribe Players List */
+.tribe-players {
+  padding: 1.5rem;
+  min-height: 100px;
+}
+
+.player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-list li {
+  margin: 0;
+  padding: 0;
+}
+
+/* Player Button */
+.player-button {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.player-button:hover {
+  background-color: #f0f0f0;
+  border-color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.player-button:active {
+  transform: scale(0.98);
+}
+
+.player-button .player-name {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  text-align: left;
+}
+
+.player-button .player-stats {
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* No Players / No Data States */
+.no-players {
+  color: #999;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.no-data,
+.no-selection {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  border: 1px dashed #ddd;
+}
+
+.no-data p,
+.no-selection p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.loading-message {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+/* Player Detail Header */
+.player-detail-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+}
+
+.player-detail-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.player-tribe {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Player Stats Grid */
+.player-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-item label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-value.active {
+  color: #2e7d32;
+}
+
+/* Edit Form */
+.edit-form {
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667EEA;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Checkbox Group */
+.form-group.checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-group.checkbox label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.form-group.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal-actions .btn {
+  margin: 0;
+}
+
+/* Messages */
+.message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.message-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.message-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+/* Back Link */
+.back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  color: #666;
+  text-decoration: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  color: #333;
+  border-color: #333;
+  background-color: #f5f5f5;
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #333;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #cbd5e0;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Buttons in No Data State */
+.no-data .btn {
+  margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .season-progress {
+    padding: 1rem;
+  }
+
+  .progress-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .tribes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .tribe-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tribe-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .player-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Dark Mode Support (if app uses dark mode) */
+@media (prefers-color-scheme: dark) {
+  .season-progress {
+    color: #e0e0e0;
+  }
+
+  .progress-header h1 {
+    color: #fff;
+  }
+
+  .progress-header .subtitle {
+    color: #aaa;
+  }
+
+  .tribe-panel {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .player-button {
+    background-color: #333;
+    border-color: #444;
+    color: #e0e0e0;
+  }
+
+  .player-button:hover {
+    background-color: #404040;
+    border-color: #666;
+  }
+
+  .player-button .player-name {
+    color: #fff;
+  }
+
+  .player-button .player-stats {
+    color: #bbb;
+  }
+
+  .modal-content {
+    background-color: #2a2a2a;
+  }
+
+  .no-players {
+    color: #888;
+  }
+
+  .no-data,
+  .no-selection {
+    background-color: #333;
+    border-color: #444;
+  }
+
+  .no-data p,
+  .no-selection p {
+    color: #aaa;
+  }
+
+  .player-detail-header {
+    border-bottom-color: #444;
+  }
+
+  .player-detail-header h2 {
+    color: #fff;
+  }
+
+  .stat-value {
+    color: #e0e0e0;
+  }
+
+  .stat-item label {
+    color: #aaa;
+  }
+
+  .back-link {
+    color: #aaa;
+    border-color: #444;
+  }
+
+  .back-link:hover {
+    color: #fff;
+    border-color: #666;
+    background-color: #333;
+  }
+
+  .form-input {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+
+  .form-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+
+  .form-group label {
+    color: #e0e0e0;
+  }
+
+  .message-success {
+    background-color: rgba(46, 125, 50, 0.2);
+    color: #66bb6a;
+    border-left-color: #66bb6a;
+  }
+
+  .message-error {
+    background-color: rgba(198, 40, 40, 0.2);
+    color: #ef5350;
+    border-left-color: #ef5350;
+  }
+}
