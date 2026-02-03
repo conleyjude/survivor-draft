@@ -1,4 +1,4 @@
-/* App.css - Jungle themed application styles */
+/* App.css - Jungle themed application styles with 90s Sports Flair */
 
 * {
   margin: 0;
@@ -7,9 +7,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-bg-primary);
@@ -22,12 +20,15 @@ body {
   min-height: 100vh;
 }
 
-/* Navigation */
+/* Navigation - 90s SPORTS STYLE */
 .App-nav {
-  background-color: var(--color-deep-jungle);
+  background: linear-gradient(135deg, var(--color-deep-jungle) 0%, var(--color-jungle-green) 100%);
   color: var(--color-text-inverse);
   padding: 1rem 0;
-  box-shadow: 0 2px 8px var(--color-shadow);
+  border-bottom: 4px solid var(--color-gold);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 -2px 0 rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -43,17 +44,26 @@ body {
 }
 
 .nav-brand {
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: 2rem;
   font-weight: bold;
+  letter-spacing: 3px;
   text-decoration: none;
+  text-transform: uppercase;
   color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .nav-brand:hover {
   color: var(--color-gold);
+  transform: scale(1.05);
+  text-shadow: 
+    2px 2px 0 var(--color-sunset-pink),
+    4px 4px 0 var(--color-electric-blue);
 }
 
 .nav-menu {
@@ -64,13 +74,35 @@ body {
 }
 
 .nav-menu a {
+  position: relative;
+  font-family: var(--font-athletic);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: var(--color-text-inverse);
   text-decoration: none;
   transition: color 0.3s ease;
+  padding: 0.25rem 0;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--gradient-90s-sport);
+  transition: width 0.3s ease;
 }
 
 .nav-menu a:hover {
   color: var(--color-gold);
+}
+
+.nav-menu a:hover::after {
+  width: 100%;
 }
 
 .nav-submenu {
@@ -83,6 +115,11 @@ body {
   align-items: center;
   padding: 0.5rem 0;
   pointer-events: none;
+  font-family: var(--font-athletic);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .nav-submenu:hover .nav-submenu-list {
@@ -97,9 +134,10 @@ body {
   background-color: var(--color-jungle-dark);
   flex-direction: column;
   min-width: 200px;
-  border-radius: 4px;
+  border-radius: 8px;
+  border: 2px solid var(--color-gold);
   padding: 0.5rem 0;
-  box-shadow: 0 4px 12px var(--color-shadow);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
 }
 
@@ -110,6 +148,11 @@ body {
 .nav-submenu-list a {
   display: block;
   padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.nav-submenu-list a::after {
+  display: none;
 }
 
 .nav-submenu-list a:hover {
@@ -127,63 +170,128 @@ body {
 
 /* Footer */
 .App-footer {
-  background-color: var(--color-deep-jungle);
+  background: linear-gradient(135deg, var(--color-deep-jungle) 0%, var(--color-jungle-green) 100%);
+  border-top: 4px solid var(--color-gold);
   color: var(--color-text-inverse);
   text-align: center;
   padding: 2rem;
   margin-top: 4rem;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Common Styles */
+/* Common Styles - 90s BUTTON STYLE */
 button.btn {
   padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
+  border: 3px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
+  font-family: var(--font-athletic);
   font-size: 1rem;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
   font-weight: 500;
+  box-shadow: 
+    0 4px 0 rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background: var(--gradient-jungle);
+  background: var(--gradient-tropical);
   color: var(--color-text-inverse);
+  border-color: var(--color-deep-jungle);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-jungle-dark) 0%, var(--color-moss-green) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--color-shadow);
+  box-shadow: 
+    0 6px 0 rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 
+    0 2px 0 rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
-  background-color: var(--color-stone);
+  background: var(--gradient-sunset);
   color: var(--color-text-inverse);
+  border-color: var(--color-burnt-orange);
 }
 
 .btn-secondary:hover {
-  background-color: var(--color-earth-brown);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 0 rgba(0, 0, 0, 0.2),
+    0 8px 16px var(--color-shadow-pink);
+}
+
+.btn-secondary:active {
+  transform: translateY(2px);
 }
 
 .btn-danger {
   background-color: var(--color-danger);
   color: var(--color-text-inverse);
+  border-color: #a00d1a;
 }
 
 .btn-danger:hover {
   background-color: #a00d1a;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 0 rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(193, 18, 31, 0.4);
+}
+
+.btn-danger:active {
+  transform: translateY(2px);
+}
+
+/* Shine effect on buttons */
+button.btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+button.btn:hover::before {
+  left: 100%;
 }
 
 .back-link {
   display: inline-block;
   margin-top: 2rem;
+  font-family: var(--font-athletic);
+  font-weight: 600;
+  letter-spacing: 1px;
   color: var(--color-deep-jungle);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--color-tropical-teal);
 }
 
 .back-link:hover {
   color: var(--color-moss-green);
+  border-left-color: var(--color-sunset-pink);
+  transform: translateX(4px);
 }
 
 /* Responsive */
@@ -198,7 +306,12 @@ button.btn {
   }
 
   .nav-brand {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+  
+  .nav-menu a {
+    font-size: 0.95rem;
   }
 }
 
@@ -209,9 +322,12 @@ button.btn {
 }
 
 .not-found h1 {
-  font-size: 3rem;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  letter-spacing: 3px;
   color: var(--color-danger);
   margin-bottom: 1rem;
+  text-shadow: 2px 2px 0 var(--color-sunset-pink);
 }
 
 .not-found p {
@@ -234,9 +350,9 @@ button.btn {
   background: linear-gradient(135deg, var(--color-jungle-dark) 0%, var(--color-moss-green) 100%);
 }
 
-/* Jungle Theme Enhancements */
+/* Jungle Theme Enhancements - CARD STYLING */
 
-/* Enhanced card styling with subtle texture */
+/* Enhanced card styling with geometric accents */
 .dashboard-section,
 .admin-section-card,
 .create-section,
@@ -246,21 +362,37 @@ button.btn {
 .tribe-card {
   position: relative;
   overflow: hidden;
+  border-top: 4px solid transparent;
+  border-image: var(--gradient-90s-sport) 1;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px var(--color-shadow-teal);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Subtle foliage accent on cards */
+.dashboard-section:hover,
+.admin-section-card:hover,
+.player-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 3px var(--color-tropical-teal);
+}
+
+/* Geometric corner accent */
 .dashboard-section::before,
 .create-section::before,
 .list-section::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(64, 145, 108, 0.03) 0%, transparent 70%);
-  pointer-events: none;
-  border-radius: 50%;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: var(--gradient-90s-sport);
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+  opacity: 0.1;
+  z-index: 0;
 }
 
 /* Hero section jungle enhancement */
@@ -268,37 +400,19 @@ button.btn {
 .admin-header::after,
 .manager-header::after {
   content: '';
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--color-burnt-orange) 0%, var(--color-gold) 50%, var(--color-burnt-orange) 100%);
+  background: linear-gradient(90deg, 
+    var(--color-burnt-orange) 0%, 
+    var(--color-gold) 25%,
+    var(--color-tropical-teal) 50%,
+    var(--color-gold) 75%,
+    var(--color-burnt-orange) 100%);
   pointer-events: none;
-}
-
-/* Enhanced button styling with jungle flair */
-button.btn {
-  position: relative;
-  overflow: hidden;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 6px var(--color-shadow);
-}
-
-button.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: left 0.3s ease;
-}
-
-button.btn:hover::before {
-  left: 100%;
+  z-index: 50;
 }
 
 /* Input field jungle styling */
@@ -322,7 +436,7 @@ input[type="date"]:focus,
 select:focus,
 textarea:focus {
   border-color: var(--color-moss-green) !important;
-  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(32, 197, 94, 0.15) !important;
   background-color: white;
 }
 
@@ -336,23 +450,41 @@ a:hover {
   color: var(--color-moss-green);
 }
 
-/* Heading enhancements */
+/* Heading enhancements - 90s STYLE */
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-dark);
   font-weight: 600;
 }
 
 h1 {
-  border-bottom: 3px solid var(--color-gold);
+  font-family: var(--font-display);
+  border-bottom: 4px solid var(--color-gold);
   padding-bottom: 0.5rem;
   display: inline-block;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
-/* Section dividers */
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--font-athletic);
+}
+
+/* Section dividers - ZIGZAG STYLE */
 hr {
   border: none;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--color-border) 50%, transparent 100%);
+  height: 20px;
+  background: 
+    linear-gradient(135deg, var(--color-tropical-teal) 25%, transparent 25%),
+    linear-gradient(225deg, var(--color-tropical-teal) 25%, transparent 25%),
+    linear-gradient(315deg, var(--color-sunset-pink) 25%, transparent 25%),
+    linear-gradient(45deg, var(--color-sunset-pink) 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 0, 10px 10px, 0 10px;
   margin: 2rem 0;
 }
 

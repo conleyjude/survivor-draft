@@ -70,6 +70,58 @@ export const PLAYER_STATUS = {
   RUNNER_UP: 'runner_up',
 };
 
+// Event Types for Progress Tracking
+export const EVENT_TYPES = {
+  CHALLENGE_WIN: {
+    id: 'challenge_win',
+    label: 'Challenge Win',
+    icon: '🏆',
+    statsField: 'challenges_won',
+    incrementStats: true,
+    description: 'Won a tribal/team challenge'
+  },
+  IMMUNITY_WIN: {
+    id: 'immunity_win',
+    label: 'Immunity Win',
+    icon: '🛡️',
+    statsField: 'immunity_challenge_wins',
+    incrementStats: true,
+    description: 'Won individual immunity'
+  },
+  IDOL_FOUND: {
+    id: 'idol_found',
+    label: 'Found Idol',
+    icon: '🗝️',
+    statsField: 'has_idol',
+    setValue: true,
+    description: 'Found a hidden immunity idol'
+  },
+  IDOL_PLAYED: {
+    id: 'idol_played',
+    label: 'Played Idol',
+    icon: '✨',
+    statsField: 'idols_played',
+    incrementStats: true,
+    description: 'Played an immunity idol'
+  },
+  TRIBAL_COUNCIL: {
+    id: 'tribal_council',
+    label: 'Tribal Council',
+    icon: '🔥',
+    statsField: null,
+    incrementStats: false,
+    description: 'Attended tribal council'
+  },
+  VOTED_OUT: {
+    id: 'voted_out',
+    label: 'Voted Out',
+    icon: '❌',
+    statsField: 'status',
+    setValue: 'eliminated',
+    description: 'Eliminated from the game'
+  }
+};
+
 // Role Types
 export const ROLES = {
   ADMIN: 'admin',
@@ -77,33 +129,52 @@ export const ROLES = {
   VIEWER: 'viewer',
 };
 
-// Color Palette
+// Color Palette - 90s Sports Jungle Theme
 export const COLORS = {
-  PRIMARY: '#667eea',
-  PRIMARY_DARK: '#764ba2',
-  SECONDARY: '#f59e0b',
-  SUCCESS: '#10b981',
-  WARNING: '#f59e0b',
-  DANGER: '#ef4444',
-  INFO: '#3b82f6',
+  // Primary Jungle Colors - VIBRANT
+  DEEP_JUNGLE: '#0f7c3e',
+  JUNGLE_GREEN: '#1e9857',
+  MOSS_GREEN: '#20c55e',
+  LIGHT_MOSS: '#3de07c',
+  
+  // Tropical Accents - 90s FLAIR
+  TROPICAL_TEAL: '#00d4aa',
+  JUNGLE_LIME: '#b7ff00',
+  SUNSET_PINK: '#ff006e',
+  ELECTRIC_BLUE: '#00b4ff',
+  
+  // Enhanced Earth Tones
+  BURNT_ORANGE: '#ff6b35',
+  GOLD: '#ffc857',
+  WARM_BROWN: '#8b5a3c',
+  
+  // Functional
+  SUCCESS: '#20c55e',
+  WARNING: '#ff6b35',
+  DANGER: '#c1121f',
+  INFO: '#00b4ff',
+  
+  // Neutrals
   LIGHT_GRAY: '#f9fafb',
-  DARK_GRAY: '#333',
-  BORDER_COLOR: '#e5e7eb',
-  TEXT_LIGHT: '#999',
-  TEXT_DEFAULT: '#666',
+  DARK_GRAY: '#2d3436',
+  BORDER_COLOR: '#d4c4b0',
+  TEXT_LIGHT: '#636e72',
+  TEXT_DEFAULT: '#2d3436',
 };
 
-// Tribe Colors (Survivor themed)
+// Tribe Colors (Survivor themed - VIBRANT)
 export const TRIBE_COLORS = {
-  BORAN: '#FF6B35',
-  SAMBURU: '#004E89',
-  MOTO: '#00A651',
-  MARAAMU: '#E63946',
-  ROTU: '#457B9D',
-  JACARÉ: '#F4A261',
-  LALARI: '#2A9D8F',
-  MANIHIKI: '#E76F51',
-  TAMBU: '#F1FAEE',
+  BORAN: '#ffc857',
+  SAMBURU: '#ff006e',
+  MOTO: '#1e9857',
+  JEMBE: '#00b4ff',
+  MARAAMU: '#ff6b35',
+  ROTU: '#00d4aa',
+  JACARÉ: '#b7ff00',
+  LALARI: '#20c55e',
+  MANIHIKI: '#ff6b35',
+  TAMBU: '#f5f2ed',
+  FINAL: '#ff6b35',
 };
 
 // Icon Mapping
@@ -278,6 +349,8 @@ export default {
   CACHE,
   ALLIANCE_STATUS,
   DRAFT_STATUS,
+  PLAYER_STATUS,
+  EVENT_TYPES,
   COLORS,
   ICONS,
   ROUTES,

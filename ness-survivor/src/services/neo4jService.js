@@ -149,7 +149,8 @@ export const createPlayer = async (
       has_idol: false,
       idols_played: 0,
       votes_received: 0,
-      notes: $notes
+      notes: $notes,
+      status: 'active'
     })
     CREATE (p)-[:BELONGS_TO]->(t)
     CREATE (p)-[:COMPETES_IN]->(s)
@@ -299,13 +300,18 @@ export const getPlayersInSeason = async (season_number) => {
   const query = `
     MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
     OPTIONAL MATCH (p)-[:BELONGS_TO]->(t:Tribe)
-    RETURN p, t.tribe_name as tribe_name
+    OPTIONAL MATCH (p)-[:ON_TEAM]->(ft:FantasyTeam)
+    RETURN p, t.tribe_name as tribe_name, t.tribe_color as tribe_color, 
+           ft.team_name as fantasy_team_name, ft.owners as fantasy_team_owners
     ORDER BY p.last_name
   `;
   const results = await executeQuery(query, { season_number });
   return results.map(r => ({
     ...r.p?.properties || {},
-    tribe_name: r.tribe_name || null
+    tribe_name: r.tribe_name || null,
+    tribe_color: r.tribe_color || null,
+    fantasy_team_name: r.fantasy_team_name || null,
+    fantasy_team_owners: r.fantasy_team_owners || null
   }));
 };
 
@@ -1046,9 +1052,377 @@ export const deleteDraftPick = async (season_number, round, pick_number) => {
 export const getDraftPicksForSeason = async (season_number) => {
   const query = `
     MATCH (dp:DraftPick)-[:PICKED_IN]->(s:Season {season_number: $season_number})
-    RETURN dp
+    OPTIONAL MATCH (t:FantasyTeam)-[:MADE_PICK]->(dp)
+    RETURN dp, t.team_name as team_name
     ORDER BY dp.round, dp.pick_number
   `;
   const results = await executeQuery(query, { season_number });
-  return results.map(r => r.dp?.properties || {});
+  return results.map(r => ({
+    ...r.dp?.properties || {},
+    team_name: r.team_name || null
+  }));
+};
+
+/**
+ * Mark remaining players as reserves after draft completion
+ * @param {number} season_number - The season number
+ * @param {number} num_teams - Number of teams
+ * @returns {Promise<Object>} - Count of drafted and reserve players
+ */
+export const finalizeReserves = async (season_number, num_teams) => {
+  const query = `
+    MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
+    WHERE NOT (p)-[:ON_TEAM]->(:FantasyTeam)
+    SET p.status = 'reserve'
+    WITH count(p) as reserve_count
+    MATCH (p2:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
+    WHERE (p2)-[:ON_TEAM]->(:FantasyTeam)
+    WITH reserve_count, count(p2) as drafted_count
+    RETURN drafted_count, reserve_count
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results[0] || { drafted_count: 0, reserve_count: 0 };
+};
+
+/**
+ * Get reserve players for a season
+ * @param {number} season_number - The season number
+ * @returns {Promise<Array>} - Array of reserve players
+ */
+export const getReservePlayers = async (season_number) => {
+  const query = `
+    MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
+    WHERE p.status = 'reserve'
+    RETURN p
+    ORDER BY p.last_name
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => r.p?.properties || {});
+};
+
+/**
+ * Mark a player as eliminated (voted out)
+ * @param {string} first_name - Player's first name
+ * @param {string} last_name - Player's last name
+ * @returns {Promise<Object>} - Updated player and their team
+ */
+export const eliminatePlayer = async (first_name, last_name) => {
+  const query = `
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+    OPTIONAL MATCH (p)-[:ON_TEAM]->(t:FantasyTeam)
+    SET p.status = 'eliminated'
+    RETURN p, t
+  `;
+  const results = await executeQuery(query, { first_name, last_name });
+  return {
+    player: results[0]?.p?.properties || null,
+    team: results[0]?.t?.properties || null
+  };
+};
+
+/**
+ * Replace an eliminated player with a reserve
+ * @param {string} reserve_first_name - Reserve player's first name
+ * @param {string} reserve_last_name - Reserve player's last name
+ * @param {string} team_name - Fantasy team name
+ * @returns {Promise<Object>} - Reserve player added to team
+ */
+export const replaceWithReserve = async (reserve_first_name, reserve_last_name, team_name) => {
+  const query = `
+    MATCH (p:Player {first_name: $reserve_first_name, last_name: $reserve_last_name})
+    WHERE p.status = 'reserve'
+    MATCH (t:FantasyTeam {team_name: $team_name})
+    CREATE (p)-[:ON_TEAM]->(t)
+    SET p.status = 'drafted'
+    RETURN p, t
+  `;
+  const results = await executeQuery(query, { reserve_first_name, reserve_last_name, team_name });
+  return {
+    player: results[0]?.p?.properties || null,
+    team: results[0]?.t?.properties || null
+  };
+};
+
+/**
+ * Get teams that have eliminated players and can select reserves
+ * @param {number} season_number - The season number
+ * @returns {Promise<Array>} - Array of teams with eliminated player counts
+ */
+export const getTeamsEligibleForReserves = async (season_number) => {
+  const query = `
+    MATCH (t:FantasyTeam)-[:DRAFTED_FOR]->(s:Season {season_number: $season_number})
+    OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(t)
+    WHERE p.status = 'eliminated'
+    WITH t, count(p) as eliminated_count
+    WHERE eliminated_count > 0
+    RETURN t.team_name as team_name, eliminated_count
+    ORDER BY t.team_name
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => ({
+    team_name: r.team_name,
+    eliminated_count: r.eliminated_count || 0
+  }));
+};
+
+// ============================================
+// EVENT TRACKING OPERATIONS
+// ============================================
+
+/**
+ * Synchronize player stats based on event type
+ * This helper method is called automatically when events are created or deleted
+ * @param {string} first_name - Player's first name
+ * @param {string} last_name - Player's last name
+ * @param {string} event_type - Type of event
+ * @param {string} operation - 'increment' or 'decrement'
+ * @returns {Promise<Object>} - Updated player
+ */
+const syncPlayerStatsFromEvent = async (first_name, last_name, event_type, operation = 'increment') => {
+  const increment = operation === 'increment';
+  let query = '';
+  
+  switch (event_type) {
+    case 'challenge_win':
+      query = `
+        MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+        SET p.challenges_won = COALESCE(p.challenges_won, 0) ${increment ? '+ 1' : '- 1'}
+        RETURN p
+      `;
+      break;
+      
+    case 'immunity_win':
+      query = `
+        MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+        SET p.immunity_challenge_wins = COALESCE(p.immunity_challenge_wins, 0) ${increment ? '+ 1' : '- 1'}
+        RETURN p
+      `;
+      break;
+      
+    case 'idol_found':
+      query = `
+        MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+        SET p.has_idol = ${increment ? 'true' : 'false'}
+        RETURN p
+      `;
+      break;
+      
+    case 'idol_played':
+      query = `
+        MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+        SET p.idols_played = COALESCE(p.idols_played, 0) ${increment ? '+ 1' : '- 1'},
+            p.has_idol = false
+        RETURN p
+      `;
+      break;
+      
+    case 'voted_out':
+      query = `
+        MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+        SET p.status = ${increment ? "'eliminated'" : "'active'"}
+        RETURN p
+      `;
+      break;
+      
+    case 'tribal_council':
+      // No stats to update for tribal council
+      return null;
+      
+    default:
+      console.warn(`Unknown event type: ${event_type}`);
+      return null;
+  }
+  
+  const results = await executeQuery(query, { first_name, last_name });
+  return results[0]?.p?.properties || null;
+};
+
+/**
+ * Create a new event for a player
+ * @param {string} first_name - Player's first name
+ * @param {string} last_name - Player's last name
+ * @param {string} event_type - Type of event (challenge_win, immunity_win, idol_found, etc.)
+ * @param {number} episode_number - Episode number
+ * @param {number} season_number - Season number
+ * @param {string} notes - Optional notes about the event
+ * @returns {Promise<Object>} - Created event with player info
+ */
+export const createEvent = async (first_name, last_name, event_type, episode_number, season_number, notes = '') => {
+  const query = `
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})
+    MATCH (s:Season {season_number: $season_number})
+    CREATE (e:Event {
+      event_id: randomUUID(),
+      event_type: $event_type,
+      episode_number: $episode_number,
+      timestamp: datetime(),
+      notes: $notes
+    })
+    CREATE (p)-[:PARTICIPATED_IN]->(e)
+    CREATE (e)-[:OCCURRED_IN]->(s)
+    RETURN e, p
+  `;
+  const results = await executeQuery(query, { 
+    first_name, 
+    last_name, 
+    event_type, 
+    episode_number, 
+    season_number, 
+    notes 
+  });
+  
+  // Automatically update player stats based on event type
+  await syncPlayerStatsFromEvent(first_name, last_name, event_type, 'increment');
+  
+  return {
+    event: results[0]?.e?.properties || null,
+    player: results[0]?.p?.properties || null
+  };
+};
+
+/**
+ * Get all events for a specific player
+ * @param {string} first_name - Player's first name
+ * @param {string} last_name - Player's last name
+ * @returns {Promise<Array>} - Array of events sorted by episode
+ */
+export const getEventsForPlayer = async (first_name, last_name) => {
+  const query = `
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[:PARTICIPATED_IN]->(e:Event)
+    RETURN e
+    ORDER BY e.episode_number DESC, e.timestamp DESC
+  `;
+  const results = await executeQuery(query, { first_name, last_name });
+  return results.map(r => r.e?.properties || {});
+};
+
+/**
+ * Get all events for a season
+ * @param {number} season_number - Season number
+ * @returns {Promise<Array>} - Array of events with player info sorted by episode
+ */
+export const getEventsForSeason = async (season_number) => {
+  const query = `
+    MATCH (e:Event)-[:OCCURRED_IN]->(s:Season {season_number: $season_number})
+    MATCH (p:Player)-[:PARTICIPATED_IN]->(e)
+    RETURN e, p
+    ORDER BY e.episode_number DESC, e.timestamp DESC
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results.map(r => ({
+    event: r.e?.properties || {},
+    player: r.p?.properties || {}
+  }));
+};
+
+/**
+ * Delete an event by ID
+ * @param {string} event_id - The event ID to delete
+ * @returns {Promise<Object>} - Deleted event
+ */
+export const deleteEvent = async (event_id) => {
+  // First, get the event details and associated player before deletion
+  const getEventQuery = `
+    MATCH (p:Player)-[:PARTICIPATED_IN]->(e:Event {event_id: $event_id})
+    RETURN e, p
+  `;
+  const eventResults = await executeQuery(getEventQuery, { event_id });
+  
+  if (eventResults.length === 0) {
+    throw new Error('Event not found');
+  }
+  
+  const event = eventResults[0]?.e?.properties;
+  const player = eventResults[0]?.p?.properties;
+  
+  // Delete the event
+  const deleteQuery = `
+    MATCH (e:Event {event_id: $event_id})
+    DETACH DELETE e
+    RETURN e
+  `;
+  await executeQuery(deleteQuery, { event_id });
+  
+  // Decrement the stats for the player
+  if (player && event) {
+    await syncPlayerStatsFromEvent(player.first_name, player.last_name, event.event_type, 'decrement');
+  }
+  
+  return event;
+};
+
+/**
+ * Get event counts for a player (for stats display)
+ * @param {string} first_name - Player's first name
+ * @param {string} last_name - Player's last name
+ * @returns {Promise<Object>} - Object with event type counts
+ */
+export const getEventCountsForPlayer = async (first_name, last_name) => {
+  const query = `
+    MATCH (p:Player {first_name: $first_name, last_name: $last_name})-[:PARTICIPATED_IN]->(e:Event)
+    RETURN e.event_type as event_type, count(e) as count
+  `;
+  const results = await executeQuery(query, { first_name, last_name });
+  const counts = {};
+  results.forEach(r => {
+    counts[r.event_type] = r.count || 0;
+  });
+  return counts;
+};
+
+/**
+ * Create events for multiple players at once (bulk operation)
+ * @param {Array} players - Array of player objects with first_name and last_name
+ * @param {string} event_type - Type of event
+ * @param {number} episode_number - Episode number
+ * @param {number} season_number - Season number
+ * @param {string} notes - Optional notes
+ * @returns {Promise<Array>} - Array of created events
+ */
+export const createBulkEvents = async (players, event_type, episode_number, season_number, notes = '') => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    UNWIND $players as playerData
+    MATCH (p:Player {first_name: playerData.first_name, last_name: playerData.last_name})
+    WHERE p.status <> 'eliminated'
+    CREATE (e:Event {
+      event_id: randomUUID(),
+      event_type: $event_type,
+      episode_number: $episode_number,
+      timestamp: datetime(),
+      notes: $notes
+    })
+    CREATE (p)-[:PARTICIPATED_IN]->(e)
+    CREATE (e)-[:OCCURRED_IN]->(s)
+    RETURN e, p
+  `;
+  
+  const playerData = players.map(p => ({
+    first_name: p.first_name,
+    last_name: p.last_name
+  }));
+  
+  const results = await executeQuery(query, { 
+    players: playerData,
+    event_type, 
+    episode_number, 
+    season_number, 
+    notes 
+  });
+  
+  // Automatically update stats for all affected players
+  const statUpdatePromises = results.map(r => {
+    const player = r.p?.properties;
+    if (player && player.first_name && player.last_name) {
+      return syncPlayerStatsFromEvent(player.first_name, player.last_name, event_type, 'increment');
+    }
+    return Promise.resolve(null);
+  });
+  
+  await Promise.all(statUpdatePromises);
+  
+  return results.map(r => ({
+    event: r.e?.properties || null,
+    player: r.p?.properties || null
+  }));
 };

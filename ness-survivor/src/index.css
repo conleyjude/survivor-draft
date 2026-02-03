@@ -1,36 +1,42 @@
-/* Jungle Theme CSS Custom Properties */
+/* Jungle Theme CSS Custom Properties - 90s Sports Edition */
 :root {
-  /* Primary Jungle Colors */
-  --color-deep-jungle: #1a4d2e;
+  /* Primary Jungle Colors - VIBRANT */
+  --color-deep-jungle: #0f7c3e;
   --color-jungle-dark: #0d2818;
-  --color-jungle-green: #2d6a4f;
-  --color-moss-green: #40916c;
-  --color-light-moss: #52b788;
+  --color-jungle-green: #1e9857;
+  --color-moss-green: #20c55e;
+  --color-light-moss: #3de07c;
   
-  /* Earthy & Natural Tones */
-  --color-burnt-orange: #d66a3c;
+  /* Tropical Accent Colors - 90s FLAIR */
+  --color-tropical-teal: #00d4aa;
+  --color-jungle-lime: #b7ff00;
+  --color-sunset-pink: #ff006e;
+  --color-electric-blue: #00b4ff;
+  
+  /* Earthy & Natural Tones - ENHANCED */
+  --color-burnt-orange: #ff6b35;
   --color-warm-brown: #8b5a3c;
   --color-earth-brown: #6b4423;
-  --color-gold: #d4a574;
+  --color-gold: #ffc857;
   --color-stone: #a89968;
   --color-sand: #e8dcc4;
   --color-cream: #f5f2ed;
   
   /* Secondary Colors */
-  --color-accent-blue: #1f6e78;
-  --color-accent-teal: #2d7a7a;
+  --color-accent-blue: #00b4ff;
+  --color-accent-teal: #00d4aa;
   
   /* Functional Colors */
-  --color-success: #40916c;
-  --color-warning: #d66a3c;
+  --color-success: #20c55e;
+  --color-warning: #ff6b35;
   --color-danger: #c1121f;
-  --color-info: #1f6e78;
+  --color-info: #00b4ff;
   
   /* Text Colors */
   --color-text-dark: #0d2818;
   --color-text-main: #2d3436;
   --color-text-light: #636e72;
-  --color-text-inverse: #f5f2ed;
+  --color-text-inverse: #ffffff;
   
   /* Background Colors */
   --color-bg-primary: #f5f2ed;
@@ -38,35 +44,89 @@
   --color-bg-tertiary: #e8dcc4;
   --color-bg-dark: #0d2818;
   
-  /* Tribe Colors (Jungle inspired) */
-  --tribe-boran: #d4a574;
-  --tribe-samburu: #c1121f;
-  --tribe-moto: #2d6a4f;
-  --tribe-jembe: #1f6e78;
-  --tribe-final: #8b5a3c;
+  /* Tribe Colors (Jungle inspired - VIBRANT) */
+  --tribe-boran: #ffc857;
+  --tribe-samburu: #ff006e;
+  --tribe-moto: #1e9857;
+  --tribe-jembe: #00b4ff;
+  --tribe-final: #ff6b35;
   
   /* UI Elements */
   --color-border: #d4c4b0;
   --color-shadow: rgba(13, 40, 24, 0.15);
   --color-shadow-light: rgba(13, 40, 24, 0.08);
+  --color-shadow-teal: rgba(0, 212, 170, 0.3);
+  --color-shadow-pink: rgba(255, 0, 110, 0.3);
   
-  /* Gradients */
-  --gradient-jungle: linear-gradient(135deg, #1a4d2e 0%, #2d6a4f 100%);
-  --gradient-bronze: linear-gradient(135deg, #8b5a3c 0%, #d4a574 100%);
-  --gradient-fire: linear-gradient(135deg, #d66a3c 0%, #c1121f 100%);
+  /* Gradients - ORIGINAL */
+  --gradient-jungle: linear-gradient(135deg, #0f7c3e 0%, #1e9857 100%);
+  --gradient-bronze: linear-gradient(135deg, #8b5a3c 0%, #ffc857 100%);
+  --gradient-fire: linear-gradient(135deg, #ff6b35 0%, #c1121f 100%);
   --gradient-earth: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
+  
+  /* 90s Sports Gradients - NEW */
+  --gradient-90s-sport: linear-gradient(135deg, #ff006e 0%, #ffbe0b 50%, #00d4aa 100%);
+  --gradient-tropical: linear-gradient(135deg, #0f7c3e 0%, #20c55e 50%, #3de07c 100%);
+  --gradient-sunset: linear-gradient(135deg, #ff6b35 0%, #ffc857 100%);
+  --gradient-electric: linear-gradient(135deg, #00b4ff 0%, #00d4aa 100%);
+  --gradient-neon: linear-gradient(135deg, #b7ff00 0%, #00d4aa 100%);
+  
+  /* Font Families - 90s ATHLETIC */
+  --font-display: 'Bebas Neue', 'Impact', sans-serif;
+  --font-athletic: 'Teko', 'Oswald', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Subtle jungle pattern background */
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(15, 124, 62, 0.02) 10px, rgba(15, 124, 62, 0.02) 20px),
+    radial-gradient(circle at 20% 80%, rgba(0, 212, 170, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 0, 110, 0.05) 0%, transparent 50%);
+  background-color: var(--color-bg-primary);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Typography - 90s Sports Style */
+h1, h2 {
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--font-athletic);
+  font-weight: 600;
+}
+
+/* Retro Text Effects - Utility Classes */
+.text-outlined {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-deep-jungle);
+  text-shadow: 3px 3px 0 var(--color-tropical-teal);
+}
+
+.text-3d {
+  text-shadow: 
+    1px 1px 0 var(--color-electric-blue),
+    2px 2px 0 var(--color-tropical-teal),
+    3px 3px 0 var(--color-sunset-pink),
+    4px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.text-athletic {
+  font-family: var(--font-athletic);
+  font-weight: 700;
+  letter-spacing: 2px;
+  transform: scaleY(1.2);
+  display: inline-block;
 }

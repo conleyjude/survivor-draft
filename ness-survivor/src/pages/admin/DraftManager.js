@@ -15,20 +15,20 @@ function DraftManager() {
   const [selectedSeason, setSelectedSeason] = useState('');
 
   // State for draft management
-  const [draftRound, setDraftRound] = useState(1);
-  const [draftPick, setDraftPick] = useState(1);
-  const [teamPlayerSelections, setTeamPlayerSelections] = useState({});
-  // Maps team_name -> selected_player_name
+  const [selectedSlot, setSelectedSlot] = useState(null); // { teamName, slotIndex }
 
   // State for draft order (local only)
   const [draftOrder, setDraftOrder] = useState([]); // Array of team names in draft order
   const [draftOrderSet, setDraftOrderSet] = useState(false); // Flag to track if draft order has been set
   const [draftOrderInputs, setDraftOrderInputs] = useState({}); // Maps team_name -> draft position
-  const [draftType, setDraftType] = useState('normal'); // 'normal' or 'snake'
+  const draftType = 'snake'; // Always snake draft
 
   // State for messages
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // State for reserves
+  const [isDraftFinalized, setIsDraftFinalized] = useState(false);
 
   // Data fetching
   const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
@@ -44,32 +44,50 @@ function DraftManager() {
     () => (selectedSeason ? neo4jService.getDraftPicksForSeason(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
+  const { data: reservePlayers, refetch: refetchReservePlayers } = useFetchData(
+    () => (selectedSeason ? neo4jService.getReservePlayers(Number(selectedSeason)) : Promise.resolve([])),
+    [selectedSeason]
+  );
+
+  // Calculate max rounds dynamically (after data is fetched)
+  const maxRounds = teams && teams.length > 0 && players 
+    ? Math.floor(players.length / teams.length)
+    : 0;
 
   // Mutations
   const { mutate: createDraftPick } = useMutation(
-    (teamName, playerName) =>
+    ({ teamName, playerName, round, pickNumber }) =>
       neo4jService.createDraftPick(
         Number(selectedSeason),
-        draftRound,
-        draftPick,
+        round,
+        pickNumber,
         playerName,
         teamName
       ),
     () => {
       setSuccessMessage('Draft pick created successfully!');
-      // Auto-increment pick/round
-      const nextPick = draftPick === teams.length ? 1 : draftPick + 1;
-      const nextRound = draftPick === teams.length ? draftRound + 1 : draftRound;
-      setDraftPick(nextPick);
-      setDraftRound(nextRound);
-      // Clear selections
-      setTeamPlayerSelections({});
+      setSelectedSlot(null);
       refetchDraftPicks();
       refetchPlayers();
       setTimeout(() => setSuccessMessage(''), 3000);
     },
     (err) => {
       setErrorMessage(`Error creating draft pick: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  );
+
+  const { mutate: finalizeDraft } = useMutation(
+    () => neo4jService.finalizeReserves(Number(selectedSeason), teams.length),
+    (result) => {
+      setSuccessMessage(`Draft finalized! ${result.drafted_count} players drafted, ${result.reserve_count} reserves created.`);
+      setIsDraftFinalized(true);
+      refetchPlayers();
+      refetchReservePlayers();
+      setTimeout(() => setSuccessMessage(''), 5000);
+    },
+    (err) => {
+      setErrorMessage(`Error finalizing draft: ${err.message}`);
       setTimeout(() => setErrorMessage(''), 3000);
     }
   );
@@ -91,12 +109,11 @@ function DraftManager() {
   // Form handlers
   const handleSeasonChange = (e) => {
     setSelectedSeason(e.target.value);
-    setTeamPlayerSelections({});
+    setSelectedSlot(null);
     setDraftOrder([]);
     setDraftOrderSet(false);
     setDraftOrderInputs({});
-    setDraftRound(1);
-    setDraftPick(1);
+    setIsDraftFinalized(false);
   };
 
   // Draft order handlers
@@ -155,31 +172,101 @@ function DraftManager() {
     setDraftOrderInputs({});
   };
 
-  const getCurrentTurnTeam = () => {
+  // Helper to get team's pick order in a specific round (always snake)
+  const getTeamPickInRound = (teamName, round) => {
     if (!draftOrderSet || draftOrder.length === 0) return null;
     
     const numTeams = draftOrder.length;
-    let currentIndex;
+    const teamIndex = draftOrder.indexOf(teamName);
     
-    if (draftType === 'snake') {
-      // Snake draft: odd rounds go 1->N, even rounds go N->1
-      const roundNumber = draftRound;
-      const isEvenRound = roundNumber % 2 === 0;
-      const pickInRound = draftPick - ((draftRound - 1) * numTeams);
-      
-      if (isEvenRound) {
-        // Even rounds: reverse order (N, N-1, N-2, ..., 1)
-        currentIndex = numTeams - pickInRound;
-      } else {
-        // Odd rounds: normal order (1, 2, 3, ..., N)
-        currentIndex = pickInRound - 1;
-      }
+    if (teamIndex === -1) return null;
+    
+    // Snake draft: odd rounds go 1->N, even rounds go N->1
+    const isEvenRound = round % 2 === 0;
+    if (isEvenRound) {
+      // Even rounds: reverse order
+      return numTeams - teamIndex;
     } else {
-      // Normal draft: always 1->N
-      currentIndex = (draftPick - 1) % numTeams;
+      // Odd rounds: normal order
+      return teamIndex + 1;
     }
+  };
+
+  // Get team's drafted players organized by round
+  const getTeamDraftSlots = (teamName) => {
+    const slots = [];
+    for (let round = 1; round <= maxRounds; round++) {
+      const pickInRound = getTeamPickInRound(teamName, round);
+      if (pickInRound === null) {
+        slots.push(null);
+        continue;
+      }
+      
+      const overallPick = ((round - 1) * draftOrder.length) + pickInRound;
+      const pick = draftPicks?.find(p => 
+        p.team_name === teamName && p.round === round
+      );
+      
+      slots.push({
+        round,
+        pickInRound,
+        overallPick,
+        player: pick ? pick.player_name : null,
+        isFilled: !!pick
+      });
+    }
+    return slots;
+  };
+
+  // Check if a slot can be clicked (it's the next available pick)
+  const isSlotClickable = (teamName, slotIndex) => {
+    if (isDraftFinalized) return false;
+    if (!draftOrderSet) return false;
     
-    return draftOrder[currentIndex];
+    const slots = getTeamDraftSlots(teamName);
+    const slot = slots[slotIndex];
+    if (!slot || slot.isFilled) return false;
+    
+    // Find the next empty slot across all teams
+    const allSlots = [];
+    draftOrder.forEach(tn => {
+      const teamSlots = getTeamDraftSlots(tn);
+      teamSlots.forEach((s, idx) => {
+        if (s) {
+          allSlots.push({ ...s, teamName: tn, slotIndex: idx });
+        }
+      });
+    });
+    
+    // Sort by overall pick number
+    allSlots.sort((a, b) => a.overallPick - b.overallPick);
+    
+    // Find first unfilled slot
+    const nextSlot = allSlots.find(s => !s.isFilled);
+    
+    return nextSlot && nextSlot.teamName === teamName && nextSlot.slotIndex === slotIndex;
+  };
+
+  const handleSlotClick = (teamName, slotIndex) => {
+    if (!isSlotClickable(teamName, slotIndex)) return;
+    setSelectedSlot({ teamName, slotIndex });
+  };
+
+  const handlePlayerSelect = (playerName) => {
+    if (!selectedSlot) return;
+    
+    const { teamName, slotIndex } = selectedSlot;
+    const slots = getTeamDraftSlots(teamName);
+    const slot = slots[slotIndex];
+    
+    if (!slot) return;
+    
+    createDraftPick({
+      teamName,
+      playerName,
+      round: slot.round,
+      pickNumber: slot.overallPick
+    });
   };
 
   // Filtering
@@ -187,28 +274,27 @@ function DraftManager() {
     !draftPicks?.some((dp) => dp.player_name === `${player.first_name} ${player.last_name}`)
   ) || [];
 
-  const handleTeamPlayerSelect = (teamName, playerName) => {
-    setTeamPlayerSelections(prev => ({
-      ...prev,
-      [teamName]: playerName
-    }));
-  };
+  const handleFinalizeDraft = () => {
+    // Check if we have complete rounds
+    const totalPicks = draftPicks?.length || 0;
+    const numTeams = teams.length;
+    const completeRounds = Math.floor(totalPicks / numTeams);
+    const picksInCompleteRounds = completeRounds * numTeams;
 
-  const handleSubmitDraftPickForTeam = (teamName) => {
-    // Check if draft order is set
-    if (draftOrderSet && getCurrentTurnTeam() !== teamName) {
-      setErrorMessage(`It's ${getCurrentTurnTeam()}'s turn! They must draft next.`);
+    if (totalPicks !== picksInCompleteRounds) {
+      const remaining = numTeams - (totalPicks % numTeams);
+      setErrorMessage(`You must complete full draft rounds. Complete ${remaining} more pick(s) to finish the current round.`);
+      setTimeout(() => setErrorMessage(''), 5000);
+      return;
+    }
+
+    if (totalPicks === 0) {
+      setErrorMessage('No draft picks made yet. Cannot finalize empty draft.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
 
-    const playerName = teamPlayerSelections[teamName];
-    if (!playerName) {
-      setErrorMessage(`Please select a player for ${teamName}`);
-      setTimeout(() => setErrorMessage(''), 3000);
-      return;
-    }
-    createDraftPick(teamName, playerName);
+    finalizeDraft();
   };
 
   return (
@@ -252,52 +338,14 @@ function DraftManager() {
       <div className="manager-content">
         {selectedSeason && (
           <>
-            {/* Draft Type Selection */}
-            <section className="draft-type-selection">
-              <h2>⚙️ Draft Settings</h2>
-              <div className="draft-type-options">
-                <label className="draft-type-option">
-                  <input
-                    type="radio"
-                    name="draft-type"
-                    value="normal"
-                    checked={draftType === 'normal'}
-                    onChange={(e) => {
-                      if (!draftOrderSet) {
-                        setDraftType(e.target.value);
-                      }
-                    }}
-                    disabled={draftOrderSet}
-                  />
-                  <span className="option-label">
-                    <span className="option-title">📊 Normal Draft</span>
-                    <span className="option-description">Each team picks in the same order every round (1→2→3...→N)</span>
-                  </span>
-                </label>
-                <label className="draft-type-option">
-                  <input
-                    type="radio"
-                    name="draft-type"
-                    value="snake"
-                    checked={draftType === 'snake'}
-                    onChange={(e) => {
-                      if (!draftOrderSet) {
-                        setDraftType(e.target.value);
-                      }
-                    }}
-                    disabled={draftOrderSet}
-                  />
-                  <span className="option-label">
-                    <span className="option-title">🐍 Snake Draft</span>
-                    <span className="option-description">Odd rounds pick 1→N, even rounds pick N→1 (more fair)</span>
-                  </span>
-                </label>
-              </div>
-            </section>
-
             {/* Draft Order Setup */}
             <section className="draft-order-setup">
-              <h2>📋 Draft Order Setup</h2>
+              <h2>🐍 Snake Draft Setup</h2>
+              <p className="section-description">
+                This will be a snake draft with {maxRounds} rounds ({maxRounds * teams.length} total picks). 
+                Odd rounds pick left to right, even rounds pick right to left.
+              </p>
+              
               {!draftOrderSet ? (
                 <div className="draft-order-options">
                   <div className="draft-order-buttons">
@@ -355,21 +403,9 @@ function DraftManager() {
                 </div>
               ) : (
                 <div className="draft-order-display">
-                  <div className="draft-info-header">
-                    <h3>Current Draft Order:</h3>
-                    <span className={`draft-type-badge ${draftType}`}>
-                      {draftType === 'snake' ? '🐍 Snake Draft' : '📊 Normal Draft'}
-                    </span>
-                  </div>
-                  <ol className="draft-order-list">
-                    {draftOrder.map((teamName, idx) => (
-                      <li key={teamName} className={getCurrentTurnTeam() === teamName ? 'current-turn' : ''}>
-                        <span className="position">{idx + 1}</span>
-                        <span className="team-name">{teamName}</span>
-                        {getCurrentTurnTeam() === teamName && <span className="turn-indicator">← Now Drafting</span>}
-                      </li>
-                    ))}
-                  </ol>
+                  <p className="info-text">
+                    Draft order has been set. Teams are arranged left to right below.
+                  </p>
                   <button 
                     onClick={handleResetDraftOrder}
                     className="btn btn-secondary"
@@ -380,118 +416,146 @@ function DraftManager() {
               )}
             </section>
 
-            {/* Draft Round Info */}
-            <section className="draft-summary">
-              <h2>📊 Draft Progress</h2>
-              <div className="summary-stats">
-                <div className="stat">
-                  <span className="stat-label">Current Round</span>
-                  <span className="stat-value">{draftRound}</span>
+            {/* Draft Progress */}
+            {draftOrderSet && (
+              <section className="draft-summary">
+                <h2>📊 Draft Progress</h2>
+                <div className="summary-stats">
+                  <div className="stat">
+                    <span className="stat-label">Total Picks</span>
+                    <span className="stat-value">{draftPicks?.length || 0} / {maxRounds * teams.length}</span>
+                  </div>
+                  <div className="stat">
+                    <span className="stat-label">Available Players</span>
+                    <span className="stat-value">{filteredPlayers.length}</span>
+                  </div>
                 </div>
-                <div className="stat">
-                  <span className="stat-label">Current Pick</span>
-                  <span className="stat-value">{draftPick}</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-label">Total Picks</span>
-                  <span className="stat-value">{draftPicks?.length || 0}</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-label">Available Players</span>
-                  <span className="stat-value">{filteredPlayers.length}</span>
-                </div>
-              </div>
-            </section>
+                
+                {!isDraftFinalized && draftPicks && draftPicks.length > 0 && (
+                  <div className="finalize-draft-section">
+                    <button 
+                      onClick={handleFinalizeDraft}
+                      className="btn btn-primary btn-large"
+                    >
+                      🏁 Finalize Draft & Create Reserves
+                    </button>
+                    <p className="info-text">
+                      Click this button after completing full draft rounds. Remaining players will become reserves.
+                    </p>
+                  </div>
+                )}
 
-            {/* Teams Grid with Player Selection */}
-            <section className="teams-draft-grid">
-              <h2>🎯 Select Players for Teams</h2>
-              <div className="teams-columns">
-                {teams && teams.length > 0 ? (
-                  teams.map((team) => {
-                    const isCurrentTurn = getCurrentTurnTeam() === team.team_name;
-                    const isDraftOrderActive = draftOrderSet;
-                    const isDisabled = isDraftOrderActive && !isCurrentTurn;
+                {isDraftFinalized && (
+                  <div className="draft-finalized-banner">
+                    ✓ Draft Finalized - Reserves Created
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Reserve Players Section */}
+            {isDraftFinalized && reservePlayers && reservePlayers.length > 0 && (
+              <section className="reserve-players-section">
+                <h2>🔄 Reserve Players</h2>
+                <p className="section-description">
+                  These players were not drafted and are available as reserves when a team's player is voted out.
+                </p>
+                <div className="reserve-players-grid">
+                  {reservePlayers.map((player) => (
+                    <div key={`${player.first_name}-${player.last_name}`} className="reserve-player-card">
+                      <span className="player-name">{player.first_name} {player.last_name}</span>
+                      <span className="player-tribe">{player.tribe_name || 'No tribe'}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Teams Draft Board with Slots */}
+            {draftOrderSet && (
+              <section className="teams-draft-board">
+                <h2>🎯 Draft Board</h2>
+                <p className="section-description">
+                  Click on an empty slot to select a player for that pick.
+                </p>
+                
+                <div className="draft-board-columns">
+                  {draftOrder.map((teamName) => {
+                    const team = teams.find(t => t.team_name === teamName);
+                    const slots = getTeamDraftSlots(teamName);
                     
                     return (
-                      <div key={team.team_name} className={`team-column ${isCurrentTurn ? 'current-turn' : ''} ${isDisabled ? 'disabled' : ''}`}>
-                        <div className="team-header">
-                          <h3>{team.team_name}</h3>
-                          <p className="team-owner">{team.owner_name}</p>
-                          {isDraftOrderActive && isCurrentTurn && (
-                            <p className="draft-turn-badge">🎯 Your Turn!</p>
-                          )}
+                      <div key={teamName} className="draft-column">
+                        <div className="draft-column-header">
+                          <h3>{teamName}</h3>
+                          <p className="team-owner">{team?.owners?.join(', ') || 'No owner'}</p>
                         </div>
-                        <div className="team-draft-section">
-                          <div className="form-group">
-                            <label htmlFor={`player-${team.team_name}`}>Select Player</label>
-                            <select
-                              id={`player-${team.team_name}`}
-                              value={teamPlayerSelections[team.team_name] || ''}
-                              onChange={(e) => handleTeamPlayerSelect(team.team_name, e.target.value)}
-                              className="player-dropdown"
-                              disabled={isDisabled}
-                            >
-                              <option value="">-- Choose Player --</option>
-                              {filteredPlayers.map((player) => (
-                                <option
-                                  key={`${player.first_name}-${player.last_name}`}
-                                  value={`${player.first_name} ${player.last_name}`}
-                                >
-                                  {player.first_name} {player.last_name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <button
-                            onClick={() => handleSubmitDraftPickForTeam(team.team_name)}
-                            className="btn btn-primary btn-block"
-                            disabled={!teamPlayerSelections[team.team_name] || isDisabled}
-                          >
-                            Draft Pick
-                          </button>
-                          {isDisabled && (
-                            <p className="waiting-message">⏳ Waiting for other teams...</p>
-                          )}
+                        
+                        <div className="draft-slots">
+                          {slots.map((slot, idx) => {
+                            if (!slot) return null;
+                            
+                            const isClickable = isSlotClickable(teamName, idx);
+                            const isSelected = selectedSlot?.teamName === teamName && selectedSlot?.slotIndex === idx;
+                            
+                            return (
+                              <div
+                                key={idx}
+                                className={`draft-slot ${slot.isFilled ? 'filled' : 'empty'} ${isClickable ? 'clickable' : ''} ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleSlotClick(teamName, idx)}
+                              >
+                                <div className="slot-number">
+                                  <span className="round">R{slot.round}</span>
+                                  <span className="pick">#{slot.overallPick}</span>
+                                </div>
+                                <div className="slot-content">
+                                  {slot.isFilled ? (
+                                    <span className="player-name">{slot.player}</span>
+                                  ) : isClickable ? (
+                                    <span className="placeholder">Click to select</span>
+                                  ) : (
+                                    <span className="placeholder">—</span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
-                  })
-                ) : (
-                  <p className="no-data">No teams available. Create teams in Fantasy Teams manager first.</p>
-                )}
-              </div>
-            </section>
-
-            {/* Draft Picks History */}
-            <section className="draft-picks-history">
-              <h2>📋 Draft History</h2>
-              {draftPicks && draftPicks.length > 0 ? (
-                <div className="picks-list">
-                  {draftPicks
-                    .sort((a, b) => a.round - b.round || a.pick_number - b.pick_number)
-                    .map((pick, idx) => (
-                      <div key={idx} className="pick-item">
-                        <div className="pick-info">
-                          <span className="pick-number">
-                            Round {pick.round}, Pick {pick.pick_number}
-                          </span>
-                          <span className="pick-player">{pick.player_name}</span>
-                          <span className="pick-team">{pick.team_name}</span>
-                        </div>
-                        <button
-                          onClick={() => deleteDraftPick(pick)}
-                          className="btn btn-delete btn-small"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
+                  })}
                 </div>
-              ) : (
-                <p className="no-data">No draft picks yet</p>
-              )}
-            </section>
+              </section>
+            )}
+
+            {/* Player Selection Modal */}
+            {selectedSlot && (
+              <div className="player-selection-modal" onClick={() => setSelectedSlot(null)}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-header">
+                    <h3>Select Player</h3>
+                    <button className="close-btn" onClick={() => setSelectedSlot(null)}>×</button>
+                  </div>
+                  <div className="modal-body">
+                    <p className="modal-info">
+                      Selecting for <strong>{selectedSlot.teamName}</strong>
+                    </p>
+                    <div className="player-list">
+                      {filteredPlayers.map((player) => (
+                        <div
+                          key={`${player.first_name}-${player.last_name}`}
+                          className="player-item"
+                          onClick={() => handlePlayerSelect(`${player.first_name} ${player.last_name}`)}
+                        >
+                          <span className="player-name">{player.first_name} {player.last_name}</span>
+                          <span className="player-info">{player.archetype} • {player.tribe_name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
 

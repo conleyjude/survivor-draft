@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import './styles/animations.css';
 import { initDriver, closeDriver } from './config/neo4jConfig';
 
 // Page components - to be created
@@ -18,6 +19,7 @@ import PlayerManager from './pages/admin/PlayerManager';
 import AllianceManager from './pages/admin/AllianceManager';
 import DraftManager from './pages/admin/DraftManager';
 import FantasyTeamManager from './pages/admin/FantasyTeamManager';
+import EliminationManager from './pages/admin/EliminationManager';
 import DatabaseVerification from './pages/admin/DatabaseVerification';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
@@ -63,6 +65,7 @@ function App() {
                 <ul className="nav-submenu-list">
                   <li><Link to="/">Home</Link></li>
                   <li><Link to="/leaderboard">Leaderboard</Link></li>
+                  <li><Link to="/" title="Select a season from the dashboard">📊 Season Progress</Link></li>
                 </ul>
               </li>
               <li className="nav-submenu">
@@ -75,6 +78,7 @@ function App() {
                   <li><Link to="/admin/alliances">Manage Alliances</Link></li>
                   <li><Link to="/admin/draft">Manage Draft</Link></li>
                   <li><Link to="/admin/fantasy-teams">Manage Fantasy Teams</Link></li>
+                  <li><Link to="/admin/eliminations">Manage Eliminations</Link></li>
                   <li><Link to="/admin/database-verification">Database Verification</Link></li>
                 </ul>
               </li>
@@ -100,16 +104,13 @@ function App() {
             <Route path="/admin/alliances" element={<AllianceManager />} />
             <Route path="/admin/draft" element={<DraftManager />} />
             <Route path="/admin/fantasy-teams" element={<FantasyTeamManager />} />
+            <Route path="/admin/eliminations" element={<EliminationManager />} />
             <Route path="/admin/database-verification" element={<DatabaseVerification />} />
 
             {/* 404 Page */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-
-        <footer className="App-footer">
-          <p>&copy; 2024 Survivor Fantasy Draft. All rights reserved.</p>
-        </footer>
       </div>
     </Router>
   );

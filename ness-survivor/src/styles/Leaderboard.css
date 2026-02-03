@@ -1,5 +1,5 @@
 /**
- * Leaderboard.css - Styles for fantasy team standings
+ * Leaderboard.css - 90s SPORTS SCOREBOARD STYLE
  */
 
 .leaderboard {
@@ -14,19 +14,28 @@
 }
 
 .leaderboard-header h1 {
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
   color: var(--color-text-main);
   margin: 0 0 10px;
   font-weight: 700;
+  text-shadow: 
+    2px 2px 0 var(--color-tropical-teal),
+    4px 4px 0 var(--color-sunset-pink);
 }
 
 .subtitle {
+  font-family: var(--font-athletic);
   color: var(--color-text-light);
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
   margin: 0;
 }
 
-/* Sort Controls */
+/* Sort Controls - ATHLETIC BUTTONS */
 .sort-controls {
   display: flex;
   gap: 10px;
@@ -36,29 +45,45 @@
 }
 
 .sort-btn {
-  padding: 10px 16px;
-  border: 1px solid var(--color-border);
+  padding: 12px 20px;
+  font-family: var(--font-athletic);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 3px solid var(--color-border);
   background: white;
   color: var(--color-text-light);
   border-radius: 8px;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sort-btn:hover {
   border-color: var(--color-moss-green);
   color: var(--color-moss-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sort-btn.active {
-  background: var(--gradient-jungle);
+  background: var(--gradient-tropical);
   color: var(--color-text-inverse);
-  border-color: transparent;
+  border-color: var(--color-deep-jungle);
+  box-shadow: 
+    0 4px 0 rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Leaderboard Table */
+.sort-btn.active:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 6px 0 rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Leaderboard Table - SCOREBOARD STYLE */
 .leaderboard-section {
   margin-bottom: 30px;
 }
@@ -66,8 +91,11 @@
 .leaderboard-table-container {
   background: white;
   border-radius: 12px;
+  border: 3px solid var(--color-gold);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 1px 3px var(--color-shadow-teal);
   display: none;
 }
 
@@ -87,35 +115,42 @@
 }
 
 .leaderboard-table thead {
-  background: var(--gradient-jungle);
+  background: var(--gradient-tropical);
   color: var(--color-text-inverse);
+  border-top: 4px solid var(--color-gold);
+  border-bottom: 4px solid var(--color-gold);
 }
 
 .leaderboard-table th {
-  padding: 15px;
+  padding: 18px 15px;
   text-align: left;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-family: var(--font-athletic);
+  font-weight: 700;
+  font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .leaderboard-table tbody tr {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
   transition: all 0.3s ease;
 }
 
 .leaderboard-table tbody tr:hover {
   background-color: var(--color-bg-primary);
+  transform: translateX(8px);
 }
 
 .leaderboard-table td {
-  padding: 15px;
+  padding: 18px 15px;
   color: var(--color-text-main);
+  font-family: var(--font-athletic);
+  font-size: 1.05rem;
 }
 
 .col-rank {
-  width: 80px;
+  width: 100px;
 }
 
 .col-team {
@@ -124,29 +159,50 @@
 }
 
 .team-link {
+  font-family: var(--font-athletic);
   color: var(--color-deep-jungle);
   text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.team-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-90s-sport);
+  transition: width 0.3s ease;
 }
 
 .team-link:hover {
   color: var(--color-moss-green);
-  text-decoration: underline;
+}
+
+.team-link:hover::after {
+  width: 100%;
 }
 
 .col-owner {
   color: var(--color-text-light);
+  font-weight: 500;
 }
 
 .col-wins {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-deep-jungle);
 }
 
 .stat-value {
+  font-family: var(--font-athletic);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
 }
 
 .col-roster {
@@ -157,45 +213,101 @@
   display: inline-block;
   background: var(--color-bg-secondary);
   color: var(--color-text-main);
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.85rem;
+  border: 2px solid var(--color-border);
+  font-family: var(--font-athletic);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
 }
 
 .col-prev {
   text-align: center;
   color: var(--color-text-light);
+  font-weight: 600;
 }
 
+/* PODIUM STYLING - Top 3 rows */
 .rank-1 {
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0) 100%);
 }
 
 .rank-2 {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0) 100%);
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(192, 192, 192, 0) 100%);
 }
 
 .rank-3 {
-  background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%);
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(205, 127, 50, 0) 100%);
 }
 
-/* Rank Badge */
+/* Rank Badge - ATHLETIC STYLE */
 .rank-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--gradient-jungle);
+  width: 55px;
+  height: 55px;
+  background: var(--gradient-90s-sport);
   color: var(--color-text-inverse);
   border-radius: 50%;
+  border: 3px solid white;
+  font-family: var(--font-athletic);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.6rem;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Mobile Cards View */
+/* Podium positions with special styling */
+.rank-1 .rank-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: var(--color-text-dark);
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  border-color: #ffa500;
+  font-size: 1.8rem;
+  width: 60px;
+  height: 60px;
+}
+
+.rank-2 .rank-badge {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: var(--color-text-dark);
+  border-color: #a0a0a0;
+  font-size: 1.7rem;
+  width: 58px;
+  height: 58px;
+}
+
+.rank-3 .rank-badge {
+  background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%);
+  color: white;
+  border-color: #b8860b;
+  font-size: 1.7rem;
+  width: 58px;
+  height: 58px;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.5),
+      0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  50% { 
+    transform: scale(1.1); 
+    box-shadow: 
+      0 0 30px rgba(255, 215, 0, 0.8),
+      0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Mobile Cards View - 90s STYLE */
 .leaderboard-cards {
   display: none;
   gap: 15px;
@@ -210,24 +322,49 @@
     display: flex;
     flex-direction: column;
   }
+  
+  .leaderboard-header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+  }
 }
 
 .leaderboard-card {
   display: flex;
   align-items: center;
   background: white;
-  border: 1px solid var(--color-border);
+  border: 3px solid var(--color-border);
   border-radius: 12px;
   padding: 15px;
   text-decoration: none;
   color: inherit;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.leaderboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: var(--gradient-tropical);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.leaderboard-card:hover::before {
+  transform: scaleY(1);
 }
 
 .leaderboard-card:hover {
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
-  transform: translateX(4px);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 3px var(--color-tropical-teal);
+  transform: translateX(8px);
   border-color: var(--color-deep-jungle);
 }
 
@@ -241,10 +378,12 @@
 }
 
 .rank-number {
-  font-size: 0.8rem;
+  font-family: var(--font-athletic);
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--color-text-light);
   margin-top: 5px;
-  font-weight: 500;
+  letter-spacing: 1px;
 }
 
 .card-content {
@@ -253,10 +392,12 @@
 }
 
 .card-content h3 {
+  font-family: var(--font-athletic);
   margin: 0 0 5px;
   color: var(--color-text-main);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -265,7 +406,8 @@
 .card-content .owner {
   margin: 0;
   color: var(--color-text-light);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .card-stats {
@@ -281,17 +423,21 @@
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-family: var(--font-athletic);
+  font-size: 0.75rem;
   color: var(--color-text-light);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .stat-val {
   display: block;
-  font-size: 1.1rem;
+  font-family: var(--font-athletic);
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-deep-jungle);
+  letter-spacing: 1px;
 }
 
 /* Empty State */
@@ -300,9 +446,12 @@
   padding: 60px 20px;
   color: var(--color-text-light);
   background: white;
-  border: 1px dashed var(--color-border);
+  border: 3px dashed var(--color-border);
   border-radius: 12px;
-  font-size: 1rem;
+  font-family: var(--font-athletic);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .empty-state p {
@@ -314,8 +463,12 @@
 .error-state {
   text-align: center;
   padding: 80px 20px;
+  font-family: var(--font-athletic);
   color: var(--color-text-light);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .error-state {
@@ -332,25 +485,32 @@
   gap: 10px;
   margin-top: 40px;
   padding-top: 20px;
-  border-top: 2px solid var(--color-border);
+  border-top: 3px solid var(--color-border);
   flex-wrap: wrap;
 }
 
 .nav-link {
-  padding: 10px 16px;
+  padding: 12px 20px;
+  font-family: var(--font-athletic);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   background: var(--color-bg-secondary);
   color: var(--color-deep-jungle);
   text-decoration: none;
   border-radius: 8px;
-  font-weight: 500;
+  border: 3px solid var(--color-border);
   transition: all 0.3s ease;
-  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link:hover {
   background: var(--color-deep-jungle);
   color: var(--color-text-inverse);
   border-color: var(--color-deep-jungle);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Responsive Design */
@@ -360,7 +520,7 @@
   }
 
   .leaderboard-header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .sort-controls {
@@ -388,7 +548,8 @@
 
 @media (max-width: 480px) {
   .leaderboard-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
   }
 
   .leaderboard-card {
@@ -405,9 +566,17 @@
   }
 
   .rank-badge {
-    width: 32px;
-    height: 32px;
-    font-size: 0.8rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .rank-1 .rank-badge,
+  .rank-2 .rank-badge,
+  .rank-3 .rank-badge {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
   }
 
   .rank-number {
@@ -422,10 +591,10 @@
   }
 
   .stat-label {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 
   .stat-val {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
   }
 }

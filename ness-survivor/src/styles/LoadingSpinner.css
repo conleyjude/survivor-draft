@@ -1,3 +1,5 @@
+/* LoadingSpinner.css - 90s SPORTS STYLE */
+
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -12,31 +14,39 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   z-index: 9999;
 }
 
+/* 90s COLORFUL SPINNER */
 .spinner {
-  border: 4px solid rgba(102, 126, 234, 0.1);
-  border-top: 4px solid var(--color-deep-jungle);
-  border-right: 4px solid var(--color-jungle-green);
+  border: 6px solid transparent;
+  border-top-color: var(--color-tropical-teal);
+  border-right-color: var(--color-sunset-pink);
+  border-bottom-color: var(--color-electric-blue);
+  border-left-color: var(--color-jungle-lime);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite, spinMultiColor 3s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
 }
 
 .spinner.small {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
 }
 
 .spinner.medium {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
+  border-width: 6px;
 }
 
 .spinner.large {
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
+  border-width: 8px;
 }
 
 @keyframes spin {
@@ -44,11 +54,50 @@
   100% { transform: rotate(360deg); }
 }
 
+@keyframes spinMultiColor {
+  0% { 
+    border-top-color: var(--color-tropical-teal); 
+    filter: drop-shadow(0 0 10px var(--color-tropical-teal));
+  }
+  33% { 
+    border-top-color: var(--color-sunset-pink); 
+    filter: drop-shadow(0 0 10px var(--color-sunset-pink));
+  }
+  66% { 
+    border-top-color: var(--color-electric-blue); 
+    filter: drop-shadow(0 0 10px var(--color-electric-blue));
+  }
+  100% { 
+    border-top-color: var(--color-tropical-teal); 
+    filter: drop-shadow(0 0 10px var(--color-tropical-teal));
+  }
+}
+
 .spinner-message {
   margin-top: 20px;
+  font-family: var(--font-athletic);
   color: var(--color-text-light);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-container.spinner-overlay .spinner-message {
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
 }
 
 @media (max-width: 768px) {
@@ -57,11 +106,13 @@
   }
 
   .spinner.medium {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
+    border-width: 5px;
   }
 
   .spinner-message {
-    font-size: 14px;
+    font-size: 16px;
+    letter-spacing: 1.5px;
   }
 }

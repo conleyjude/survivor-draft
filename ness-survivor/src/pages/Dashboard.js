@@ -5,12 +5,16 @@
  * links to main features, and quick stats.
  */
 
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFetchData } from '../hooks/useNeo4j';
 import * as neo4jService from '../services/neo4jService';
 import '../styles/Dashboard.css';
 
 function Dashboard() {
+  const navigate = useNavigate();
+  const [selectedSeason, setSelectedSeason] = useState('');
+  
   const { data: seasons, loading: seasonsLoading } = useFetchData(
     () => neo4jService.getAllSeasons(),
     []
@@ -21,6 +25,12 @@ function Dashboard() {
     []
   );
 
+  const handleSeasonProgressNavigate = () => {
+    if (selectedSeason) {
+      navigate(`/season/${selectedSeason}/progress`);
+    }
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard-hero">
@@ -29,6 +39,33 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
+        {/* Season Progress Tracker */}
+        <section className="dashboard-section season-progress-tracker">
+          <h2>📊 Season Progress Tracker</h2>
+          <p className="section-description">Track tribe and player stats during an ongoing season</p>
+          <div className="season-selector">
+            <select 
+              value={selectedSeason} 
+              onChange={(e) => setSelectedSeason(e.target.value)}
+              className="season-select"
+            >
+              <option value="">Select a season...</option>
+              {seasons?.map((season) => (
+                <option key={season.season_number} value={season.season_number}>
+                  Season {season.season_number} ({season.year})
+                </option>
+              ))}
+            </select>
+            <button 
+              onClick={handleSeasonProgressNavigate}
+              disabled={!selectedSeason}
+              className="progress-button"
+            >
+              Track Progress →
+            </button>
+          </div>
+        </section>
+
         {/* Quick Stats */}
         <section className="dashboard-section quick-stats">
           <h2>📊 Quick Stats</h2>
@@ -73,14 +110,22 @@ function Dashboard() {
           ) : seasons && seasons.length > 0 ? (
             <div className="seasons-list">
               {seasons.slice(0, 5).map((season) => (
-                <Link
-                  key={season.season_number}
-                  to={`/seasons/${season.season_number}`}
-                  className="season-card"
-                >
-                  <h3>Season {season.season_number}</h3>
-                  <p>{season.year}</p>
-                </Link>
+                <div key={season.season_number} className="season-card-wrapper">
+                  <Link
+                    to={`/seasons/${season.season_number}`}
+                    className="season-card"
+                  >
+                    <h3>Season {season.season_number}</h3>
+                    <p>{season.year}</p>
+                  </Link>
+                  <Link
+                    to={`/season/${season.season_number}/progress`}
+                    className="season-progress-link"
+                    title="Track progress"
+                  >
+                    📊
+                  </Link>
+                </div>
               ))}
             </div>
           ) : (

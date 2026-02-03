@@ -44,6 +44,12 @@ function AdminDashboard() {
       link: '/admin/fantasy-teams',
     },
     {
+      title: 'Eliminations',
+      description: 'Mark players as eliminated and manage reserves',
+      icon: '⚰️',
+      link: '/admin/eliminations',
+    },
+    {
       title: 'Database Verification',
       description: 'Test database connectivity and CRUD operations',
       icon: '🔍',
