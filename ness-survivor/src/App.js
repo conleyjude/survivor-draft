@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import './styles/animations.css';
-import { initDriver, closeDriver } from './config/neo4jConfig';
 
 // Page components - to be created
 import Dashboard from './pages/Dashboard';
@@ -24,32 +22,6 @@ import DatabaseVerification from './pages/admin/DatabaseVerification';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
-  useEffect(() => {
-    let isMounted = true;
-    const setupDriver = async () => {
-      try {
-        console.log('App: Initializing Neo4j driver...');
-        await initDriver();
-        if (isMounted) {
-          console.log('App: Neo4j driver initialized successfully');
-        }
-      } catch (err) {
-        if (isMounted) {
-          console.error('App: Failed to initialize Neo4j driver:', err);
-        }
-      }
-    };
-
-    setupDriver();
-
-    // Return cleanup function
-    return () => {
-      isMounted = false;
-      // Don't close driver on unmount in StrictMode - it causes issues
-      // Only close on actual app shutdown
-    };
-  }, []);
-
   return (
     <Router>
       <div className="App">

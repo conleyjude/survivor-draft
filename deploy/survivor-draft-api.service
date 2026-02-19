@@ -1,0 +1,20 @@
+[Unit]
+Description=Survivor Draft Express API
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/var/www/survivor-draft/server
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=survivor-draft-api
+
+[Install]
+WantedBy=multi-user.target

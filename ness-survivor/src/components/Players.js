@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getDriver, initDriver } from '../config/neo4jConfig';
+import { getPlayersInSeason, createPlayer, deletePlayer } from '../services/neo4jService';
 
 const Players = ({ seasonId }) => {
   const [players, setPlayers] = useState([]);
@@ -14,99 +14,57 @@ const Players = ({ seasonId }) => {
 
   // Fetch players for the current season
   const fetchPlayers = async () => {
-    let session = null;
     try {
-      const driver = await getDriver();
-      if (!driver) {
-        throw new Error('Could not connect to Neo4j');
-      }
-      session = driver.session();
-      const result = await session.run(
-        `MATCH (p:Player)-[:PLAYED_IN]->(s:Season)
-         WHERE ID(s) = $seasonId
-         RETURN p`,
-        { seasonId }
-      );
-      setPlayers(result.records.map(record => ({
-        ...record.get('p').properties,
-        id: record.get('p').identity.toString()
+      const result = await getPlayersInSeason(seasonId);
+      setPlayers(result.map(p => ({
+        ...p,
+        id: `${p.first_name}-${p.last_name}`,
+        name: `${p.first_name} ${p.last_name}`
       })));
     } catch (error) {
       console.error('Error fetching players:', error);
-    } finally {
-      session.close();
+      setError(error.message);
     }
   };
 
   // Add a new player
   const addPlayer = async (e) => {
     e.preventDefault();
-    let session = null;
     try {
-      const driver = await getDriver();
-      if (!driver) {
-        throw new Error('Could not connect to Neo4j');
-      }
-      session = driver.session();
-      await session.run(
-        `MATCH (s:Season)
-         WHERE ID(s) = $seasonId
-         CREATE (p:Player {
-           name: $name,
-           age: toInteger($age),
-           occupation: $occupation,
-           hometown: $hometown
-         })-[:PLAYED_IN]->(s)
-         RETURN p`,
-        { ...newPlayer, seasonId }
+      const [first_name, ...rest] = newPlayer.name.split(' ');
+      const last_name = rest.join(' ') || '';
+      await createPlayer(
+        seasonId,
+        '', // tribe_name - not collected in this form
+        first_name,
+        last_name,
+        newPlayer.occupation,
+        newPlayer.hometown,
+        '', // archetype
+        ''  // notes
       );
-      setNewPlayer({
-        name: '',
-        age: '',
-        occupation: '',
-        hometown: ''
-      });
+      setNewPlayer({ name: '', age: '', occupation: '', hometown: '' });
       await fetchPlayers();
     } catch (error) {
       console.error('Error adding player:', error);
       setError(error.message);
-    } finally {
-      if (session) {
-        await session.close();
-      }
     }
   };
 
   // Delete a player
-  const deletePlayer = async (playerId) => {
-    let session = null;
+  const handleDeletePlayer = async (player) => {
     try {
-      const driver = await getDriver();
-      if (!driver) {
-        throw new Error('Could not connect to Neo4j');
-      }
-      session = driver.session();
-      await session.run(
-        `MATCH (p:Player)
-         WHERE ID(p) = $playerId
-         DETACH DELETE p`,
-        { playerId }
-      );
+      await deletePlayer(player.first_name, player.last_name);
       await fetchPlayers();
     } catch (error) {
       console.error('Error deleting player:', error);
       setError(error.message);
-    } finally {
-      if (session) {
-        await session.close();
-      }
     }
   };
 
   useEffect(() => {
     const initializeAndFetch = async () => {
       try {
-        await initDriver();
         if (seasonId) {
           await fetchPlayers();
         }
@@ -168,7 +126,7 @@ const Players = ({ seasonId }) => {
             <p>Age: {player.age}</p>
             <p>Occupation: {player.occupation}</p>
             <p>Hometown: {player.hometown}</p>
-            <button onClick={() => deletePlayer(player.id)}>Delete</button>
+            <button onClick={() => handleDeletePlayer(player)}>Delete</button>
           </div>
         ))}
       </div>

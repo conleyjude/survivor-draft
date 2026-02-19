@@ -1,0 +1,16 @@
+{
+  "name": "survivor-draft-api",
+  "version": "1.0.0",
+  "description": "Backend API for Survivor Draft app - proxies Neo4j queries",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "neo4j-driver": "^6.0.0"
+  }
+}
