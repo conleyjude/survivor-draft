@@ -91,7 +91,7 @@ function Dashboard() {
               {leaderboard.slice(0, 5).map((team, index) => (
                 <div key={index} className="leaderboard-item">
                   <span className="rank">#{index + 1}</span>
-                  <span className="team-name">{team.teamName}</span>
+                  <span className="team-name">{team.teamName}{team.seasonNumber != null ? ` (S${team.seasonNumber})` : ''}</span>
                   <span className="team-score">{team.totalChallengeWins} wins</span>
                 </div>
               ))}

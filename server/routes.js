@@ -85,8 +85,8 @@ router.get('/seasons/:seasonNumber/players/available', wrap(async (req, res) => 
 
 router.post('/seasons/:seasonNumber/players', wrap(async (req, res) => {
   const season_number = Number(req.params.seasonNumber);
-  const { tribe_name, first_name, last_name, occupation, hometown, archetype, notes } = req.body;
-  res.json(await db.createPlayer(season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes));
+  const { tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age } = req.body;
+  res.json(await db.createPlayer(season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age));
 }));
 
 router.get('/players/:firstName/:lastName', wrap(async (req, res) => {
@@ -196,6 +196,10 @@ router.post('/seasons/:seasonNumber/fantasy-teams', wrap(async (req, res) => {
   res.json(await db.createFantasyTeam(team_name, owners, season_number));
 }));
 
+router.get('/fantasy-teams/leaderboard', wrap(async (req, res) => {
+  res.json(await db.getFantasyTeamLeaderboard());
+}));
+
 router.get('/fantasy-teams/:teamName', wrap(async (req, res) => {
   res.json(await db.getFantasyTeamWithPlayers(req.params.teamName));
 }));
@@ -215,10 +219,6 @@ router.post('/fantasy-teams/:teamName/draft', wrap(async (req, res) => {
 
 router.delete('/fantasy-teams/players/:firstName/:lastName', wrap(async (req, res) => {
   res.json(await db.removePlayerFromFantasyTeam(req.params.firstName, req.params.lastName));
-}));
-
-router.get('/fantasy-teams/leaderboard', wrap(async (req, res) => {
-  res.json(await db.getFantasyTeamLeaderboard());
 }));
 
 // ============================================

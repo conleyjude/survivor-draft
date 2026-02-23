@@ -10,12 +10,15 @@ import '../../styles/Leaderboard.css';
 
 function Leaderboard() {
   const { leaderboard, loading, error } = useLeaderboard();
-  const [sortBy, setSortBy] = useState('wins'); // wins, roster, prev
+  const [sortBy, setSortBy] = useState('season'); // season, wins, roster, prev
 
   // Sort leaderboard based on selected criteria
   const sortedLeaderboard = leaderboard
     ? [...leaderboard].sort((a, b) => {
         switch (sortBy) {
+          case 'season':
+            return (b.seasonNumber || 0) - (a.seasonNumber || 0) ||
+                   (b.totalChallengeWins || 0) - (a.totalChallengeWins || 0);
           case 'wins':
             return (b.totalChallengeWins || 0) - (a.totalChallengeWins || 0);
           case 'roster':
@@ -45,6 +48,12 @@ function Leaderboard() {
 
       {/* Sort Controls */}
       <section className="sort-controls">
+        <button
+          className={`sort-btn ${sortBy === 'season' ? 'active' : ''}`}
+          onClick={() => setSortBy('season')}
+        >
+          By Season
+        </button>
         <button
           className={`sort-btn ${sortBy === 'wins' ? 'active' : ''}`}
           onClick={() => setSortBy('wins')}
@@ -81,6 +90,7 @@ function Leaderboard() {
                 <tr>
                   <th className="col-rank">Rank</th>
                   <th className="col-team">Team</th>
+                  <th className="col-season">Season</th>
                   <th className="col-owner">Owner</th>
                   <th className="col-wins">Challenge Wins</th>
                   <th className="col-roster">Roster</th>
@@ -100,7 +110,8 @@ function Leaderboard() {
                         {team.teamName}
                       </Link>
                     </td>
-                    <td className="col-owner">{team.ownerName || 'N/A'}</td>
+                    <td className="col-season">{team.seasonNumber != null ? `S${team.seasonNumber}` : '—'}</td>
+                    <td className="col-owner">{(team.owners && team.owners.length > 0) ? team.owners.join(', ') : 'N/A'}</td>
                     <td className="col-wins">
                       <span className="stat-value">{team.totalChallengeWins || 0}</span>
                     </td>
@@ -128,7 +139,8 @@ function Leaderboard() {
                 </div>
                 <div className="card-content">
                   <h3>{team.teamName}</h3>
-                  {team.ownerName && <p className="owner">{team.ownerName}</p>}
+                  {team.seasonNumber != null && <p className="season-label">Season {team.seasonNumber}</p>}
+                  {team.owners && team.owners.length > 0 && <p className="owner">{team.owners.join(', ')}</p>}
                 </div>
                 <div className="card-stats">
                   <div className="stat-item">

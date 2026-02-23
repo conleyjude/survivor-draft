@@ -38,15 +38,11 @@ export const tribeValidation = {
     if (value.trim().length > 50) return 'Tribe name cannot exceed 50 characters';
     return '';
   },
-  color: (value) => {
+  tribe_color: (value) => {
     if (!value || !value.trim()) return 'Tribe color is required';
     // Validate hex color format
     const hexRegex = /^#[0-9A-F]{6}$/i;
     if (!hexRegex.test(value)) return 'Please provide a valid hex color (e.g., #FF5733)';
-    return '';
-  },
-  season_number: (value) => {
-    if (!value && value !== 0) return 'Season is required';
     return '';
   },
 };
@@ -73,6 +69,15 @@ export const playerValidation = {
     if (!value || !value.trim()) return 'Occupation is required';
     if (value.trim().length < 2) return 'Occupation must be at least 2 characters';
     if (value.trim().length > 100) return 'Occupation cannot exceed 100 characters';
+    return '';
+  },
+  age: (value) => {
+    if (!value && value !== 0) return '';
+    const num = Number(value);
+    if (isNaN(num)) return 'Age must be a number';
+    if (num < 18) return 'Age must be at least 18';
+    if (num > 100) return 'Age cannot exceed 100';
+    if (!Number.isInteger(num)) return 'Age must be a whole number';
     return '';
   },
   hometown: (value) => {

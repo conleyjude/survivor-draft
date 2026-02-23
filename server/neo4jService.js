@@ -60,7 +60,7 @@ const createTribe = async (season_number, tribe_name, tribe_color) => {
   return results[0]?.t?.properties || null;
 };
 
-const createPlayer = async (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes) => {
+const createPlayer = async (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age) => {
   const query = `
     MATCH (s:Season {season_number: $season_number})
     MATCH (t:Tribe {tribe_name: $tribe_name})
@@ -68,6 +68,7 @@ const createPlayer = async (season_number, tribe_name, first_name, last_name, oc
     CREATE (p:Player {
       first_name: $first_name, last_name: $last_name,
       occupation: $occupation, hometown: $hometown, archetype: $archetype,
+      age: $age,
       challenges_won: 0, has_idol: false, idols_played: 0, votes_received: 0,
       notes: $notes, status: 'active'
     })
@@ -75,7 +76,7 @@ const createPlayer = async (season_number, tribe_name, first_name, last_name, oc
     CREATE (p)-[:COMPETES_IN]->(s)
     RETURN p
   `;
-  const results = await executeQuery(query, { season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes });
+  const results = await executeQuery(query, { season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age: age || null });
   return results[0]?.p?.properties || null;
 };
 
@@ -407,15 +408,18 @@ const getPlayerStatsSummary = async (season_number) => {
 const getFantasyTeamLeaderboard = async () => {
   const query = `
     MATCH (ft:FantasyTeam)
+    OPTIONAL MATCH (ft)-[:DRAFTED_FOR]->(s:Season)
     OPTIONAL MATCH (p:Player)-[:ON_TEAM]->(ft)
-    RETURN ft.team_name, ft.previous_wins,
+    RETURN ft.team_name, ft.previous_wins, ft.owners,
+           s.season_number as season_number,
            sum(p.challenges_won) as total_challenge_wins, count(p) as roster_size
-    ORDER BY total_challenge_wins DESC
+    ORDER BY season_number DESC, total_challenge_wins DESC
   `;
   const results = await executeQuery(query);
   return results.map(r => ({
     teamName: r.team_name, previousWins: r.previous_wins || 0,
     totalChallengeWins: r.total_challenge_wins || 0, rosterSize: r.roster_size || 0,
+    seasonNumber: r.season_number || null, owners: r.owners || [],
   }));
 };
 
