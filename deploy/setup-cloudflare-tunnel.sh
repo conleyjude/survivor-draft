@@ -28,7 +28,7 @@ fi
 echo ""
 echo "[2/4] Authenticating with Cloudflare..."
 echo "  A browser URL will appear — open it on any device"
-echo "  and select the nessvivor.com zone."
+echo "  and select the surviveness.com zone."
 echo ""
 cloudflared tunnel login
 
@@ -57,9 +57,9 @@ tunnel: $TUNNEL_ID
 credentials-file: /root/.cloudflared/${TUNNEL_ID}.json
 
 ingress:
-  - hostname: nessvivor.com
+  - hostname: surviveness.com
     service: http://localhost:80
-  - hostname: www.nessvivor.com
+  - hostname: www.surviveness.com
     service: http://localhost:80
   - service: http_status:404
 CFEOF
@@ -69,8 +69,8 @@ echo "  ✓ Config written to /etc/cloudflared/config.yml"
 # ── 5. DNS routes ───────────────────────────
 echo ""
 echo "  Setting up DNS routes..."
-cloudflared tunnel route dns "$TUNNEL_NAME" nessvivor.com || true
-cloudflared tunnel route dns "$TUNNEL_NAME" www.nessvivor.com || true
+cloudflared tunnel route dns "$TUNNEL_NAME" surviveness.com || true
+cloudflared tunnel route dns "$TUNNEL_NAME" www.surviveness.com || true
 echo "  ✓ DNS CNAME records created"
 
 # ── 6. Install as system service ────────────

@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
+User=ubuntu
 WorkingDirectory=/var/www/survivor-draft/server
 ExecStart=/usr/bin/node index.js
 Restart=on-failure

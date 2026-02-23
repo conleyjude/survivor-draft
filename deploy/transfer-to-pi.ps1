@@ -3,7 +3,7 @@
 # Run from the repo root: .\deploy\transfer-to-pi.ps1
 # ─────────────────────────────────────────────
 
-$PI = "pi@192.168.0.71"
+$PI = "ubuntu@192.168.0.71"
 $REMOTE_DIR = "/var/www/survivor-draft"
 
 Write-Host ""

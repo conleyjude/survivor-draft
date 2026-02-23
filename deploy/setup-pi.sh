@@ -5,7 +5,7 @@
 # ─────────────────────────────────────────────
 set -euo pipefail
 
-PI_USER="pi"
+PI_USER="ubuntu"
 APP_DIR="/var/www/survivor-draft"
 
 echo "════════════════════════════════════════"

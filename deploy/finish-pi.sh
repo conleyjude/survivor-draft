@@ -6,7 +6,7 @@
 # ─────────────────────────────────────────────
 set -euo pipefail
 
-PI_USER="pi"
+PI_USER="ubuntu"
 APP_DIR="/var/www/survivor-draft"
 
 echo "════════════════════════════════════════"
@@ -45,7 +45,7 @@ NEO4J_PASSWORD=CHANGE_ME
 
 # Server config
 PORT=4000
-CORS_ORIGIN=https://nessvivor.com
+CORS_ORIGIN=https://surviveness.com
 ENVEOF
     chown "$PI_USER:$PI_USER" "$APP_DIR/server/.env"
     chmod 600 "$APP_DIR/server/.env"

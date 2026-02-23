@@ -7,7 +7,7 @@ const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://nessvivor.com';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://surviveness.com';
 
 // Middleware
 app.use(cors({

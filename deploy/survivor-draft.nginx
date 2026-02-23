@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name nessvivor.com www.nessvivor.com;
+    server_name surviveness.com www.surviveness.com;
 
     root /var/www/survivor-draft/build;
     index index.html;
