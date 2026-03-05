@@ -133,7 +133,7 @@
 
 /* Tribe Players List */
 .tribe-players {
-  padding: 1.5rem;
+  padding: 1rem;
   min-height: 100px;
 }
 
@@ -158,19 +158,18 @@
 
 .player-button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid #e0e0e0;
   background-color: #f9f9f9;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
   font-family: inherit;
   font-size: 0.95rem;
-  min-height: 60px;
 }
 
 /* Team View Enhancement - Tribe Color Accent */
@@ -178,6 +177,36 @@
   position: relative;
   border-top: 3px solid;
   border-top-color: inherit;
+}
+
+/* Eliminated Player */
+.player-button.eliminated {
+  background-color: #1a1a1a;
+  border-color: #444;
+  opacity: 0.7;
+}
+
+.player-button.eliminated:hover {
+  background-color: #222;
+  border-color: #555;
+}
+
+.player-button.eliminated .player-name-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.eliminated-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: #c62828;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .player-button:hover {
@@ -190,18 +219,23 @@
   transform: scale(0.98);
 }
 
-.player-button .player-name {
+.player-button .player-card-top {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.player-button .player-name-text {
   font-weight: 600;
   color: #333;
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .player-button .player-tribe-badge {
@@ -209,22 +243,16 @@
   font-weight: 500;
   opacity: 0.8;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.player-button .player-info-right {
+.player-button .player-card-bottom {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  flex-wrap: nowrap;
+  justify-content: center;
 }
 
-.player-button .player-stats {
-  font-size: 0.85rem;
-  color: #666;
-  white-space: nowrap;
-  min-width: fit-content;
-}
 
 /* No Players / No Data States */
 .no-players {
@@ -472,6 +500,11 @@
   text-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
 }
 
+.stat-value.eliminated {
+  color: #c62828;
+  text-shadow: 0 0 20px rgba(198, 40, 40, 0.3);
+}
+
 /* Edit Form */
 .edit-form {
   padding: 2rem;
@@ -674,12 +707,6 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .player-button .player-name {
-    flex-basis: 100%;
-    margin-bottom: 0.25rem;
-  }
-}
 
 @media (max-width: 768px) {
   .season-progress {
@@ -710,11 +737,6 @@
     align-items: flex-start;
     gap: 0.75rem;
     padding: 0.875rem;
-  }
-
-  .player-button .player-info-right {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .player-stats-grid {
@@ -756,12 +778,12 @@
     border-color: #666;
   }
 
-  .player-button .player-name {
+  .player-button .player-name-text {
     color: #fff;
   }
 
-  .player-button .player-stats {
-    color: #bbb;
+  .player-button.eliminated .player-name-text {
+    color: #666;
   }
 
   .modal-content {

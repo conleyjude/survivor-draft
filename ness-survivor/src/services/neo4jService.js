@@ -41,8 +41,8 @@ export const createAlliance = (season_number, alliance_name, formation_episode, 
 export const addPlayerToAlliance = (first_name, last_name, alliance_name) =>
   request('POST', `/alliances/${encodeURIComponent(alliance_name)}/players`, { first_name, last_name });
 
-export const draftPlayerToTeam = (first_name, last_name, team_name) =>
-  request('POST', `/fantasy-teams/${encodeURIComponent(team_name)}/draft`, { first_name, last_name });
+export const draftPlayerToTeam = (first_name, last_name, team_name, season_number) =>
+  request('POST', `/fantasy-teams/${encodeURIComponent(team_name)}/draft`, { first_name, last_name, season_number });
 
 // ============================================
 // READ OPERATIONS
@@ -162,11 +162,11 @@ export const getAlliancesInSeason = (season_number) =>
 export const createFantasyTeam = (team_name, owners, season_number) =>
   request('POST', `/seasons/${season_number}/fantasy-teams`, { team_name, owners });
 
-export const updateFantasyTeam = (team_name, owners) =>
-  request('PATCH', `/fantasy-teams/${encodeURIComponent(team_name)}`, { owners });
+export const updateFantasyTeam = (team_name, owners, season_number) =>
+  request('PATCH', `/seasons/${season_number}/fantasy-teams/${encodeURIComponent(team_name)}`, { owners });
 
-export const deleteFantasyTeam = (team_name) =>
-  request('DELETE', `/fantasy-teams/${encodeURIComponent(team_name)}`);
+export const deleteFantasyTeam = (team_name, season_number) =>
+  request('DELETE', `/seasons/${season_number}/fantasy-teams/${encodeURIComponent(team_name)}`);
 
 export const getFantasyTeamsInSeason = (season_number) =>
   request('GET', `/seasons/${season_number}/fantasy-teams`);

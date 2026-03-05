@@ -204,17 +204,19 @@ router.get('/fantasy-teams/:teamName', wrap(async (req, res) => {
   res.json(await db.getFantasyTeamWithPlayers(req.params.teamName));
 }));
 
-router.patch('/fantasy-teams/:teamName', wrap(async (req, res) => {
-  res.json(await db.updateFantasyTeam(req.params.teamName, req.body.owners));
+router.patch('/seasons/:seasonNumber/fantasy-teams/:teamName', wrap(async (req, res) => {
+  const season_number = Number(req.params.seasonNumber);
+  res.json(await db.updateFantasyTeam(req.params.teamName, req.body.owners, season_number));
 }));
 
-router.delete('/fantasy-teams/:teamName', wrap(async (req, res) => {
-  res.json({ success: await db.deleteFantasyTeam(req.params.teamName) });
+router.delete('/seasons/:seasonNumber/fantasy-teams/:teamName', wrap(async (req, res) => {
+  const season_number = Number(req.params.seasonNumber);
+  res.json({ success: await db.deleteFantasyTeam(req.params.teamName, season_number) });
 }));
 
 router.post('/fantasy-teams/:teamName/draft', wrap(async (req, res) => {
-  const { first_name, last_name } = req.body;
-  res.json(await db.draftPlayerToTeam(first_name, last_name, req.params.teamName));
+  const { first_name, last_name, season_number } = req.body;
+  res.json(await db.draftPlayerToTeam(first_name, last_name, req.params.teamName, Number(season_number)));
 }));
 
 router.delete('/fantasy-teams/players/:firstName/:lastName', wrap(async (req, res) => {

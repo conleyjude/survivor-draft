@@ -105,14 +105,14 @@ const addPlayerToAlliance = async (first_name, last_name, alliance_name) => {
   return { player: results[0]?.p?.properties || null, alliance: results[0]?.a?.properties || null };
 };
 
-const draftPlayerToTeam = async (first_name, last_name, team_name) => {
+const draftPlayerToTeam = async (first_name, last_name, team_name, season_number) => {
   const query = `
     MATCH (p:Player {first_name: $first_name, last_name: $last_name})
-    MATCH (ft:FantasyTeam {team_name: $team_name})
+    MATCH (ft:FantasyTeam {team_name: $team_name})-[:DRAFTED_FOR]->(s:Season {season_number: $season_number})
     CREATE (p)-[:ON_TEAM]->(ft)
     RETURN p, ft
   `;
-  const results = await executeQuery(query, { first_name, last_name, team_name });
+  const results = await executeQuery(query, { first_name, last_name, team_name, season_number });
   return { player: results[0]?.p?.properties || null, team: results[0]?.ft?.properties || null };
 };
 
@@ -464,15 +464,15 @@ const createFantasyTeam = async (team_name, owners, season_number) => {
   return results[0]?.t?.properties || null;
 };
 
-const updateFantasyTeam = async (team_name, owners) => {
-  const query = `MATCH (t:FantasyTeam {team_name: $team_name}) SET t.owners = $owners RETURN t`;
-  const results = await executeQuery(query, { team_name, owners });
+const updateFantasyTeam = async (team_name, owners, season_number) => {
+  const query = `MATCH (t:FantasyTeam {team_name: $team_name})-[:DRAFTED_FOR]->(s:Season {season_number: $season_number}) SET t.owners = $owners RETURN t`;
+  const results = await executeQuery(query, { team_name, owners, season_number });
   return results[0]?.t?.properties || null;
 };
 
-const deleteFantasyTeam = async (team_name) => {
-  const query = `MATCH (t:FantasyTeam {team_name: $team_name}) DETACH DELETE t RETURN true as success`;
-  const results = await executeQuery(query, { team_name });
+const deleteFantasyTeam = async (team_name, season_number) => {
+  const query = `MATCH (t:FantasyTeam {team_name: $team_name})-[:DRAFTED_FOR]->(s:Season {season_number: $season_number}) DETACH DELETE t RETURN true as success`;
+  const results = await executeQuery(query, { team_name, season_number });
   return results[0]?.success || false;
 };
 
@@ -493,7 +493,7 @@ const getFantasyTeamsInSeason = async (season_number) => {
 const createDraftPick = async (season_number, round, pick_number, player_name, team_name) => {
   const query = `
     MATCH (s:Season {season_number: $season_number})
-    MATCH (t:FantasyTeam {team_name: $team_name})
+    MATCH (t:FantasyTeam {team_name: $team_name})-[:DRAFTED_FOR]->(s)
     MATCH (p:Player) WHERE (p.first_name + ' ' + p.last_name) = $player_name
     CREATE (dp:DraftPick { round: $round, pick_number: $pick_number, player_name: $player_name })-[:PICKED_IN]->(s)
     CREATE (t)-[:MADE_PICK]->(dp)
