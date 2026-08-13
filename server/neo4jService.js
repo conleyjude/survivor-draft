@@ -60,7 +60,7 @@ const createTribe = async (season_number, tribe_name, tribe_color) => {
   return results[0]?.t?.properties || null;
 };
 
-const createPlayer = async (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age) => {
+const createPlayer = async (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age, photo_url) => {
   const query = `
     MATCH (s:Season {season_number: $season_number})
     MATCH (t:Tribe {tribe_name: $tribe_name})
@@ -70,13 +70,13 @@ const createPlayer = async (season_number, tribe_name, first_name, last_name, oc
       occupation: $occupation, hometown: $hometown, archetype: $archetype,
       age: $age,
       challenges_won: 0, has_idol: false, idols_played: 0, votes_received: 0,
-      notes: $notes, status: 'active'
+      notes: $notes, status: 'active', photo_url: $photo_url
     })
     CREATE (p)-[:BELONGS_TO]->(t)
     CREATE (p)-[:COMPETES_IN]->(s)
     RETURN p
   `;
-  const results = await executeQuery(query, { season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age: age || null });
+  const results = await executeQuery(query, { season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age: age || null, photo_url: photo_url || null });
   return results[0]?.p?.properties || null;
 };
 

@@ -547,8 +547,18 @@ function DraftManager() {
                           className="player-item"
                           onClick={() => handlePlayerSelect(`${player.first_name} ${player.last_name}`)}
                         >
-                          <span className="player-name">{player.first_name} {player.last_name}</span>
-                          <span className="player-info">{player.archetype} • {player.tribe_name}</span>
+                          {player.photo_url && (
+                            <img
+                              src={player.photo_url}
+                              alt={`${player.first_name} ${player.last_name}`}
+                              className="player-photo"
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          )}
+                          <div className="player-text">
+                            <span className="player-name">{player.first_name} {player.last_name}</span>
+                            <span className="player-info">{player.archetype} • {player.tribe_name}</span>
+                          </div>
                         </div>
                       ))}
                     </div>

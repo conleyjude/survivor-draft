@@ -32,8 +32,8 @@ export const createSeason = (season_number, year) =>
 export const createTribe = (season_number, tribe_name, tribe_color) =>
   request('POST', `/seasons/${season_number}/tribes`, { tribe_name, tribe_color });
 
-export const createPlayer = (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age) =>
-  request('POST', `/seasons/${season_number}/players`, { tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age });
+export const createPlayer = (season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age, photo_url) =>
+  request('POST', `/seasons/${season_number}/players`, { tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age, photo_url });
 
 export const createAlliance = (season_number, alliance_name, formation_episode, dissolved_episode, size, notes) =>
   request('POST', `/seasons/${season_number}/alliances`, { alliance_name, formation_episode, dissolved_episode, size, notes });

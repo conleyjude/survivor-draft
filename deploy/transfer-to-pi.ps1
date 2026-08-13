@@ -10,14 +10,21 @@ Write-Host ""
 Write-Host "--- Survivor Draft: Deploying to Pi ---" -ForegroundColor Cyan
 Write-Host ""
 
-# 1. React build - use tar pipe to avoid Windows glob issues
+# 1. React build - scp the directory, then move into place on Pi
 Write-Host "[1/3] Uploading React build/ ..." -ForegroundColor Yellow
-$buildDir = Resolve-Path "$ROOT\ness-survivor\build"
-tar -czf - -C $buildDir . | ssh @SSH_OPT $PI "tar -xzf - -C $REMOTE/build"
+$buildDir = (Resolve-Path "$ROOT\ness-survivor\build").Path
+scp @SSH_OPT -r "$buildDir" "${PI}:/tmp/sdraft-build"
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "ERROR uploading build/" -ForegroundColor Red
+    Write-Host "ERROR uploading build" -ForegroundColor Red
     exit 1
 }
+ssh @SSH_OPT $PI "rm -rf $REMOTE/build/* && cp -r /tmp/sdraft-build/. $REMOTE/build/ && rm -rf /tmp/sdraft-build && chmod -R 755 $REMOTE/build"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "ERROR installing build on Pi" -ForegroundColor Red
+    exit 1
+}
+$zipPath = "$env:TEMP\survivor-build.zip"
+Remove-Item $zipPath -ErrorAction SilentlyContinue
 
 # 2. Server source files
 Write-Host "[2/3] Uploading server/ ..." -ForegroundColor Yellow

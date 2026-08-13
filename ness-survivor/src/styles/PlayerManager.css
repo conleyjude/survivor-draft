@@ -275,6 +275,28 @@
 
 .player-content {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.player-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--color-deep-jungle);
+}
+
+.photo-preview {
+  display: block;
+  margin-top: 0.5rem;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid var(--color-deep-jungle);
 }
 
 .player-info h3 {

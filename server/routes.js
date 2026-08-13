@@ -85,8 +85,8 @@ router.get('/seasons/:seasonNumber/players/available', wrap(async (req, res) => 
 
 router.post('/seasons/:seasonNumber/players', wrap(async (req, res) => {
   const season_number = Number(req.params.seasonNumber);
-  const { tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age } = req.body;
-  res.json(await db.createPlayer(season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age));
+  const { tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age, photo_url } = req.body;
+  res.json(await db.createPlayer(season_number, tribe_name, first_name, last_name, occupation, hometown, archetype, notes, age, photo_url));
 }));
 
 router.get('/players/:firstName/:lastName', wrap(async (req, res) => {

@@ -113,7 +113,7 @@ function PlayerManager() {
   );
 
   const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
-    { first_name: '', last_name: '', occupation: '', age: '', hometown: '', archetype: '', notes: '' },
+    { first_name: '', last_name: '', occupation: '', age: '', hometown: '', archetype: '', notes: '', photo_url: '' },
     async (formValues) => {
       if (!selectedSeason) {
         setErrorMessage('Please select a season first');
@@ -132,6 +132,7 @@ function PlayerManager() {
           age: formValues.age ? Number(formValues.age) : null,
           hometown: formValues.hometown,
           archetype: formValues.archetype,
+          photo_url: formValues.photo_url || null,
         });
         // If tribe changed, move player to new tribe
         if (editingId.tribe_name !== selectedTribe) {
@@ -147,7 +148,8 @@ function PlayerManager() {
           formValues.hometown,
           formValues.archetype,
           '',
-          formValues.age ? Number(formValues.age) : null
+          formValues.age ? Number(formValues.age) : null,
+          formValues.photo_url || null
         );
       }
     },
@@ -168,6 +170,7 @@ function PlayerManager() {
       hometown: player.hometown || '',
       archetype: player.archetype || '',
       notes: player.notes || '',
+      photo_url: player.photo_url || '',
     });
   };
 
@@ -364,6 +367,26 @@ function PlayerManager() {
                 />
               </div>
 
+              <div className="form-group">
+                <label htmlFor="photo_url">Photo URL</label>
+                <input
+                  id="photo_url"
+                  name="photo_url"
+                  type="url"
+                  value={values.photo_url}
+                  onChange={handleChange}
+                  placeholder="e.g., https://survivor.fandom.com/wiki/..."
+                />
+                {values.photo_url && (
+                  <img
+                    src={values.photo_url}
+                    alt="Player preview"
+                    className="photo-preview"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                )}
+              </div>
+
               <div className="form-actions">
                 <button
                   type="submit"
@@ -412,6 +435,14 @@ function PlayerManager() {
                 {filteredPlayers.map((player) => (
                   <div key={`${player.first_name}-${player.last_name}`} className="player-item">
                     <div className="player-content">
+                      {player.photo_url && (
+                        <img
+                          src={player.photo_url}
+                          alt={`${player.first_name} ${player.last_name}`}
+                          className="player-photo"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
                       <div className="player-info">
                         <h3>{player.first_name} {player.last_name}{player.age != null ? `, ${player.age}` : ''}</h3>
                         <p className="player-details">
