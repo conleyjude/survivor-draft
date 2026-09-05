@@ -185,6 +185,19 @@ export const getDraftPicksForSeason = (season_number) =>
   request('GET', `/seasons/${season_number}/draft-picks`);
 
 // ============================================
+// DRAFT ORDER (shared draft room state)
+// ============================================
+
+export const getDraftState = (season_number) =>
+  request('GET', `/seasons/${season_number}/draft-order`);
+
+export const setDraftOrder = (season_number, draft_order) =>
+  request('POST', `/seasons/${season_number}/draft-order`, { draft_order });
+
+export const resetDraftOrder = (season_number) =>
+  request('DELETE', `/seasons/${season_number}/draft-order`);
+
+// ============================================
 // ELIMINATIONS / RESERVES
 // ============================================
 

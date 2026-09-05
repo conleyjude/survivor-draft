@@ -1,11 +1,14 @@
 require('dotenv').config();
 
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const { initDriver, closeDriver } = require('./neo4jConfig');
 const routes = require('./routes');
+const draftSocket = require('./socket');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://surviveness.com';
 
@@ -29,7 +32,8 @@ app.get('/health', (req, res) => {
 const start = async () => {
   try {
     await initDriver();
-    app.listen(PORT, () => {
+    draftSocket.init(server, CORS_ORIGIN);
+    server.listen(PORT, () => {
       console.log(`Survivor Draft API running on port ${PORT}`);
       console.log(`CORS origin: ${CORS_ORIGIN}`);
     });
@@ -38,6 +42,7 @@ const start = async () => {
     process.exit(1);
   }
 };
+
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {

@@ -4,10 +4,11 @@
  * Prerequisites: Fantasy teams must be created first
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFetchData, useMutation } from '../../hooks/useNeo4j';
 import * as neo4jService from '../../services/neo4jService';
+import { socket } from '../../services/socket';
 import '../../styles/DraftManager.css';
 
 function DraftManager() {
@@ -17,18 +18,13 @@ function DraftManager() {
   // State for draft management
   const [selectedSlot, setSelectedSlot] = useState(null); // { teamName, slotIndex }
 
-  // State for draft order (local only)
-  const [draftOrder, setDraftOrder] = useState([]); // Array of team names in draft order
-  const [draftOrderSet, setDraftOrderSet] = useState(false); // Flag to track if draft order has been set
+  // Draft order inputs are local (form scratchpad); the confirmed order is shared/persisted server-side
   const [draftOrderInputs, setDraftOrderInputs] = useState({}); // Maps team_name -> draft position
   const draftType = 'snake'; // Always snake draft
 
   // State for messages
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  // State for reserves
-  const [isDraftFinalized, setIsDraftFinalized] = useState(false);
 
   // Data fetching
   const { data: seasons } = useFetchData(() => neo4jService.getAllSeasons(), []);
@@ -48,6 +44,37 @@ function DraftManager() {
     () => (selectedSeason ? neo4jService.getReservePlayers(Number(selectedSeason)) : Promise.resolve([])),
     [selectedSeason]
   );
+  // Shared draft state (draft order + finalized flag), persisted on the Season node
+  const { data: draftState, refetch: refetchDraftState } = useFetchData(
+    () => (selectedSeason ? neo4jService.getDraftState(Number(selectedSeason)) : Promise.resolve({ draft_order: [], draft_finalized: false })),
+    [selectedSeason]
+  );
+  const draftOrder = draftState?.draft_order || [];
+  const draftOrderSet = draftOrder.length > 0;
+  const isDraftFinalized = draftState?.draft_finalized || false;
+
+  // Join the shared draft room for this season and live-sync on any teammate's changes
+  useEffect(() => {
+    if (!selectedSeason) return undefined;
+
+    socket.connect();
+    socket.emit('join-season', selectedSeason);
+
+    const handleDraftUpdated = () => {
+      refetchDraftPicks();
+      refetchDraftState();
+      refetchPlayers();
+      refetchReservePlayers();
+    };
+    socket.on('draft-updated', handleDraftUpdated);
+
+    return () => {
+      socket.emit('leave-season', selectedSeason);
+      socket.off('draft-updated', handleDraftUpdated);
+      socket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSeason]);
 
   // Calculate max rounds dynamically (after data is fetched)
   const maxRounds = teams && teams.length > 0 && players 
@@ -81,13 +108,35 @@ function DraftManager() {
     () => neo4jService.finalizeReserves(Number(selectedSeason), teams.length),
     (result) => {
       setSuccessMessage(`Draft finalized! ${result.drafted_count} players drafted, ${result.reserve_count} reserves created.`);
-      setIsDraftFinalized(true);
+      refetchDraftState();
       refetchPlayers();
       refetchReservePlayers();
       setTimeout(() => setSuccessMessage(''), 5000);
     },
     (err) => {
       setErrorMessage(`Error finalizing draft: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  );
+
+  const { mutate: saveDraftOrder } = useMutation(
+    (order) => neo4jService.setDraftOrder(Number(selectedSeason), order),
+    () => {
+      refetchDraftState();
+    },
+    (err) => {
+      setErrorMessage(`Error saving draft order: ${err.message}`);
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  );
+
+  const { mutate: clearDraftOrder } = useMutation(
+    () => neo4jService.resetDraftOrder(Number(selectedSeason)),
+    () => {
+      refetchDraftState();
+    },
+    (err) => {
+      setErrorMessage(`Error resetting draft order: ${err.message}`);
       setTimeout(() => setErrorMessage(''), 3000);
     }
   );
@@ -110,22 +159,18 @@ function DraftManager() {
   const handleSeasonChange = (e) => {
     setSelectedSeason(e.target.value);
     setSelectedSlot(null);
-    setDraftOrder([]);
-    setDraftOrderSet(false);
     setDraftOrderInputs({});
-    setIsDraftFinalized(false);
   };
 
   // Draft order handlers
   const handleRandomDraftOrder = () => {
     const shuffled = [...teams].sort(() => Math.random() - 0.5);
-    setDraftOrder(shuffled.map(t => t.team_name));
-    setDraftOrderSet(true);
     const inputs = {};
     shuffled.forEach((team, idx) => {
       inputs[team.team_name] = idx + 1;
     });
     setDraftOrderInputs(inputs);
+    saveDraftOrder(shuffled.map(t => t.team_name));
     setSuccessMessage('Random draft order generated! 🎲');
     setTimeout(() => setSuccessMessage(''), 3000);
   };
@@ -160,15 +205,13 @@ function DraftManager() {
     const ordered = [...teams].sort((a, b) => 
       (draftOrderInputs[a.team_name] || 0) - (draftOrderInputs[b.team_name] || 0)
     );
-    setDraftOrder(ordered.map(t => t.team_name));
-    setDraftOrderSet(true);
+    saveDraftOrder(ordered.map(t => t.team_name));
     setSuccessMessage('Draft order set successfully! ✓');
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   const handleResetDraftOrder = () => {
-    setDraftOrder([]);
-    setDraftOrderSet(false);
+    clearDraftOrder();
     setDraftOrderInputs({});
   };
 

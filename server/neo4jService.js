@@ -491,17 +491,25 @@ const getFantasyTeamsInSeason = async (season_number) => {
 // ============================================
 
 const createDraftPick = async (season_number, round, pick_number, player_name, team_name) => {
+  // Guards against two clients racing to claim the same slot/player concurrently
   const query = `
     MATCH (s:Season {season_number: $season_number})
     MATCH (t:FantasyTeam {team_name: $team_name})-[:DRAFTED_FOR]->(s)
     MATCH (p:Player) WHERE (p.first_name + ' ' + p.last_name) = $player_name
+    OPTIONAL MATCH (p)-[already_drafted:ON_TEAM]->(:FantasyTeam)
+    OPTIONAL MATCH (existing:DraftPick {round: $round, pick_number: $pick_number})-[:PICKED_IN]->(s)
+    WITH s, t, p, already_drafted, existing
+    WHERE already_drafted IS NULL AND existing IS NULL
     CREATE (dp:DraftPick { round: $round, pick_number: $pick_number, player_name: $player_name })-[:PICKED_IN]->(s)
     CREATE (t)-[:MADE_PICK]->(dp)
     CREATE (p)-[:ON_TEAM]->(t)
     RETURN dp
   `;
   const results = await executeQuery(query, { season_number, round, pick_number, player_name, team_name });
-  return results[0]?.dp?.properties || null;
+  if (!results[0]) {
+    throw new Error('This pick was already claimed by someone else. Refreshing the draft board.');
+  }
+  return results[0].dp.properties;
 };
 
 const deleteDraftPick = async (season_number, round, pick_number) => {
@@ -524,6 +532,39 @@ const getDraftPicksForSeason = async (season_number) => {
 };
 
 // ============================================
+// DRAFT STATE (shared draft order / finalized flag)
+// ============================================
+
+const getDraftState = async (season_number) => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    RETURN coalesce(s.draft_order, []) as draft_order, coalesce(s.draft_finalized, false) as draft_finalized
+  `;
+  const results = await executeQuery(query, { season_number });
+  return results[0] || { draft_order: [], draft_finalized: false };
+};
+
+const setDraftOrder = async (season_number, draft_order) => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    SET s.draft_order = $draft_order
+    RETURN s.draft_order as draft_order
+  `;
+  const results = await executeQuery(query, { season_number, draft_order });
+  return { draft_order: results[0]?.draft_order || [] };
+};
+
+const resetDraftOrder = async (season_number) => {
+  const query = `
+    MATCH (s:Season {season_number: $season_number})
+    REMOVE s.draft_order
+    RETURN true as success
+  `;
+  const results = await executeQuery(query, { season_number });
+  return { success: results[0]?.success || false };
+};
+
+// ============================================
 // ELIMINATION / RESERVE OPERATIONS
 // ============================================
 
@@ -532,10 +573,11 @@ const finalizeReserves = async (season_number) => {
     MATCH (p:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
     WHERE NOT (p)-[:ON_TEAM]->(:FantasyTeam)
     SET p.status = 'reserve'
-    WITH count(p) as reserve_count
-    MATCH (p2:Player)-[:COMPETES_IN]->(s:Season {season_number: $season_number})
+    WITH s, count(p) as reserve_count
+    MATCH (p2:Player)-[:COMPETES_IN]->(s)
     WHERE (p2)-[:ON_TEAM]->(:FantasyTeam)
-    WITH reserve_count, count(p2) as drafted_count
+    WITH s, reserve_count, count(p2) as drafted_count
+    SET s.draft_finalized = true
     RETURN drafted_count, reserve_count
   `;
   const results = await executeQuery(query, { season_number });
@@ -719,7 +761,7 @@ module.exports = {
   // Fantasy Teams
   createFantasyTeam, updateFantasyTeam, deleteFantasyTeam, getFantasyTeamsInSeason,
   // Draft
-  createDraftPick, deleteDraftPick, getDraftPicksForSeason,
+  createDraftPick, deleteDraftPick, getDraftPicksForSeason, getDraftState, setDraftOrder, resetDraftOrder,
   // Elimination / Reserves
   finalizeReserves, getReservePlayers, eliminatePlayer, replaceWithReserve, getTeamsEligibleForReserves,
   // Events

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./neo4jService');
+const { emitDraftUpdate } = require('./socket');
 
 // Helper: wrap async route handlers
 const wrap = (fn) => (req, res, next) => fn(req, res, next).catch(next);
@@ -235,14 +236,42 @@ router.get('/seasons/:seasonNumber/draft-picks', wrap(async (req, res) => {
 router.post('/seasons/:seasonNumber/draft-picks', wrap(async (req, res) => {
   const season_number = Number(req.params.seasonNumber);
   const { round, pick_number, player_name, team_name } = req.body;
-  res.json(await db.createDraftPick(season_number, round, pick_number, player_name, team_name));
+  const pick = await db.createDraftPick(season_number, round, pick_number, player_name, team_name);
+  emitDraftUpdate(season_number, { type: 'pick-created', pick });
+  res.json(pick);
 }));
 
 router.delete('/seasons/:seasonNumber/draft-picks/:round/:pickNumber', wrap(async (req, res) => {
   const season_number = Number(req.params.seasonNumber);
   const round = Number(req.params.round);
   const pick_number = Number(req.params.pickNumber);
-  res.json({ success: await db.deleteDraftPick(season_number, round, pick_number) });
+  const success = await db.deleteDraftPick(season_number, round, pick_number);
+  emitDraftUpdate(season_number, { type: 'pick-deleted', round, pick_number });
+  res.json({ success });
+}));
+
+// ============================================
+// DRAFT ORDER (shared draft room state)
+// ============================================
+
+router.get('/seasons/:seasonNumber/draft-order', wrap(async (req, res) => {
+  const season_number = Number(req.params.seasonNumber);
+  res.json(await db.getDraftState(season_number));
+}));
+
+router.post('/seasons/:seasonNumber/draft-order', wrap(async (req, res) => {
+  const season_number = Number(req.params.seasonNumber);
+  const { draft_order } = req.body;
+  const result = await db.setDraftOrder(season_number, draft_order);
+  emitDraftUpdate(season_number, { type: 'draft-order-set', draft_order: result.draft_order });
+  res.json(result);
+}));
+
+router.delete('/seasons/:seasonNumber/draft-order', wrap(async (req, res) => {
+  const season_number = Number(req.params.seasonNumber);
+  const result = await db.resetDraftOrder(season_number);
+  emitDraftUpdate(season_number, { type: 'draft-order-reset' });
+  res.json(result);
 }));
 
 // ============================================
@@ -251,7 +280,9 @@ router.delete('/seasons/:seasonNumber/draft-picks/:round/:pickNumber', wrap(asyn
 
 router.post('/seasons/:seasonNumber/finalize-reserves', wrap(async (req, res) => {
   const season_number = Number(req.params.seasonNumber);
-  res.json(await db.finalizeReserves(season_number));
+  const result = await db.finalizeReserves(season_number);
+  emitDraftUpdate(season_number, { type: 'draft-finalized' });
+  res.json(result);
 }));
 
 router.get('/seasons/:seasonNumber/players/reserves', wrap(async (req, res) => {
