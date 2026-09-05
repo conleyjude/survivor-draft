@@ -45,7 +45,7 @@
 .stat-card {
   background: white;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 20px;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -53,7 +53,7 @@
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.15);
   border-color: var(--color-deep-jungle);
   transform: translateY(-2px);
 }
@@ -95,7 +95,7 @@
 .roster-player-card {
   background: white;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 15px;
   text-decoration: none;
   color: inherit;
@@ -104,7 +104,7 @@
 }
 
 .roster-player-card:hover {
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 6px 16px rgba(176, 69, 31, 0.15);
   transform: translateY(-2px);
   border-color: var(--color-deep-jungle);
 }
@@ -128,7 +128,7 @@
   background: var(--gradient-jungle);
   color: var(--color-text-inverse);
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
@@ -183,7 +183,7 @@
   color: var(--color-text-light);
   background: white;
   border: 1px dashed var(--color-border);
-  border-radius: 12px;
+  border-radius: 4px;
   margin-top: 20px;
 }
 
@@ -232,7 +232,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.4);
 }
 
 /* Navigation */

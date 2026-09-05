@@ -230,7 +230,7 @@ function SeasonProgress() {
       {seasonNumber && (
         <>
           <div className="progress-header">
-            <h1>🏝️ Season {seasonNumber} Progress</h1>
+            <h1>Season {seasonNumber} Progress</h1>
             <p className="subtitle">Track tribes and player statistics as the season progresses</p>
           </div>
 
@@ -262,11 +262,11 @@ function SeasonProgress() {
                     <div
                       key={group.name}
                       className="tribe-panel"
-                      style={{ borderTopColor: group.color || '#667EEA' }}
+                      style={{ borderTopColor: group.color || '#b0451f' }}
                     >
                       <div
                         className="tribe-header"
-                        style={{ backgroundColor: group.color || '#667EEA' }}
+                        style={{ backgroundColor: group.color || '#b0451f' }}
                       >
                         <h2>{group.name}</h2>
                         {viewMode === 'team' && group.owners && (

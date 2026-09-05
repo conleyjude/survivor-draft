@@ -10,49 +10,49 @@ function AdminDashboard() {
     {
       title: 'Seasons',
       description: 'Create and manage seasons',
-      icon: '📅',
+      icon: '01',
       link: '/admin/seasons',
     },
     {
       title: 'Tribes',
       description: 'Create and manage tribes within seasons',
-      icon: '🏕️',
+      icon: '02',
       link: '/admin/tribes',
     },
     {
       title: 'Players',
       description: 'Add and edit player information',
-      icon: '👥',
+      icon: '03',
       link: '/admin/players',
     },
     {
       title: 'Alliances',
       description: 'Create and manage player alliances',
-      icon: '🤝',
+      icon: '04',
       link: '/admin/alliances',
     },
     {
       title: 'Draft',
       description: 'Manage fantasy team draft and rosters',
-      icon: '📋',
+      icon: '05',
       link: '/admin/draft',
     },
     {
       title: 'Fantasy Teams',
       description: 'Create and edit fantasy teams',
-      icon: '🎯',
+      icon: '06',
       link: '/admin/fantasy-teams',
     },
     {
       title: 'Eliminations',
       description: 'Mark players as eliminated and manage reserves',
-      icon: '⚰️',
+      icon: '07',
       link: '/admin/eliminations',
     },
     {
       title: 'Database Verification',
       description: 'Test database connectivity and CRUD operations',
-      icon: '🔍',
+      icon: '08',
       link: '/admin/database-verification',
     },
   ];
@@ -60,7 +60,7 @@ function AdminDashboard() {
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
-        <h1>⚙️ Admin Dashboard</h1>
+        <h1>Admin Dashboard</h1>
         <p>Manage all aspects of the Survivor Fantasy Draft</p>
       </div>
 
@@ -76,7 +76,7 @@ function AdminDashboard() {
       </div>
 
       <div className="admin-footer">
-        <p>⚠️ Warning: Changes made in admin section affect the entire database</p>
+        <p>Warning: changes made in the admin section affect the entire database</p>
         <Link to="/">Back to Public View</Link>
       </div>
     </div>

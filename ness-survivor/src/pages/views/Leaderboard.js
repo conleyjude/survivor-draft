@@ -31,18 +31,11 @@ function Leaderboard() {
       })
     : [];
 
-  const getMedalEmoji = (rank) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return '•';
-  };
-
   return (
     <div className="leaderboard">
       {/* Header */}
       <div className="leaderboard-header">
-        <h1>🏆 Fantasy Leaderboard</h1>
+        <h1>Fantasy Leaderboard</h1>
         <p className="subtitle">Rankings based on combined challenge wins of drafted players</p>
       </div>
 
@@ -76,10 +69,10 @@ function Leaderboard() {
 
       {/* Loading State */}
       {loading ? (
-        <div className="loading-state">⏳ Loading leaderboard...</div>
+        <div className="loading-state">Loading leaderboard...</div>
       ) : error ? (
         <div className="error-state">
-          <p>❌ Error loading leaderboard: {error}</p>
+          <p>Error loading leaderboard: {error}</p>
         </div>
       ) : sortedLeaderboard && sortedLeaderboard.length > 0 ? (
         <section className="leaderboard-section">
@@ -102,7 +95,7 @@ function Leaderboard() {
                   <tr key={index} className={`leaderboard-row rank-${index + 1}`}>
                     <td className="col-rank">
                       <span className="rank-badge">
-                        {getMedalEmoji(index + 1)} #{index + 1}
+                        #{index + 1}
                       </span>
                     </td>
                     <td className="col-team">
@@ -134,7 +127,6 @@ function Leaderboard() {
                 className="leaderboard-card"
               >
                 <div className="card-rank">
-                  <span className="rank-badge">{getMedalEmoji(index + 1)}</span>
                   <span className="rank-number">#{index + 1}</span>
                 </div>
                 <div className="card-content">
@@ -162,7 +154,7 @@ function Leaderboard() {
         </section>
       ) : (
         <div className="empty-state">
-          <p>📭 No teams yet. Start by creating a fantasy team in the admin panel.</p>
+          <p>No teams yet. Start by creating a fantasy team in the admin panel.</p>
         </div>
       )}
 

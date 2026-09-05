@@ -41,7 +41,7 @@ function Dashboard() {
       <div className="dashboard-grid">
         {/* Season Progress Tracker */}
         <section className="dashboard-section season-progress-tracker">
-          <h2>📊 Season Progress Tracker</h2>
+          <h2>Season Progress Tracker</h2>
           <p className="section-description">Track tribe and player stats during an ongoing season</p>
           <div className="season-selector">
             <select 
@@ -68,7 +68,7 @@ function Dashboard() {
 
         {/* Quick Stats */}
         <section className="dashboard-section quick-stats">
-          <h2>📊 Quick Stats</h2>
+          <h2>Quick Stats</h2>
           <div className="stats-grid">
             <div className="stat-card">
               <h3>Total Seasons</h3>
@@ -83,7 +83,7 @@ function Dashboard() {
 
         {/* Leaderboard Preview */}
         <section className="dashboard-section leaderboard-preview">
-          <h2>🏆 Top Teams</h2>
+          <h2>Top Teams</h2>
           {leaderboardLoading ? (
             <p className="loading">Loading leaderboard...</p>
           ) : leaderboard && leaderboard.length > 0 ? (
@@ -104,7 +104,7 @@ function Dashboard() {
 
         {/* Recent Seasons */}
         <section className="dashboard-section seasons-preview">
-          <h2>📺 Seasons</h2>
+          <h2>Seasons</h2>
           {seasonsLoading ? (
             <p className="loading">Loading seasons...</p>
           ) : seasons && seasons.length > 0 ? (
@@ -123,7 +123,7 @@ function Dashboard() {
                     className="season-progress-link"
                     title="Track progress"
                   >
-                    📊
+                    →
                   </Link>
                 </div>
               ))}
@@ -135,26 +135,26 @@ function Dashboard() {
 
         {/* Admin Quick Links */}
         <section className="dashboard-section admin-links">
-          <h2>⚙️ Admin Tools</h2>
+          <h2>Admin Tools</h2>
           <div className="admin-link-grid">
             <Link to="/admin/seasons" className="admin-link">
-              <span className="icon">📅</span>
+              <span className="icon">01</span>
               <span className="label">Manage Seasons</span>
             </Link>
             <Link to="/admin/tribes" className="admin-link">
-              <span className="icon">🏕️</span>
+              <span className="icon">02</span>
               <span className="label">Manage Tribes</span>
             </Link>
             <Link to="/admin/players" className="admin-link">
-              <span className="icon">👥</span>
+              <span className="icon">03</span>
               <span className="label">Manage Players</span>
             </Link>
             <Link to="/admin/alliances" className="admin-link">
-              <span className="icon">🤝</span>
+              <span className="icon">04</span>
               <span className="label">Manage Alliances</span>
             </Link>
             <Link to="/admin/draft" className="admin-link">
-              <span className="icon">📋</span>
+              <span className="icon">05</span>
               <span className="label">Manage Draft</span>
             </Link>
           </div>

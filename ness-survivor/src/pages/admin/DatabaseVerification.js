@@ -141,7 +141,7 @@ function DatabaseVerification() {
   return (
     <div className="database-verification">
       <div className="verification-header">
-        <h1>🔍 Database Verification</h1>
+        <h1>Database Verification</h1>
         <p className="header-subtitle">Test database connectivity and verify CRUD operations</p>
       </div>
 

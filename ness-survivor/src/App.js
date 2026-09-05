@@ -28,7 +28,7 @@ function App() {
         <nav className="App-nav">
           <div className="nav-container">
             <Link to="/" className="nav-brand">
-              🏝️ Survivor Draft Manager
+              Survivor Draft Manager
             </Link>
             <ul className="nav-menu">
               <li><Link to="/">Dashboard</Link></li>
@@ -37,7 +37,7 @@ function App() {
                 <ul className="nav-submenu-list">
                   <li><Link to="/">Home</Link></li>
                   <li><Link to="/leaderboard">Leaderboard</Link></li>
-                  <li><Link to="/" title="Select a season from the dashboard">📊 Season Progress</Link></li>
+                  <li><Link to="/" title="Select a season from the dashboard">Season Progress</Link></li>
                 </ul>
               </li>
               <li className="nav-submenu">

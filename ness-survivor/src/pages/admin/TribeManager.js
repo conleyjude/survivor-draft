@@ -92,7 +92,7 @@ function TribeManager() {
   );
 
   const { values, errors, handleChange, handleSubmit, resetForm } = useForm(
-    { tribe_name: '', tribe_color: '#667EEA' },
+    { tribe_name: '', tribe_color: '#b0451f' },
     async (formValues) => {
       if (!selectedSeason) {
         setErrorMessage('Please select a season first');
@@ -137,7 +137,7 @@ function TribeManager() {
   return (
     <div className="tribe-manager">
       <div className="manager-header">
-        <h1>🏕️ Manage Tribes</h1>
+        <h1>Manage Tribes</h1>
         <p className="header-subtitle">Create, edit, and manage Survivor tribes</p>
       </div>
 

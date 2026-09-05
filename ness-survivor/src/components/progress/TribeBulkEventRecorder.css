@@ -18,7 +18,7 @@
 
 .tribe-bulk-recorder-modal {
   background-color: #fff;
-  border-radius: 16px;
+  border-radius: 4px;
   padding: 0;
   max-width: 550px;
   width: 100%;
@@ -30,7 +30,7 @@
 }
 
 .tribe-bulk-recorder-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   text-align: center;
   padding: 2rem 2rem 1.5rem 2rem;
   position: relative;
@@ -76,7 +76,7 @@
 .players-preview {
   background: #f8f9fa;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 2px solid #e9ecef;
 }
 
@@ -98,12 +98,12 @@
 .player-chip {
   display: inline-block;
   padding: 0.4rem 0.8rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: #fff;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 6px rgba(176, 69, 31, 0.3);
 }
 
 .form-group {
@@ -132,8 +132,8 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #667EEA;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  border-color: #b0451f;
+  box-shadow: 0 0 0 4px rgba(176, 69, 31, 0.15);
   background: #fff;
 }
 
@@ -151,8 +151,8 @@
 
 .form-textarea:focus {
   outline: none;
-  border-color: #667EEA;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  border-color: #b0451f;
+  box-shadow: 0 0 0 4px rgba(176, 69, 31, 0.15);
   background: #fff;
 }
 
@@ -176,7 +176,7 @@
   flex: 1;
   padding: 1rem 1.5rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 4px;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -192,14 +192,14 @@
 }
 
 .form-actions .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.3);
 }
 
 .form-actions .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(176, 69, 31, 0.4);
 }
 
 .form-actions .btn-secondary {
@@ -270,7 +270,7 @@
 
   .form-input:focus,
   .form-textarea:focus {
-    border-color: #667eea;
+    border-color: #b0451f;
     background: #404040;
   }
 

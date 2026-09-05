@@ -9,7 +9,7 @@
 
 .error-box {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 40px;
   max-width: 600px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -92,7 +92,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(176, 69, 31, 0.3);
 }
 
 .btn-secondary {

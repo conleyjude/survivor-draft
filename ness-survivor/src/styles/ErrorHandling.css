@@ -121,7 +121,7 @@
 .form-field__select:focus,
 .form-field__textarea:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #3f5b46;
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
@@ -160,7 +160,7 @@
 /* Form Submit Button */
 .form-submit-button {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  background: linear-gradient(135deg, #3f5b46 0%, #253526 100%);
   color: var(--color-text-inverse);
   border: none;
   border-radius: 6px;
@@ -263,7 +263,7 @@
   }
 
   .form-submit-button {
-    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    background: linear-gradient(135deg, #253526 0%, #1a2419 100%);
   }
 
   .form-submit-button:hover:not(:disabled) {

@@ -196,7 +196,7 @@ function PlayerManager() {
   return (
     <div className="player-manager">
       <div className="manager-header">
-        <h1>👥 Manage Players</h1>
+        <h1>Manage Players</h1>
         <p className="header-subtitle">Create, edit, and manage Survivor players</p>
       </div>
 

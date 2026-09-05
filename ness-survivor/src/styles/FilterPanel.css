@@ -19,7 +19,7 @@
 
 .filter-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.3);
 }
 
 .filter-icon {
@@ -32,7 +32,7 @@
   height: 20px;
   background: var(--color-danger);
   color: var(--color-text-inverse);
-  border-radius: 10px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 700;
   text-align: center;
@@ -113,7 +113,7 @@
 .filter-select:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .filter-reset {

@@ -23,10 +23,10 @@
 }
 
 .action-btn:hover {
-  background: #667EEA;
-  border-color: #667EEA;
+  background: #b0451f;
+  border-color: #b0451f;
   transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(176, 69, 31, 0.3);
   z-index: 10;
 }
 

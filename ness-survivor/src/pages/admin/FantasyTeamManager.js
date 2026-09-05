@@ -155,7 +155,7 @@ function FantasyTeamManager() {
       )}
 
       <div className="manager-header">
-        <h1>👥 Fantasy Teams</h1>
+        <h1>Fantasy Teams</h1>
       </div>
 
       {/* Season Selector */}

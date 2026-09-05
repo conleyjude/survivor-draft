@@ -137,7 +137,7 @@ function EliminationManager() {
       )}
 
       <div className="manager-header">
-        <h1>⚰️ Elimination & Reserves Manager</h1>
+        <h1>Elimination & Reserves Manager</h1>
         <p>Mark players as eliminated and manage reserve replacements</p>
       </div>
 

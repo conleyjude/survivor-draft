@@ -355,7 +355,7 @@ function DraftManager() {
       )}
 
       <div className="manager-header">
-        <h1>🎯 Draft Management</h1>
+        <h1>Draft Management</h1>
       </div>
 
       {/* Season Selector */}
