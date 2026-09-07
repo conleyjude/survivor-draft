@@ -112,7 +112,7 @@ const AnalyticsDashboard = ({ draftData, onExport }) => {
   return (
     <div className="analytics-dashboard">
       <div className="analytics-header">
-        <h1>📊 Analytics Dashboard</h1>
+        <h1>Analytics Dashboard</h1>
         <button className="btn-primary" onClick={() => onExport && onExport()}>
           📥 Export Report
         </button>

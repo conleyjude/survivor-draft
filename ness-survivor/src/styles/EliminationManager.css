@@ -18,19 +18,19 @@
   padding: 2rem 1rem;
 }
 
-.manager-header {
+.elimination-manager .manager-header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.manager-header h1 {
+.elimination-manager .manager-header h1 {
   font-size: 2.5rem;
   color: var(--color-text-inverse);
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.manager-header p {
+.elimination-manager .manager-header p {
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.1rem;
   margin-top: 0.5rem;
@@ -41,7 +41,7 @@
   margin: 0 auto 2rem;
   background: white;
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -69,7 +69,7 @@
 .season-selector-container select:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .manager-content {
@@ -97,7 +97,7 @@
 .message-success {
   background: var(--color-success);
   color: var(--color-text-inverse);
-  border-left: 4px solid #059669;
+  border-left: 4px solid #55693f;
 }
 
 .message-error {
@@ -114,7 +114,7 @@
 .reserve-selection-section,
 .no-reserves-section {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 2rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
@@ -158,7 +158,7 @@
 .form-group select:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .section-description {
@@ -193,7 +193,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 16px rgba(176, 69, 31, 0.4);
 }
 
 .btn-danger {
@@ -232,7 +232,7 @@
 
 .roster-player-card:hover {
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.1);
   transform: translateY(-2px);
 }
 
@@ -282,7 +282,7 @@
 
 .no-selection {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 4rem 2rem;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -340,7 +340,7 @@
     padding: 1rem;
   }
 
-  .manager-header h1 {
+  .elimination-manager .manager-header h1 {
     font-size: 1.8rem;
   }
 
@@ -361,7 +361,7 @@
     padding: 0.5rem;
   }
 
-  .manager-header h1 {
+  .elimination-manager .manager-header h1 {
     font-size: 1.4rem;
   }
 

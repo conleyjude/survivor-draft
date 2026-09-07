@@ -103,7 +103,7 @@ function SeasonManager() {
   return (
     <div className="season-manager">
       <div className="manager-header">
-        <h1>📅 Manage Seasons</h1>
+        <h1>Manage Seasons</h1>
         <p className="header-subtitle">Create, edit, and manage Survivor seasons</p>
       </div>
 

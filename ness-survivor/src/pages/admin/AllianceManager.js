@@ -160,7 +160,7 @@ function AllianceManager() {
   return (
     <div className="alliance-manager">
       <div className="manager-header">
-        <h1>🤝 Manage Alliances</h1>
+        <h1>Manage Alliances</h1>
         <p className="header-subtitle">Create, edit, and manage player alliances</p>
       </div>
 

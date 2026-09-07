@@ -52,7 +52,7 @@ function FantasyTeamManager() {
       try {
         if (editingTeam) {
           console.log('Updating team:', editingTeam.team_name);
-          await updateTeamMutation(editingTeam.team_name, owners);
+          await updateTeamMutation(editingTeam.team_name, owners, Number(selectedSeason));
         } else {
           console.log('Creating new team');
           await createTeamMutation(formValues.team_name, owners, Number(selectedSeason));
@@ -83,7 +83,7 @@ function FantasyTeamManager() {
   );
 
   const { mutate: updateTeamMutation, isLoading: isUpdating } = useMutation(
-    (name, owners) => neo4jService.updateFantasyTeam(name, owners),
+    (name, owners, season) => neo4jService.updateFantasyTeam(name, owners, season),
     () => {
       setSuccessMessage('Fantasy team updated successfully!');
       setEditingTeam(null);
@@ -98,7 +98,7 @@ function FantasyTeamManager() {
   );
 
   const { mutate: deleteTeamMutation, isLoading: isDeleting } = useMutation(
-    (name) => neo4jService.deleteFantasyTeam(name),
+    (name, season) => neo4jService.deleteFantasyTeam(name, season),
     () => {
       setSuccessMessage('Fantasy team deleted successfully!');
       setEditingTeam(null);
@@ -129,7 +129,7 @@ function FantasyTeamManager() {
 
   const handleDeleteTeam = () => {
     if (window.confirm(`Are you sure you want to delete "${editingTeam.team_name}"? This action cannot be undone.`)) {
-      deleteTeamMutation(editingTeam.team_name);
+      deleteTeamMutation(editingTeam.team_name, Number(selectedSeason));
     }
   };
 
@@ -155,7 +155,7 @@ function FantasyTeamManager() {
       )}
 
       <div className="manager-header">
-        <h1>👥 Fantasy Teams</h1>
+        <h1>Fantasy Teams</h1>
       </div>
 
       {/* Season Selector */}

@@ -45,20 +45,20 @@
 }
 
 .view-toggle-tabs .tab:hover {
-  border-color: #667EEA;
+  border-color: #b0451f;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 8px rgba(176, 69, 31, 0.2);
 }
 
 .view-toggle-tabs .tab.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #b0451f;
 }
 
 .view-toggle-tabs .tab.active:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 12px rgba(176, 69, 31, 0.4);
 }
 
 /* Tribes Grid */
@@ -76,7 +76,7 @@
 /* Tribe Panel */
 .tribe-panel {
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
@@ -111,7 +111,7 @@
   font-size: 0.85rem;
   background-color: rgba(255, 255, 255, 0.25);
   padding: 0.3rem 0.7rem;
-  border-radius: 15px;
+  border-radius: 4px;
   font-weight: 500;
   font-style: italic;
 }
@@ -126,14 +126,14 @@
   font-size: 0.9rem;
   background-color: rgba(255, 255, 255, 0.3);
   padding: 0.4rem 0.8rem;
-  border-radius: 20px;
+  border-radius: 4px;
   font-weight: 600;
   white-space: nowrap;
 }
 
 /* Tribe Players List */
 .tribe-players {
-  padding: 1.5rem;
+  padding: 1rem;
   min-height: 100px;
 }
 
@@ -158,19 +158,18 @@
 
 .player-button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid #e0e0e0;
   background-color: #f9f9f9;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
   font-family: inherit;
   font-size: 0.95rem;
-  min-height: 60px;
 }
 
 /* Team View Enhancement - Tribe Color Accent */
@@ -178,6 +177,36 @@
   position: relative;
   border-top: 3px solid;
   border-top-color: inherit;
+}
+
+/* Eliminated Player */
+.player-button.eliminated {
+  background-color: #1a1a1a;
+  border-color: #444;
+  opacity: 0.7;
+}
+
+.player-button.eliminated:hover {
+  background-color: #222;
+  border-color: #555;
+}
+
+.player-button.eliminated .player-name-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.eliminated-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: #c62828;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .player-button:hover {
@@ -190,18 +219,23 @@
   transform: scale(0.98);
 }
 
-.player-button .player-name {
+.player-button .player-card-top {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.player-button .player-name-text {
   font-weight: 600;
   color: #333;
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .player-button .player-tribe-badge {
@@ -209,22 +243,16 @@
   font-weight: 500;
   opacity: 0.8;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.player-button .player-info-right {
+.player-button .player-card-bottom {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  flex-wrap: nowrap;
+  justify-content: center;
 }
 
-.player-button .player-stats {
-  font-size: 0.85rem;
-  color: #666;
-  white-space: nowrap;
-  min-width: fit-content;
-}
 
 /* No Players / No Data States */
 .no-players {
@@ -240,7 +268,7 @@
   text-align: center;
   padding: 3rem 2rem;
   background-color: #f5f5f5;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px dashed #ddd;
 }
 
@@ -292,7 +320,7 @@
 
 .modal-content {
   background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 20px;
+  border-radius: 4px;
   padding: 0;
   max-width: 600px;
   width: 100%;
@@ -311,8 +339,8 @@
   left: -3px;
   right: -3px;
   bottom: -3px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  border-radius: 20px;
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 50%, #f093fb 100%);
+  border-radius: 4px;
   z-index: -1;
   opacity: 0.7;
 }
@@ -359,7 +387,7 @@
 
 /* Player Detail Header */
 .player-detail-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   padding: 2.5rem 2rem 2rem 2rem;
   text-align: center;
   position: relative;
@@ -396,7 +424,7 @@
   padding: 0.5rem 1.5rem;
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
-  border-radius: 25px;
+  border-radius: 4px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
   z-index: 1;
@@ -419,7 +447,7 @@
   gap: 0.5rem;
   padding: 1.25rem;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 12px;
+  border-radius: 4px;
   border: 2px solid #e0e0e0;
   transition: all 0.3s ease;
   position: relative;
@@ -433,14 +461,14 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(to bottom, #667eea, #764ba2);
+  background: linear-gradient(to bottom, #b0451f, #7c2f16);
   transition: width 0.3s ease;
 }
 
 .stat-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-  border-color: #667eea;
+  box-shadow: 0 8px 20px rgba(176, 69, 31, 0.2);
+  border-color: #b0451f;
 }
 
 .stat-item:hover::before {
@@ -470,6 +498,11 @@
 .stat-value.active {
   color: #2e7d32;
   text-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+}
+
+.stat-value.eliminated {
+  color: #c62828;
+  text-shadow: 0 0 20px rgba(198, 40, 40, 0.3);
 }
 
 /* Edit Form */
@@ -505,8 +538,8 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #667EEA;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  border-color: #b0451f;
+  box-shadow: 0 0 0 4px rgba(176, 69, 31, 0.15);
   background: #fff;
 }
 
@@ -531,7 +564,7 @@
   height: 20px;
   cursor: pointer;
   margin: 0;
-  accent-color: #667eea;
+  accent-color: #b0451f;
 }
 
 /* Modal Actions */
@@ -602,7 +635,7 @@
 .btn {
   padding: 1rem 1.5rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 4px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -638,14 +671,14 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(176, 69, 31, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 12px 24px rgba(176, 69, 31, 0.5);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -674,12 +707,6 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .player-button .player-name {
-    flex-basis: 100%;
-    margin-bottom: 0.25rem;
-  }
-}
 
 @media (max-width: 768px) {
   .season-progress {
@@ -710,11 +737,6 @@
     align-items: flex-start;
     gap: 0.75rem;
     padding: 0.875rem;
-  }
-
-  .player-button .player-info-right {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .player-stats-grid {
@@ -756,12 +778,12 @@
     border-color: #666;
   }
 
-  .player-button .player-name {
+  .player-button .player-name-text {
     color: #fff;
   }
 
-  .player-button .player-stats {
-    color: #bbb;
+  .player-button.eliminated .player-name-text {
+    color: #666;
   }
 
   .modal-content {
@@ -817,8 +839,8 @@
   }
 
   .form-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    border-color: #b0451f;
+    box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.2);
   }
 
   .form-group label {

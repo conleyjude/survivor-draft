@@ -230,7 +230,7 @@ function SeasonProgress() {
       {seasonNumber && (
         <>
           <div className="progress-header">
-            <h1>🏝️ Season {seasonNumber} Progress</h1>
+            <h1>Season {seasonNumber} Progress</h1>
             <p className="subtitle">Track tribes and player statistics as the season progresses</p>
           </div>
 
@@ -262,11 +262,11 @@ function SeasonProgress() {
                     <div
                       key={group.name}
                       className="tribe-panel"
-                      style={{ borderTopColor: group.color || '#667EEA' }}
+                      style={{ borderTopColor: group.color || '#b0451f' }}
                     >
                       <div
                         className="tribe-header"
-                        style={{ backgroundColor: group.color || '#667EEA' }}
+                        style={{ backgroundColor: group.color || '#b0451f' }}
                       >
                         <h2>{group.name}</h2>
                         {viewMode === 'team' && group.owners && (
@@ -292,40 +292,40 @@ function SeasonProgress() {
                           <ul className="player-list">
                             {groupedPlayers[group.name].map((player) => (
                               <li key={`${player.first_name}-${player.last_name}`}>
-                                <div className="player-card-wrapper">
-                                  <button
-                                    className={`player-button ${viewMode === 'team' ? 'team-view' : ''}`}
-                                    onClick={() => setSelectedPlayer(player)}
-                                    style={
-                                      viewMode === 'team' && player.tribe_color
-                                        ? {
-                                            borderTopColor: player.tribe_color,
-                                            background: `linear-gradient(to bottom, ${player.tribe_color}20 0%, transparent 40%)`
-                                          }
-                                        : {}
-                                    }
-                                  >
-                                    <span className="player-name">
-                                      {player.first_name} {player.last_name}
-                                      {viewMode === 'team' && player.tribe_name && (
-                                        <span className="player-tribe-badge" style={{ color: player.tribe_color }}>
-                                          {' '}• {player.tribe_name}
-                                        </span>
-                                      )}
-                                    </span>
-                                    <div className="player-info-right">
-                                      <span className="player-stats">
-                                        {player.jury_status && '⚖️'}
-                                        {player.challenge_wins > 0 && ` 🏆${player.challenge_wins}`}
-                                        {player.immunity_challenge_wins > 0 && ` 🛡️${player.immunity_challenge_wins}`}
-                                      </span>
-                                      <QuickActionButtons
-                                        player={player}
-                                        onActionClick={handleQuickAction}
-                                      />
-                                    </div>
-                                  </button>
-                                </div>
+                                 <div className="player-card-wrapper">
+                                   <button
+                                     className={`player-button ${viewMode === 'team' ? 'team-view' : ''} ${player.status === 'eliminated' ? 'eliminated' : ''}`}
+                                     onClick={() => setSelectedPlayer(player)}
+                                     style={
+                                       viewMode === 'team' && player.tribe_color && player.status !== 'eliminated'
+                                         ? {
+                                             borderTopColor: player.tribe_color,
+                                             background: `linear-gradient(to bottom, ${player.tribe_color}20 0%, transparent 40%)`
+                                           }
+                                         : {}
+                                     }
+                                    >
+                                     <div className="player-card-top">
+                                       <span className="player-name-text">
+                                         {player.first_name} {player.last_name}
+                                       </span>
+                                       {viewMode === 'team' && player.tribe_name && (
+                                         <span className="player-tribe-badge" style={{ color: player.tribe_color }}>
+                                           • {player.tribe_name}
+                                         </span>
+                                       )}
+                                       {player.status === 'eliminated' && (
+                                         <span className="eliminated-badge">Voted Out</span>
+                                       )}
+                                     </div>
+                                     <div className="player-card-bottom">
+                                       <QuickActionButtons
+                                         player={player}
+                                         onActionClick={handleQuickAction}
+                                       />
+                                     </div>
+                                   </button>
+                                 </div>
                               </li>
                             ))}
                           </ul>
@@ -392,17 +392,19 @@ function SeasonProgress() {
                     <span className="stat-value">{selectedPlayer.challenge_wins || 0}</span>
                   </div>
                   <div className="stat-item">
-                    <label>🛡️ Immunity Challenge Wins</label>
+                    <label>🛡️ Immunity Wins</label>
                     <span className="stat-value">{selectedPlayer.immunity_challenge_wins || 0}</span>
                   </div>
                   <div className="stat-item">
-                    <label>📨 Votes Received</label>
-                    <span className="stat-value">{selectedPlayer.votes_received_total || 0}</span>
+                    <label>🗝️ Has Idol</label>
+                    <span className={`stat-value ${selectedPlayer.has_idol ? 'active' : ''}`}>
+                      {selectedPlayer.has_idol ? 'Yes' : 'No'}
+                    </span>
                   </div>
                   <div className="stat-item">
-                    <label>⚖️ Jury Status</label>
-                    <span className={`stat-value ${selectedPlayer.jury_status ? 'active' : ''}`}>
-                      {selectedPlayer.jury_status ? 'On Jury' : 'Not on Jury'}
+                    <label>❌ Status</label>
+                    <span className={`stat-value ${selectedPlayer.status === 'eliminated' ? 'eliminated' : ''}`}>
+                      {selectedPlayer.status === 'eliminated' ? 'Voted Out' : 'Active'}
                     </span>
                   </div>
                 </div>

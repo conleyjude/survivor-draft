@@ -16,7 +16,7 @@
 
 .search-bar-wrapper:focus-within {
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .search-icon {

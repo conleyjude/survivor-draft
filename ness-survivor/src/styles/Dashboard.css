@@ -1,495 +1,433 @@
-/* Dashboard.css - 90s SPORTS JUNGLE EDITION */
+/* Dashboard.css - ISLAND CHARTER EDITION */
 
 .dashboard {
   width: 100%;
 }
 
-/* HERO SECTION - 90s SPORTS MASTERPIECE */
+/* HERO SECTION - weathered expedition briefing board */
 .dashboard-hero {
-  text-align: center;
   margin-bottom: 3rem;
-  padding: 3rem 2rem;
-  background: var(--gradient-tropical);
-  color: var(--color-text-inverse);
-  border-radius: 12px;
-  border: 3px solid var(--color-gold);
+  padding: 3rem 2.5rem;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink-soft);
+  border-left: 6px solid var(--color-rust);
+  border-radius: 6px;
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.2),
-    inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-soft-lg);
 }
 
-/* Animated diagonal stripes background */
+/* Sunburst motif behind the headline, dimmed to a sun-bleached compass */
 .dashboard-hero::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 200%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 20px,
-    rgba(255, 255, 255, 0.1) 20px,
-    rgba(255, 255, 255, 0.1) 40px
+  top: -60%;
+  right: -20%;
+  width: 480px;
+  height: 480px;
+  background: repeating-conic-gradient(
+    rgba(169, 134, 63, 0.1) 0deg 8deg,
+    transparent 8deg 16deg
   );
-  animation: slide 20s linear infinite;
-  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
-@keyframes slide {
-  to { left: 0; }
+.dashboard-hero::after {
+  content: 'EST. SEASON FIFTY';
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-family: var(--font-athletic);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: rgba(230, 219, 191, 0.45);
 }
 
 .dashboard-hero h1 {
   font-family: var(--font-display);
-  font-size: 4rem;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 3rem;
+  letter-spacing: 0.2px;
+  margin-bottom: 0.75rem;
+  border-bottom: none;
+  padding-bottom: 0;
+  display: block;
+  color: var(--color-sand);
   position: relative;
-  z-index: 1;
-  text-shadow: 
-    2px 2px 0 var(--color-sunset-pink),
-    4px 4px 0 var(--color-electric-blue),
-    6px 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 .dashboard-hero p {
-  font-family: var(--font-athletic);
-  font-size: 1.4rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  opacity: 0.95;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: rgba(230, 219, 191, 0.8);
+  max-width: 55ch;
   position: relative;
-  z-index: 1;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 1.75rem;
 }
 
 .dashboard-section {
   background: white;
-  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    0 1px 3px var(--color-shadow-teal);
   position: relative;
-  overflow: hidden;
 }
 
 .dashboard-section h2 {
   font-family: var(--font-display);
-  font-size: 1.8rem;
-  letter-spacing: 2px;
+  font-style: italic;
+  font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: var(--color-text-dark);
-  border-bottom: 3px solid var(--color-moss-green);
-  padding-bottom: 0.5rem;
-  text-transform: uppercase;
+  color: var(--color-ink);
+  border-bottom: 2px solid var(--color-vote-gold);
+  padding-bottom: 0.6rem;
   position: relative;
   z-index: 1;
 }
 
-/* STAT CARDS - ATHLETIC STYLE */
-.stats-grid {
+/* STAT CARDS - camp tally boards */
+.dashboard .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
-.stat-card {
-  background: var(--gradient-sunset);
-  color: var(--color-text-inverse);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 3px solid var(--color-gold);
+.dashboard .stat-card {
+  background: var(--color-sand);
+  color: var(--color-ink);
+  padding: 1.5rem 1.25rem;
   text-align: center;
-  box-shadow: 
-    0 6px 12px rgba(0, 0, 0, 0.15),
-    inset 0 2px 4px rgba(255, 255, 255, 0.3);
-  transform: skewY(-1deg);
-  transition: transform 0.3s ease;
+  border: 1px solid var(--color-ink-soft);
+  border-radius: 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-  overflow: hidden;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.dashboard .stat-card:nth-child(2) {
+  background: #dccda4;
 }
 
-.stat-card:hover {
-  transform: skewY(-1deg) scale(1.05) translateY(-4px);
+.dashboard .stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
 }
 
-.stat-card:hover::before {
-  opacity: 1;
-}
-
-.stat-card h3 {
+.dashboard .stat-card h3 {
   font-family: var(--font-athletic);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 400;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  opacity: 0.9;
-  margin-bottom: 0.5rem;
+  color: var(--color-ink-soft);
+  margin-bottom: 0.6rem;
 }
 
-.stat-number {
-  font-family: var(--font-athletic);
-  font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: 3px;
+.dashboard .stat-number {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2.75rem;
   line-height: 1;
-  text-shadow: 
-    1px 1px 0 rgba(0, 0, 0, 0.2),
-    2px 2px 0 rgba(0, 0, 0, 0.1),
-    3px 3px 6px rgba(0, 0, 0, 0.3);
+  color: var(--color-rust);
 }
 
-.mini-leaderboard {
+.dashboard .stat-card:nth-child(2) .stat-number {
+  color: var(--color-teal-dark);
+}
+
+.dashboard .mini-leaderboard {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
 }
 
-.leaderboard-item {
+.dashboard .leaderboard-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  background: var(--color-bg-secondary);
-  border-radius: 8px;
-  border-left: 4px solid var(--color-deep-jungle);
-  transition: all 0.3s ease;
+  padding: 0.85rem 0;
+  border-bottom: 1px dashed var(--color-parchment);
+  transition: background 0.2s ease;
 }
 
-.leaderboard-item:hover {
-  transform: translateX(8px);
-  background: var(--color-bg-tertiary);
-  border-left-color: var(--color-tropical-teal);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.dashboard .leaderboard-item:hover {
+  background: var(--color-sand);
 }
 
-.rank {
+.dashboard .rank {
   font-family: var(--font-athletic);
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--color-deep-jungle);
-  min-width: 40px;
+  font-size: 0.9rem;
+  color: var(--color-rust);
+  min-width: 32px;
 }
 
-.team-name {
+.dashboard .team-name {
   flex: 1;
-  font-family: var(--font-athletic);
+  font-family: var(--font-body);
   font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: 0.5px;
+  font-size: 1rem;
+  color: var(--color-ink);
 }
 
-.team-score {
+.dashboard .team-score {
   font-family: var(--font-athletic);
-  color: var(--color-deep-jungle);
-  font-weight: 700;
-  font-size: 1.2rem;
-}
-
-.view-all-link {
-  display: inline-block;
-  margin-top: 1rem;
-  font-family: var(--font-athletic);
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: var(--color-deep-jungle);
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--color-deep-jungle);
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
+  color: var(--color-teal-dark);
   font-size: 0.9rem;
 }
 
-.view-all-link:hover {
-  color: white;
-  background: var(--color-moss-green);
-  border-color: var(--color-moss-green);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.dashboard .view-all-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-family: var(--font-athletic);
+  letter-spacing: 0.5px;
+  color: var(--color-teal-dark);
+  text-decoration: none;
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--color-teal);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
-.seasons-list {
+.dashboard .view-all-link:hover {
+  color: var(--color-sand);
+  background: var(--color-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.dashboard .seasons-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 1rem;
 }
 
-.season-card {
+.dashboard .season-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 1.5rem 1rem;
-  background: var(--gradient-jungle);
-  color: var(--color-text-inverse);
+  padding: 1.25rem 1.1rem;
+  background: var(--color-sand);
+  color: var(--color-ink);
   text-decoration: none;
-  border-radius: 12px;
-  border: 3px solid var(--color-gold);
-  transition: all 0.3s ease;
+  border: 1px solid var(--color-ink-soft);
+  border-radius: 4px;
+  transition: all 0.2s ease;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   position: relative;
-  overflow: hidden;
 }
 
-.season-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
+.dashboard .season-card:hover {
+  background: white;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--color-vote-gold);
 }
 
-.season-card:hover::before {
-  left: 100%;
+.dashboard .season-card h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.15rem;
+  color: var(--color-rust);
 }
 
-.season-card:hover {
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.2),
-    0 0 0 3px var(--color-tropical-teal);
-}
-
-.season-card h3 {
+.dashboard .season-card p {
   font-family: var(--font-athletic);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
 }
 
-.season-card p {
-  font-family: var(--font-athletic);
-  font-size: 0.95rem;
-  opacity: 0.9;
-  letter-spacing: 0.5px;
-}
-
-.admin-link-grid {
+.dashboard .admin-link-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
 }
 
-.admin-link {
+.dashboard .admin-link {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  background: white;
+  border: 1px solid var(--color-ink-soft);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--color-ink);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dashboard .admin-link:hover {
+  background: var(--color-sand);
+  border-color: var(--color-rust);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+
+.dashboard .admin-link .icon {
+  font-family: var(--font-athletic);
+  font-size: 0.7rem;
+  color: var(--color-rust);
+  background: transparent;
+  border: 2px solid var(--color-rust);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  background: white;
-  border: 3px solid var(--color-bg-secondary);
-  border-radius: 12px;
-  text-decoration: none;
-  color: var(--color-text-dark);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
-.admin-link:hover {
-  border-color: var(--color-moss-green);
-  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, white 100%);
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.15),
-    0 0 0 3px var(--color-tropical-teal);
-}
-
-.admin-link .icon {
-  font-size: 2.5rem;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.admin-link .label {
+.dashboard .admin-link .label {
   font-family: var(--font-athletic);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
 }
 
-.loading,
-.no-data {
+.dashboard .loading,
+.dashboard .no-data {
   text-align: center;
   color: var(--color-text-light);
   padding: 2rem;
   font-style: italic;
+  background: none;
+  border-radius: 0;
 }
 
 /* Season Progress Tracker Section */
-.season-progress-tracker {
+.dashboard .season-progress-tracker {
   grid-column: 1 / -1; /* Full width across grid */
-  background: var(--gradient-electric);
-  color: white;
-  border: 3px solid var(--color-gold);
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.2),
-    inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+  background: var(--color-ink);
+  color: var(--color-sand);
+  border: 1px solid var(--color-ink-soft);
+  border-left: 6px solid var(--color-teal);
+  border-radius: 6px;
 }
 
-.season-progress-tracker h2 {
-  color: white;
-  border-bottom-color: rgba(255, 255, 255, 0.4);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+.dashboard .season-progress-tracker h2 {
+  color: var(--color-sand);
+  border-bottom-color: var(--color-vote-gold);
 }
 
-.section-description {
+.dashboard .section-description {
   margin-bottom: 1.5rem;
-  opacity: 0.95;
+  opacity: 0.9;
   font-size: 1rem;
-  font-family: var(--font-athletic);
-  letter-spacing: 0.5px;
+  font-family: var(--font-body);
 }
 
-.season-selector {
+.dashboard .season-selector {
   display: flex;
   gap: 1rem;
   align-items: stretch;
 }
 
-.season-select {
+.dashboard .season-select {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.1rem;
   font-family: var(--font-athletic);
-  font-size: 1.05rem;
-  font-weight: 600;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.95);
-  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  border: 1.5px solid rgba(230, 219, 191, 0.4) !important;
+  border-radius: 4px;
+  background: rgba(230, 219, 191, 0.95);
+  color: var(--color-ink);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.season-select:focus {
+.dashboard .season-select:focus {
   outline: none;
-  border-color: white;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  border-color: var(--color-vote-gold) !important;
+  box-shadow: none !important;
 }
 
-.progress-button {
+.dashboard .progress-button {
   padding: 0.75rem 2rem;
   font-family: var(--font-athletic);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  background: white;
-  color: var(--color-electric-blue);
-  border: 3px solid white;
-  border-radius: 8px;
+  background: var(--color-rust);
+  color: var(--color-sand);
+  border: 1.5px solid var(--color-rust);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.progress-button:hover:not(:disabled) {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.progress-button:active:not(:disabled) {
+.dashboard .progress-button:hover:not(:disabled) {
+  background: var(--color-rust-dark);
+  border-color: var(--color-rust-dark);
   transform: translateY(-2px);
 }
 
-.progress-button:disabled {
-  opacity: 0.5;
+.dashboard .progress-button:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* Season Card Wrapper for Progress Link */
-.season-card-wrapper {
+.dashboard .season-card-wrapper {
   position: relative;
   display: flex;
   align-items: stretch;
+  gap: 0.5rem;
 }
 
-.season-card-wrapper .season-card {
+.dashboard .season-card-wrapper .season-card {
   flex: 1;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-right: none;
 }
 
-.season-progress-link {
+.dashboard .season-progress-link {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 1rem;
-  background: var(--color-moss-green);
-  color: white;
+  background: var(--color-sand);
+  color: var(--color-rust);
   text-decoration: none;
-  border: 3px solid var(--color-gold);
-  border-left: none;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-  transition: all 0.3s ease;
-  font-size: 1.5rem;
+  border: 1px solid var(--color-ink-soft);
+  border-radius: 4px;
+  font-family: var(--font-athletic);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
 }
 
-.season-progress-link:hover {
-  background: var(--color-burnt-orange);
-  transform: scale(1.15);
+.dashboard .season-progress-link:hover {
+  background: var(--color-rust);
+  color: var(--color-sand);
 }
 
 @media (max-width: 768px) {
   .dashboard-hero h1 {
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-  }
-  
-  .dashboard-hero p {
-    font-size: 1.1rem;
+    font-size: 2.1rem;
   }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
-  .season-selector {
+  .dashboard .season-selector {
     flex-direction: column;
   }
 
-  .progress-button {
+  .dashboard .progress-button {
     width: 100%;
   }
-  
-  .stat-number {
-    font-size: 2.5rem;
+
+  .dashboard .stat-number {
+    font-size: 2.25rem;
   }
 }
+

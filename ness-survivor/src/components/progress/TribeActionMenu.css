@@ -38,7 +38,7 @@
   top: calc(100% + 8px);
   right: 0;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   min-width: 220px;
   z-index: 100;
@@ -60,7 +60,7 @@
 
 .tribe-action-header {
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: #fff;
   font-weight: 700;
   font-size: 0.85rem;

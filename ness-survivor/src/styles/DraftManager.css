@@ -1,3 +1,20 @@
+.draft-manager .manager-header {
+  margin-bottom: 2rem;
+}
+
+.draft-manager .manager-header h1 {
+  font-size: 2rem;
+  color: var(--color-ink);
+  margin-bottom: 0.5rem;
+}
+
+.draft-manager .manager-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
 .pick-team {
   color: #718096;
   font-size: 0.85rem;
@@ -6,7 +23,7 @@
 .teams-draft-board {
   background: white;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin: 2rem auto;
   max-width: 1400px;
@@ -83,20 +100,20 @@
 .draft-slot.filled {
   background: white;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 2px 8px rgba(176, 69, 31, 0.1);
 }
 
 .draft-slot.empty.clickable {
   cursor: pointer;
   border-color: var(--color-tropical-teal);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.05) 0%, rgba(63, 91, 70, 0.05) 100%);
 }
 
 .draft-slot.empty.clickable:hover {
   border-color: var(--color-deep-jungle);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.1) 0%, rgba(63, 91, 70, 0.1) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.2);
 }
 
 .draft-slot.selected {
@@ -169,7 +186,7 @@
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 90%;
   max-width: 600px;
@@ -248,8 +265,9 @@
 
 .player-item {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
   padding: 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
@@ -260,9 +278,24 @@
 
 .player-item:hover {
   border-color: var(--color-deep-jungle);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.05) 0%, rgba(63, 91, 70, 0.05) 100%);
   transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.15);
+}
+
+.player-item .player-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--color-deep-jungle);
+}
+
+.player-item .player-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .player-item .player-name {
@@ -291,7 +324,7 @@
 .draft-rounds-input:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .draft-badges {

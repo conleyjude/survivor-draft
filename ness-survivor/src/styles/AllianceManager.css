@@ -18,21 +18,21 @@
   padding: 2rem 1rem;
 }
 
-.manager-header {
+.alliance-manager .manager-header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.manager-header h1 {
+.alliance-manager .manager-header h1 {
   font-size: 2.5rem;
   color: var(--color-text-inverse);
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.manager-content {
+.alliance-manager .manager-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 2rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   max-width: 1200px;
@@ -62,7 +62,7 @@
 .message.success {
   background: var(--color-success);
   color: var(--color-text-inverse);
-  border-left: 4px solid #059669;
+  border-left: 4px solid #55693f;
 }
 
 .message.error {
@@ -114,7 +114,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .form-group input.input-error,
@@ -184,7 +184,7 @@
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -246,7 +246,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 16px rgba(176, 69, 31, 0.4);
 }
 
 .btn-secondary {
@@ -260,7 +260,7 @@
 }
 
 .btn-edit {
-  background: #3b82f6;
+  background: #3f5b46;
   color: var(--color-text-inverse);
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
@@ -318,7 +318,7 @@
 .search-container input:focus {
   outline: none;
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .alliance-item {
@@ -334,7 +334,7 @@
 
 .alliance-item:hover {
   border-color: var(--color-deep-jungle);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.1);
 }
 
 .alliance-content {
@@ -407,7 +407,7 @@
 
 .confirm-dialog-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 2rem;
   max-width: 400px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -453,7 +453,7 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .manager-content {
+  .alliance-manager .manager-content {
     grid-template-columns: 1fr;
   }
 }
@@ -463,12 +463,12 @@
     padding: 1rem 0.5rem;
   }
 
-  .manager-content {
+  .alliance-manager .manager-content {
     padding: 1rem;
     border-radius: 8px;
   }
 
-  .manager-header h1 {
+  .alliance-manager .manager-header h1 {
     font-size: 1.8rem;
   }
 

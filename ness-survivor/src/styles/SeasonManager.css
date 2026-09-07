@@ -4,11 +4,11 @@
   width: 100%;
 }
 
-.manager-header {
+.season-manager .manager-header {
   margin-bottom: 2rem;
 }
 
-.manager-header h1 {
+.season-manager .manager-header h1 {
   font-size: 2rem;
   color: var(--color-text-main);
   margin-bottom: 0.5rem;
@@ -52,7 +52,7 @@
   }
 }
 
-.manager-content {
+.season-manager .manager-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
@@ -193,7 +193,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.4);
 }
 
 .btn-secondary {
@@ -299,7 +299,7 @@
 }
 
 @media (max-width: 1024px) {
-  .manager-content {
+  .season-manager .manager-content {
     grid-template-columns: 1fr;
   }
 

@@ -23,7 +23,7 @@
 
 .confirm-modal {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 500px;
   width: 90%;
@@ -44,7 +44,7 @@
 .modal-header {
   padding: 20px;
   border-bottom: 1px solid #eee;
-  border-radius: 12px 12px 0 0;
+  border-radius: 4px 4px 0 0;
 }
 
 .modal-header.modal-warning {
@@ -56,7 +56,7 @@
 }
 
 .modal-header.modal-info {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #3f5b46 0%, #253526 100%);
 }
 
 .modal-title {
@@ -151,7 +151,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(176, 69, 31, 0.3);
 }
 
 .btn-warning {
@@ -175,7 +175,7 @@
 }
 
 .btn-info {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #3f5b46 0%, #253526 100%);
   color: var(--color-text-inverse);
 }
 

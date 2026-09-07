@@ -23,7 +23,7 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #b0451f;
   background: #f9f9f9;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -50,7 +50,7 @@
   justify-content: center;
   background: white;
   border-radius: 50%;
-  border: 2px solid #667eea;
+  border: 2px solid #b0451f;
 }
 
 .timeline-content {
@@ -72,10 +72,10 @@
 .timeline-episode {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
+  color: #b0451f;
+  background: rgba(176, 69, 31, 0.1);
   padding: 0.2rem 0.6rem;
-  border-radius: 12px;
+  border-radius: 4px;
 }
 
 .timeline-notes {
@@ -177,7 +177,7 @@
 
   .timeline-item {
     background: #333;
-    border-left-color: #667eea;
+    border-left-color: #b0451f;
   }
 
   .timeline-item:hover {
@@ -186,7 +186,7 @@
 
   .timeline-icon {
     background: #2a2a2a;
-    border-color: #667eea;
+    border-color: #b0451f;
   }
 
   .timeline-title {
@@ -194,7 +194,7 @@
   }
 
   .timeline-episode {
-    background: rgba(102, 126, 234, 0.2);
+    background: rgba(176, 69, 31, 0.2);
     color: #9eb3ff;
   }
 

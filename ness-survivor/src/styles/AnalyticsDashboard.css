@@ -1,7 +1,7 @@
 .analytics-dashboard {
   padding: 30px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.05) 0%, rgba(63, 91, 70, 0.05) 100%);
+  border-radius: 4px;
 }
 
 .analytics-header {
@@ -33,7 +33,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(176, 69, 31, 0.3);
 }
 
 .metric-selector {
@@ -99,7 +99,7 @@
 
 .stat-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 25px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-left: 4px solid var(--color-deep-jungle);
@@ -150,7 +150,7 @@
 
 .metric-box {
   background: white;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 20px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -175,7 +175,7 @@
 /* Top Lists */
 .top-list {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 25px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
@@ -199,14 +199,14 @@
   align-items: center;
   gap: 15px;
   padding: 15px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.05) 0%, rgba(63, 91, 70, 0.05) 100%);
   border-radius: 8px;
   border-left: 3px solid var(--color-deep-jungle);
   transition: all 0.2s;
 }
 
 .list-item:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(176, 69, 31, 0.1) 0%, rgba(63, 91, 70, 0.1) 100%);
   transform: translateX(4px);
 }
 
@@ -248,7 +248,7 @@
   padding: 6px 12px;
   background: var(--color-success);
   color: var(--color-text-inverse);
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
   flex-shrink: 0;
@@ -257,9 +257,9 @@
 /* Info Box */
 .info-box {
   background: white;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 25px;
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #3f5b46;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 

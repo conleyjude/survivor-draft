@@ -62,8 +62,8 @@ function PlayerManager() {
   }, [selectedSeason]);
 
   const { mutate: createPlayer, isLoading: isCreating } = useMutation(
-    (seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes) =>
-      neo4jService.createPlayer(seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes),
+    (seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age) =>
+      neo4jService.createPlayer(seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age),
     () => {
       setSuccessMessage('Player created successfully!');
       if (selectedSeason) {
@@ -113,7 +113,7 @@ function PlayerManager() {
   );
 
   const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
-    { first_name: '', last_name: '', occupation: '', hometown: '', archetype: '', notes: '' },
+    { first_name: '', last_name: '', occupation: '', age: '', hometown: '', archetype: '', notes: '', photo_url: '' },
     async (formValues) => {
       if (!selectedSeason) {
         setErrorMessage('Please select a season first');
@@ -129,8 +129,10 @@ function PlayerManager() {
           first_name: formValues.first_name,
           last_name: formValues.last_name,
           occupation: formValues.occupation,
+          age: formValues.age ? Number(formValues.age) : null,
           hometown: formValues.hometown,
           archetype: formValues.archetype,
+          photo_url: formValues.photo_url || null,
         });
         // If tribe changed, move player to new tribe
         if (editingId.tribe_name !== selectedTribe) {
@@ -145,7 +147,9 @@ function PlayerManager() {
           formValues.occupation,
           formValues.hometown,
           formValues.archetype,
-          ''
+          '',
+          formValues.age ? Number(formValues.age) : null,
+          formValues.photo_url || null
         );
       }
     },
@@ -162,9 +166,11 @@ function PlayerManager() {
       first_name: player.first_name,
       last_name: player.last_name,
       occupation: player.occupation,
+      age: player.age != null ? String(player.age) : '',
       hometown: player.hometown || '',
       archetype: player.archetype || '',
       notes: player.notes || '',
+      photo_url: player.photo_url || '',
     });
   };
 
@@ -190,7 +196,7 @@ function PlayerManager() {
   return (
     <div className="player-manager">
       <div className="manager-header">
-        <h1>👥 Manage Players</h1>
+        <h1>Manage Players</h1>
         <p className="header-subtitle">Create, edit, and manage Survivor players</p>
       </div>
 
@@ -291,18 +297,36 @@ function PlayerManager() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="occupation">Occupation *</label>
-                <input
-                  id="occupation"
-                  name="occupation"
-                  type="text"
-                  value={values.occupation}
-                  onChange={handleChange}
-                  placeholder="e.g., Restaurant Owner"
-                  className={errors.occupation ? 'input-error' : ''}
-                />
-                {errors.occupation && <span className="error-message">{errors.occupation}</span>}
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="occupation">Occupation *</label>
+                  <input
+                    id="occupation"
+                    name="occupation"
+                    type="text"
+                    value={values.occupation}
+                    onChange={handleChange}
+                    placeholder="e.g., Restaurant Owner"
+                    className={errors.occupation ? 'input-error' : ''}
+                  />
+                  {errors.occupation && <span className="error-message">{errors.occupation}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="age">Age</label>
+                  <input
+                    id="age"
+                    name="age"
+                    type="number"
+                    value={values.age}
+                    onChange={handleChange}
+                    placeholder="e.g., 32"
+                    min="18"
+                    max="100"
+                    className={errors.age ? 'input-error' : ''}
+                  />
+                  {errors.age && <span className="error-message">{errors.age}</span>}
+                </div>
               </div>
 
               <div className="form-row">
@@ -341,6 +365,26 @@ function PlayerManager() {
                   placeholder="e.g., Key player in the game..."
                   rows="3"
                 />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="photo_url">Photo URL</label>
+                <input
+                  id="photo_url"
+                  name="photo_url"
+                  type="url"
+                  value={values.photo_url}
+                  onChange={handleChange}
+                  placeholder="e.g., https://survivor.fandom.com/wiki/..."
+                />
+                {values.photo_url && (
+                  <img
+                    src={values.photo_url}
+                    alt="Player preview"
+                    className="photo-preview"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                )}
               </div>
 
               <div className="form-actions">
@@ -391,8 +435,16 @@ function PlayerManager() {
                 {filteredPlayers.map((player) => (
                   <div key={`${player.first_name}-${player.last_name}`} className="player-item">
                     <div className="player-content">
+                      {player.photo_url && (
+                        <img
+                          src={player.photo_url}
+                          alt={`${player.first_name} ${player.last_name}`}
+                          className="player-photo"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
                       <div className="player-info">
-                        <h3>{player.first_name} {player.last_name}</h3>
+                        <h3>{player.first_name} {player.last_name}{player.age != null ? `, ${player.age}` : ''}</h3>
                         <p className="player-details">
                           {player.occupation}
                         </p>

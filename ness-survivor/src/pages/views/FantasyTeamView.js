@@ -50,7 +50,7 @@ function FantasyTeamView() {
       {/* Header */}
       <div className="team-header">
         <div className="team-title">
-          <h1>🎯 {team.team_name}</h1>
+          <h1>{team.team_name}</h1>
           {team.owner_name && <p className="owner">Owner: {team.owner_name}</p>}
         </div>
       </div>

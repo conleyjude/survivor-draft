@@ -1,0 +1,7 @@
+# Server environment variables (Neo4j credentials)
+server/.env
+server/node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db

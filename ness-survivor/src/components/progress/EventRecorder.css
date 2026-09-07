@@ -26,7 +26,7 @@
 
 .event-recorder-modal {
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 2rem;
   max-width: 500px;
   width: 100%;
@@ -123,8 +123,8 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #667EEA;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #b0451f;
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .form-textarea {
@@ -140,8 +140,8 @@
 
 .form-textarea:focus {
   outline: none;
-  border-color: #667EEA;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #b0451f;
+  box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.1);
 }
 
 .error-message {
@@ -178,13 +178,13 @@
 }
 
 .form-actions .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b0451f 0%, #7c2f16 100%);
   color: white;
 }
 
 .form-actions .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(176, 69, 31, 0.4);
 }
 
 .form-actions .btn-secondary {
@@ -243,8 +243,8 @@
 
   .form-input:focus,
   .form-textarea:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    border-color: #b0451f;
+    box-shadow: 0 0 0 3px rgba(176, 69, 31, 0.2);
   }
 
   .error-message {
