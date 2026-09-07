@@ -34,7 +34,8 @@ $serverFiles = @(
     "$ROOT\server\index.js",
     "$ROOT\server\neo4jConfig.js",
     "$ROOT\server\neo4jService.js",
-    "$ROOT\server\routes.js"
+    "$ROOT\server\routes.js",
+    "$ROOT\server\socket.js"
 )
 scp @SSH_OPT @serverFiles "${PI}:${REMOTE}/server/"
 if ($LASTEXITCODE -ne 0) {
@@ -47,6 +48,15 @@ Write-Host "[3/3] Restarting API service on Pi ..." -ForegroundColor Yellow
 ssh @SSH_OPT $PI "cd $REMOTE/server && npm install --production --silent && sudo systemctl restart survivor-draft-api"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "WARNING: service restart may have failed - check Pi logs" -ForegroundColor Yellow
+}
+
+# 4. Verify the service actually stayed up (exit code 1 = crash-looped)
+Write-Host "Verifying service health ..." -ForegroundColor Yellow
+ssh @SSH_OPT $PI "sleep 4 && systemctl is-active --quiet survivor-draft-api"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "ERROR: survivor-draft-api is not running after restart. Recent logs:" -ForegroundColor Red
+    ssh @SSH_OPT $PI "journalctl -u survivor-draft-api -n 30 --no-pager"
+    exit 1
 }
 
 Write-Host ""

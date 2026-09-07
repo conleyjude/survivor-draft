@@ -51,6 +51,8 @@ body {
   color: var(--color-sand);
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   gap: 0.65rem;
   transition: color 0.2s ease;
 }
@@ -127,16 +129,23 @@ body {
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: rgba(230, 219, 191, 0.75);
+  transition: color 0.2s ease;
 }
 
-.nav-submenu:hover .nav-submenu-list {
+.nav-submenu:hover .nav-submenu-list,
+.nav-submenu:focus-within .nav-submenu-list {
   display: flex;
+}
+
+.nav-submenu:hover > span,
+.nav-submenu:focus-within > span {
+  color: var(--color-sand);
 }
 
 .nav-submenu-list {
   display: none;
   position: absolute;
-  top: calc(100% + 0.35rem);
+  top: 100%;
   left: 0;
   background-color: var(--color-sand);
   flex-direction: column;
@@ -148,6 +157,11 @@ body {
   pointer-events: auto;
 }
 
+.nav-submenu:last-child .nav-submenu-list {
+  left: auto;
+  right: 0;
+}
+
 .nav-submenu-list li {
   list-style: none;
 }
@@ -156,6 +170,7 @@ body {
   display: block;
   padding: 0.6rem 1.25rem;
   font-size: 0.8rem;
+  color: var(--color-ink);
 }
 
 .nav-submenu-list a::after {
@@ -276,8 +291,15 @@ button.btn {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .nav-container {
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+  }
+
   .nav-menu {
+    flex: 1 0 100%;
     gap: 1rem;
+    justify-content: space-between;
   }
 
   .App-main {
@@ -291,6 +313,24 @@ button.btn {
   
   .nav-menu a {
     font-size: 0.75rem;
+  }
+
+  .nav-submenu > span {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .nav-brand {
+    font-size: 1.1rem;
+  }
+
+  .nav-menu {
+    gap: 0.5rem;
   }
 }
 
