@@ -230,6 +230,14 @@
   transition: all 0.3s ease;
 }
 
+.roster-player-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-deep-jungle);
+}
+
 .roster-player-card:hover {
   border-color: var(--color-deep-jungle);
   box-shadow: 0 4px 12px rgba(176, 69, 31, 0.1);
@@ -263,6 +271,10 @@
   border: 2px solid #fcc;
   border-radius: 8px;
   opacity: 0.7;
+}
+
+.eliminated-player-card .roster-player-photo {
+  filter: grayscale(1);
 }
 
 .eliminated-player-card .player-name {

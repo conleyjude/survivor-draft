@@ -170,6 +170,15 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.player-card-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-deep-jungle);
+  margin-bottom: 10px;
+}
+
 .player-card:hover {
   box-shadow: 0 6px 16px rgba(176, 69, 31, 0.15);
   transform: translateY(-2px);

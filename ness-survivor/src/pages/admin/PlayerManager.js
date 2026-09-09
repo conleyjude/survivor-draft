@@ -62,8 +62,8 @@ function PlayerManager() {
   }, [selectedSeason]);
 
   const { mutate: createPlayer, isLoading: isCreating } = useMutation(
-    (seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age) =>
-      neo4jService.createPlayer(seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age),
+    (seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age, photoUrl) =>
+      neo4jService.createPlayer(seasonNumber, tribeName, firstName, lastName, occupation, hometown, archetype, notes, age, photoUrl),
     () => {
       setSuccessMessage('Player created successfully!');
       if (selectedSeason) {

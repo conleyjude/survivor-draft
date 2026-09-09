@@ -116,11 +116,21 @@
   margin-bottom: 10px;
 }
 
+.roster-player-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-deep-jungle);
+  margin-right: 10px;
+}
+
 .player-header h3 {
   margin: 0;
   color: var(--color-text-main);
   font-size: 1rem;
   font-weight: 600;
+  flex: 1;
 }
 
 .placement-badge {

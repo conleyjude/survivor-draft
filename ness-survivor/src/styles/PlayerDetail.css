@@ -17,6 +17,16 @@
   border-bottom: 2px solid var(--color-border);
 }
 
+.player-detail-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-deep-jungle);
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
 .player-name-section {
   flex: 1;
 }
