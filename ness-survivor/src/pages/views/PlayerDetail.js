@@ -38,6 +38,14 @@ function PlayerDetail() {
     <div className="player-detail">
       {/* Header */}
       <div className="player-header">
+        {player.photo_url && (
+          <img
+            src={player.photo_url}
+            alt={`${player.first_name} ${player.last_name}`}
+            className="player-detail-photo"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        )}
         <div className="player-name-section">
           <h1>{player.first_name} {player.last_name}</h1>
           {season && (

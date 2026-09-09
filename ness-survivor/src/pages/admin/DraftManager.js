@@ -18,6 +18,9 @@ function DraftManager() {
   // State for draft management
   const [selectedSlot, setSelectedSlot] = useState(null); // { teamName, slotIndex }
 
+  // Which team this browser is drafting for (per-season, remembered via localStorage)
+  const [myTeam, setMyTeam] = useState('');
+
   // Draft order inputs are local (form scratchpad); the confirmed order is shared/persisted server-side
   const [draftOrderInputs, setDraftOrderInputs] = useState({}); // Maps team_name -> draft position
   const draftType = 'snake'; // Always snake draft
@@ -52,6 +55,31 @@ function DraftManager() {
   const draftOrder = draftState?.draft_order || [];
   const draftOrderSet = draftOrder.length > 0;
   const isDraftFinalized = draftState?.draft_finalized || false;
+
+  // Load this browser's claimed team whenever the selected season changes
+  useEffect(() => {
+    if (!selectedSeason) {
+      setMyTeam('');
+      return;
+    }
+    setMyTeam(window.localStorage.getItem(`survivor-draft-team-${selectedSeason}`) || '');
+  }, [selectedSeason]);
+
+  const claimMyTeam = (teamName) => {
+    window.localStorage.setItem(`survivor-draft-team-${selectedSeason}`, teamName);
+    setMyTeam(teamName);
+  };
+
+  const releaseMyTeam = () => {
+    window.localStorage.removeItem(`survivor-draft-team-${selectedSeason}`);
+    setMyTeam('');
+  };
+
+  // Lookup table for player photos, keyed by full name (used on the draft board)
+  const playersByName = (players || []).reduce((acc, player) => {
+    acc[`${player.first_name} ${player.last_name}`] = player;
+    return acc;
+  }, {});
 
   // Join the shared draft room for this season and live-sync on any teammate's changes
   useEffect(() => {
@@ -265,6 +293,7 @@ function DraftManager() {
   const isSlotClickable = (teamName, slotIndex) => {
     if (isDraftFinalized) return false;
     if (!draftOrderSet) return false;
+    if (!myTeam || teamName !== myTeam) return false;
     
     const slots = getTeamDraftSlots(teamName);
     const slot = slots[slotIndex];
@@ -459,6 +488,37 @@ function DraftManager() {
               )}
             </section>
 
+            {/* Team Claim - pick which team you're drafting for */}
+            {draftOrderSet && !isDraftFinalized && (
+              <section className="team-claim-section">
+                {myTeam ? (
+                  <p className="claim-banner">
+                    🙋 Drafting as <strong>{myTeam}</strong>.{' '}
+                    <button className="link-button" onClick={releaseMyTeam}>Change team</button>
+                  </p>
+                ) : (
+                  <div className="team-claim-picker">
+                    <h2>🙋 Who are you drafting for?</h2>
+                    <p className="section-description">
+                      Choose your team below. You'll only be able to make picks for that team.
+                    </p>
+                    <div className="team-claim-grid">
+                      {teams.map((team) => (
+                        <button
+                          key={team.team_name}
+                          className="team-claim-option"
+                          onClick={() => claimMyTeam(team.team_name)}
+                        >
+                          <span className="team-claim-name">{team.team_name}</span>
+                          <span className="team-claim-owner">{team.owners?.join(', ') || 'No owner'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
             {/* Draft Progress */}
             {draftOrderSet && (
               <section className="draft-summary">
@@ -506,6 +566,14 @@ function DraftManager() {
                 <div className="reserve-players-grid">
                   {reservePlayers.map((player) => (
                     <div key={`${player.first_name}-${player.last_name}`} className="reserve-player-card">
+                      {player.photo_url && (
+                        <img
+                          src={player.photo_url}
+                          alt={`${player.first_name} ${player.last_name}`}
+                          className="reserve-player-photo"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
                       <span className="player-name">{player.first_name} {player.last_name}</span>
                       <span className="player-tribe">{player.tribe_name || 'No tribe'}</span>
                     </div>
@@ -528,7 +596,7 @@ function DraftManager() {
                     const slots = getTeamDraftSlots(teamName);
                     
                     return (
-                      <div key={teamName} className="draft-column">
+                      <div key={teamName} className={`draft-column ${myTeam === teamName ? 'my-team' : ''} ${myTeam && myTeam !== teamName ? 'not-my-team' : ''}`}>
                         <div className="draft-column-header">
                           <h3>{teamName}</h3>
                           <p className="team-owner">{team?.owners?.join(', ') || 'No owner'}</p>
@@ -540,6 +608,7 @@ function DraftManager() {
                             
                             const isClickable = isSlotClickable(teamName, idx);
                             const isSelected = selectedSlot?.teamName === teamName && selectedSlot?.slotIndex === idx;
+                            const draftedPlayer = slot.isFilled ? playersByName[slot.player] : null;
                             
                             return (
                               <div
@@ -553,7 +622,17 @@ function DraftManager() {
                                 </div>
                                 <div className="slot-content">
                                   {slot.isFilled ? (
-                                    <span className="player-name">{slot.player}</span>
+                                    <div className="slot-player">
+                                      {draftedPlayer?.photo_url && (
+                                        <img
+                                          src={draftedPlayer.photo_url}
+                                          alt={slot.player}
+                                          className="slot-player-photo"
+                                          onError={(e) => { e.target.style.display = 'none'; }}
+                                        />
+                                      )}
+                                      <span className="player-name">{slot.player}</span>
+                                    </div>
                                   ) : isClickable ? (
                                     <span className="placeholder">Click to select</span>
                                   ) : (

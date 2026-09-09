@@ -141,6 +141,14 @@ function SeasonView() {
                   to={`/players/${player.first_name}/${player.last_name}`}
                   className="player-card"
                 >
+                  {player.photo_url && (
+                    <img
+                      src={player.photo_url}
+                      alt={`${player.first_name} ${player.last_name}`}
+                      className="player-card-photo"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  )}
                   <div className="player-name">
                     {player.first_name} {player.last_name}
                   </div>
